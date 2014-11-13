@@ -64,9 +64,9 @@ matchCheck = matchTest == Just testSubstitutions
 
 -- Applying a single pattern
 transformationApply :: Eq a => a -> ([a] -> [a]) -> [a] -> ([a], [a]) -> Maybe [a]
-transformationApply wc f xs (w, t) = helper $ match wc w $ f xs 
+transformationApply wc f xs (w, t) = helper $ match wc w $ xs 
   where
-    helper (Just a) = Just $ substitute wc t a
+    helper (Just a) = Just $ substitute wc t $ f a
     helper Nothing = Nothing
 
 -- Applying a list of patterns until one succeeds

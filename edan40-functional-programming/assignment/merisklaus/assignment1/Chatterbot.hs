@@ -31,29 +31,15 @@ type BotBrain = [(Phrase, [Phrase])]
 
 stateOfMind :: BotBrain -> IO (Phrase -> Phrase)
 stateOfMind bb = do 
-                    q <- randomIO :: IO Float
-                    return $ rulesApply $ randPairs q bb
+  q <- randomIO :: IO Float
+  return $ rulesApply $ randPairs q bb
 
 randPairs :: Float -> BotBrain -> [PhrasePair]
 randPairs r = map (\n -> (fst n, pick r (snd n)))
 
---pickRandomPairs :: BotBrain -> IO (Phrase -> Phrase)
-pickRandomPairs x i = do 
-  return $ maybe (\i -> lookup i $ map hax x) i
-  where 
-    hax (x, y) = (x, pck y)
-
-pck xs = 
-  randomRIO (0, length xs - 1) >>=
-  return . (xs !!)
-
-rollDice :: IO Integer 
-rollDice = do
-   r <- randomIO :: IO Float
-   return $ floor (6*r+1)
-  
 rulesApply :: [PhrasePair] -> Phrase -> Phrase
-rulesApply pairs = try $ transformationsApply "*" id pairs 
+rulesApply pairs = try $ transformationsApply "*" reflect pairs 
+
 reflect :: Phrase -> Phrase
 reflect []     = []
 reflect (x:xs) = sub reflections : reflect(xs)
