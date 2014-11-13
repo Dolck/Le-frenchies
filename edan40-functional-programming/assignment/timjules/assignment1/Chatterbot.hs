@@ -27,8 +27,12 @@ type BotBrain = [(Phrase, [Phrase])]
 --------------------------------------------------------
 
 stateOfMind :: BotBrain -> IO (Phrase -> Phrase)
-{- TO BE WRITTEN -}
-stateOfMind _ = return id
+stateOfMind bb = do 
+                    q <- randomIO :: IO Float
+                    return $ rulesApply $ randPairs q bb
+
+randPairs :: Float -> BotBrain -> [PhrasePair]
+randPairs r = map (\n -> (fst n, pick r (snd n)))
 
 rulesApply :: [PhrasePair] -> Phrase -> Phrase
 rulesApply _ [] = []
@@ -75,11 +79,11 @@ present :: Phrase -> String
 present = unwords
 
 prepare :: String -> Phrase
-prepare = reduce . words . map toLower . filter (not . flip elem ".,:;*!#%&|") 
+prepare = words . map toLower . filter (not . flip elem ".,:;*!#%&|") 
+--reduce . above
 
 rulesCompile :: [(String, [String])] -> BotBrain
-{- TO BE WRITTEN -}
-rulesCompile _ = []
+rulesCompile = map (\n -> (prepare (fst n), map (\i -> prepare i) (snd n)))
 
 
 --------------------------------------
