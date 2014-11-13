@@ -32,7 +32,9 @@ stateOfMind _ = return id
 
 rulesApply :: [PhrasePair] -> Phrase -> Phrase
 rulesApply _ [] = []
-rulesApply pp p = transformationsApply "*" reflect pp p
+rulesApply pp p = try transform p
+  where 
+    transform = transformationsApply "*" reflect pp
 
 reflect :: Phrase -> Phrase
 reflect [] = []
