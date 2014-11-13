@@ -22,24 +22,24 @@ match :: Eq a => a -> [a] -> [a] -> Maybe [a]
 match n xs ys 
   | xs == ys = Just []
   | not $ n `elem` xs = Nothing
-  | otherwise = head $ matchHelper n xs ys
+  | [n] == xs = Just ys
+  | otherwise = matchHelper n xs ys
   where
     matchHelper n (x:xs) (y:ys)
       | x == y = matchHelper n xs ys
-      | n == x = singleWildcardMatch (x:xs) (y:ys) `orElse` longerWildcardMatch (x:xs) (y:ys) ++ match n xs ys
+      | n == x = singleWildcardMatch (x:xs) (y:ys) `orElse` longerWildcardMatch (x:xs) (y:ys)
       | otherwise = Nothing
-{- TO BE WRITTEN -}
-
-
--- Helper function to match
-singleWildcardMatch, longerWildcardMatch :: Eq a => [a] -> [a] -> Maybe [a]
-singleWildcardMatch (wc:ps) (x:xs)
-  | ps == xs = Just [x]
-  | otherwise = Nothing
-longerWildcardMatch (wc:ps) (x:xs)
-  | singleWildcardMatch (wc:ps) (x:xs) == Just [x] = Nothing
-  | isSuffixOf ps xs = Just (x:(take (length xs - length ps) xs))
-  | otherwise = Nothing
+    matchHelper _ _ _ = Nothing
+    singleWildcardMatch, longerWildcardMatch :: Eq a => [a] -> [a] -> Maybe [a]
+    singleWildcardMatch (wc:ps) (x:xs)
+      | match wc (x:ps) (x:xs) /= Nothing = Just [x]
+      | otherwise = Nothing
+    longerWildcardMatch [wc] xs = Just xs
+    longerWildcardMatch (wc:ps) (x:xs)
+      | match wc (subs++ps) (x:xs) /= Nothing = Just subs
+      | otherwise = Nothing
+      where
+        subs = x:(takeWhile (/= head ps) xs)
 
 
 
