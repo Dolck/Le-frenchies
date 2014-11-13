@@ -29,7 +29,7 @@ type BotBrain = [(Phrase, [Phrase])]
 stateOfMind :: BotBrain -> IO (Phrase -> Phrase)
 stateOfMind bb = do 
                     q <- randomIO :: IO Float
-                    return $ rulesApply $ randPairs q bb
+                    return (rulesApply (randPairs q bb))
 
 randPairs :: Float -> BotBrain -> [PhrasePair]
 randPairs r = map (\n -> (fst n, pick r (snd n)))
