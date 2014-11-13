@@ -31,12 +31,16 @@ stateOfMind :: BotBrain -> IO (Phrase -> Phrase)
 stateOfMind _ = return id
 
 rulesApply :: [PhrasePair] -> Phrase -> Phrase
-{- TO BE WRITTEN -}
-rulesApply _ = id
+rulesApply pairs = try $ transformationsApply "*" reflect pairs 
 
 reflect :: Phrase -> Phrase
-{- TO BE WRITTEN -}
-reflect = id
+reflect []     = []
+reflect (x:xs) = sub reflections : reflect(xs)
+  where 
+    sub [] = x
+    sub (y:ys)
+      | fst y == x = snd y
+      | otherwise  = sub ys
 
 reflections =
   [ ("am",     "are"),
@@ -56,6 +60,8 @@ reflections =
     ("yours",  "mine"),
     ("you",    "me")
   ]
+
+reflecturds = map (\x -> (words $ fst x, words $ snd x)) reflections
 
 
 ---------------------------------------------------------------------------------
