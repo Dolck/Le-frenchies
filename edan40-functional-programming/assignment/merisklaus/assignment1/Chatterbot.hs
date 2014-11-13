@@ -26,13 +26,34 @@ type BotBrain = [(Phrase, [Phrase])]
 
 --------------------------------------------------------
 
+--stateOfMind :: BotBrain -> IO (Phrase -> Phrase)
+--stateOfMind _ = return id
+
 stateOfMind :: BotBrain -> IO (Phrase -> Phrase)
-{- TO BE WRITTEN -}
-stateOfMind _ = return id
+stateOfMind bb = do 
+                    q <- randomIO :: IO Float
+                    return $ rulesApply $ randPairs q bb
 
+randPairs :: Float -> BotBrain -> [PhrasePair]
+randPairs r = map (\n -> (fst n, pick r (snd n)))
+
+--pickRandomPairs :: BotBrain -> IO (Phrase -> Phrase)
+pickRandomPairs x i = do 
+  return $ maybe (\i -> lookup i $ map hax x) i
+  where 
+    hax (x, y) = (x, pck y)
+
+pck xs = 
+  randomRIO (0, length xs - 1) >>=
+  return . (xs !!)
+
+rollDice :: IO Integer 
+rollDice = do
+   r <- randomIO :: IO Float
+   return $ floor (6*r+1)
+  
 rulesApply :: [PhrasePair] -> Phrase -> Phrase
-rulesApply pairs = try $ transformationsApply "*" reflect pairs 
-
+rulesApply pairs = try $ transformationsApply "*" id pairs 
 reflect :: Phrase -> Phrase
 reflect []     = []
 reflect (x:xs) = sub reflections : reflect(xs)
@@ -61,9 +82,6 @@ reflections =
     ("you",    "me")
   ]
 
-reflecturds = map (\x -> (words $ fst x, words $ snd x)) reflections
-
-
 ---------------------------------------------------------------------------------
 
 endOfDialog :: String -> Bool
@@ -73,11 +91,10 @@ present :: Phrase -> String
 present = unwords
 
 prepare :: String -> Phrase
-prepare = reduce . words . map toLower . filter (not . flip elem ".,:;*!#%&|") 
+prepare = reduce . words . map toLower . filter (not . flip elem ".,:;!#%&|") 
 
 rulesCompile :: [(String, [String])] -> BotBrain
-{- TO BE WRITTEN -}
-rulesCompile _ = []
+rulesCompile xs = map (\(x,y) -> (prepare x, map(\i -> prepare i) y)) xs
 
 
 --------------------------------------
