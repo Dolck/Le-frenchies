@@ -35,7 +35,6 @@ randPairs :: Float -> BotBrain -> [PhrasePair]
 randPairs r = map (\n -> (fst n, pick r (snd n)))
 
 rulesApply :: [PhrasePair] -> Phrase -> Phrase
-rulesApply _ [] = []
 rulesApply pp p = try transform p
   where 
     transform = transformationsApply "*" reflect pp
@@ -79,11 +78,10 @@ present :: Phrase -> String
 present = unwords
 
 prepare :: String -> Phrase
-prepare = words . map toLower . filter (not . flip elem ".,:;*!#%&|") 
---reduce . above
+prepare = reduce . words . map toLower . filter (not . flip elem ".,:;!#%&|") 
 
 rulesCompile :: [(String, [String])] -> BotBrain
-rulesCompile = map (\n -> (prepare (fst n), map (\i -> prepare i) (snd n)))
+rulesCompile xs = map (\n -> (prepare (fst n), map (\i -> prepare i) (snd n))) xs
 
 
 --------------------------------------
