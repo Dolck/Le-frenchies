@@ -21,31 +21,18 @@ match _ [] [] = Just []
 match _ [] xs = Nothing
 match _ ps [] = Nothing
 match wc (p:ps) (y:ys)
-  | p == wc = orElse (singleWildcardMatch (p:ps) (y:ys)) (longerWildcardMatch (p:ps) (y:ys))
-  | otherwise = match wc ps ys
+  | (p:ps) == [wc] = Just (y:ys)
+  | p == y         = match wc ps ys
+  | p == wc        = orElse (singleWildcardMatch (p:ps) (y:ys)) (longerWildcardMatch (p:ps) (y:ys))
+  | otherwise      = Nothing 
    where
-    singleWildcardMatch :: Eq a => [a] -> [a] -> Maybe [a]
     singleWildcardMatch (p:ps) (x:xs)
-      | ps == xs  = Just [x]
+      | (match wc ps xs) /= Nothing = Just [x]
       | otherwise = Nothing
     longerWildcardMatch pls (xl:xls) = mmap ([xl]++) (match wc pls xls)
     longerWildcardMatch _ _ = Nothing
 
 {- TO BE WRITTEN -}
-
-singleWildcardMatch :: Eq a => [a] -> [a] -> Maybe [a]
-singleWildcardMatch (p:ps) (x:xs)
-  | ps == xs  = Just [x]
-  | otherwise = Nothing
--- match wc (x:xs) (y:ls)
---  | wc == x   = Just $ extract xs y 
- -- | otherwise = match wc xs ls
-  -- where
-   -- extract :: Eq a => [a] -> a -> [a]
---    extract (x:xs) stop 
- --   | x == stop = [] 
-  --  | otherwise = x : extract xs stop
-   -- extract _ _ = [] 
 
 -- Helper function to match
 --singleWildcardMatch, longerWildcardMatch :: Eq a => [a] -> [a] -> Maybe [a]
