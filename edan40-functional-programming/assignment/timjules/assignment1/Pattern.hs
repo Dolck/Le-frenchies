@@ -67,7 +67,7 @@ transformationApply wc f xs p = tHelp sub
   where
     sub = match wc (fst p) xs
     tHelp Nothing = Nothing
-    tHelp (Just xs) = Just (substitute wc (snd p) xs)
+    tHelp (Just ys) = Just $ substitute wc (snd p) $ f ys
 
 
 -- Applying a list of patterns until one succeeds
