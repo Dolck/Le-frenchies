@@ -26,6 +26,7 @@ match wc (p:ps) (y:ys)
   | p == wc        = orElse (singleWildcardMatch (p:ps) (y:ys)) (longerWildcardMatch (p:ps) (y:ys))
   | otherwise      = Nothing 
    where
+    --singleWildcardMatch :: Eq a => [a] -> [a] -> Maybe [a]
     singleWildcardMatch (p:ps) (x:xs)
       | (match wc ps xs) /= Nothing = Just [x]
       | otherwise = Nothing
@@ -63,12 +64,15 @@ matchCheck = matchTest == Just testSubstitutions
 
 -- Applying a single pattern
 transformationApply :: Eq a => a -> ([a] -> [a]) -> [a] -> ([a], [a]) -> Maybe [a]
-transformationApply _ _ _ _ = Nothing
-{- TO BE WRITTEN -}
-
+transformationApply wc f xs (w, t) = helper $ match wc w $ f xs 
+  where
+    helper (Just a) = Just $ substitute wc t a
+    helper Nothing = Nothing
 
 -- Applying a list of patterns until one succeeds
 transformationsApply :: Eq a => a -> ([a] -> [a]) -> [([a], [a])] -> [a] -> Maybe [a]
+transformationsApply wc f ((w, t):wts) xs = (orElse $ transformationApply wc f xs (w,t)) $ transformationsApply wc f wts xs
 transformationsApply _ _ _ _ = Nothing
-{- TO BE WRITTEN -}
 
+fetLista = [("My name is *", "Je m'appelle *"), ("Jag äter *", "Je mange *")]
+tranz = transformationsApply  '*' id fetLista "Jag äter petit pain" 
