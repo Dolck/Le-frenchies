@@ -71,7 +71,7 @@ transformationApply wc f xs (w, t) = helper $ match wc w $ xs
 
 -- Applying a list of patterns until one succeeds
 transformationsApply :: Eq a => a -> ([a] -> [a]) -> [([a], [a])] -> [a] -> Maybe [a]
-transformationsApply wc f ((w, t):wts) xs = (orElse $ transformationApply wc f xs (w,t)) $ transformationsApply wc f wts xs
+transformationsApply wc f ((w, t):wts) xs = transformationApply wc f xs (w,t)) `orElse` transformationsApply wc f wts xs
 transformationsApply _ _ _ _ = Nothing
 
 fetLista = [("My name is *", "Je m'appelle *"), ("Jag äter *", "Je mange *")]
