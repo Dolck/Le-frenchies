@@ -23,7 +23,7 @@ match _ ps [] = Nothing
 match wc (p:ps) (y:ys)
   | (p:ps) == [wc] = Just (y:ys)
   | p == y         = match wc ps ys
-  | p == wc        = orElse (singleWildcardMatch (p:ps) (y:ys)) (longerWildcardMatch (p:ps) (y:ys))
+  | p == wc        = singleWildcardMatch (p:ps) (y:ys) `orElse` longerWildcardMatch (p:ps) (y:ys)
   | otherwise      = Nothing 
    where
     singleWildcardMatch (p:ps) (x:xs)
@@ -34,7 +34,7 @@ match wc (p:ps) (y:ys)
 
 
 -- Helper function to match
---singleWildcardMatch, longerWildcardMatch :: Eq a => [a] -> [a] -> Maybe [a]
+--singleWildcardMatch, 
 --singleWildcardMatch (wc:ps) (x:xs) = Nothing
 --longerWildcardMatch (wc:ps) (x:xs) = Nothing
 
@@ -67,7 +67,7 @@ transformationApply wc f xs (w, t) = helper $ match wc w $ xs
 
 -- Applying a list of patterns until one succeeds
 transformationsApply :: Eq a => a -> ([a] -> [a]) -> [([a], [a])] -> [a] -> Maybe [a]
-transformationsApply wc f ((w, t):wts) xs = transformationApply wc f xs (w,t)) `orElse` transformationsApply wc f wts xs
+transformationsApply wc f ((w, t):wts) xs = transformationApply wc f xs (w,t) `orElse` transformationsApply wc f wts xs
 transformationsApply _ _ _ _ = Nothing
 
 fetLista = [("My name is *", "Je m'appelle *"), ("Jag äter *", "Je mange *")]

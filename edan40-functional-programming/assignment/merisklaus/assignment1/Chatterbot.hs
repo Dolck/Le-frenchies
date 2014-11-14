@@ -3,6 +3,7 @@ import Utilities
 import Pattern
 import System.Random
 import Data.Char
+import Data.Tuple
 
 chatterbot :: String -> [(String, [String])] -> IO ()
 chatterbot botName botRules = do
@@ -41,13 +42,9 @@ rulesApply :: [PhrasePair] -> Phrase -> Phrase
 rulesApply pairs = try $ transformationsApply "*" reflect pairs 
 
 reflect :: Phrase -> Phrase
-reflect []     = []
-reflect (x:xs) = sub reflections : reflect(xs)
-  where 
-    sub [] = x
-    sub (y:ys)
-      | fst y == x = snd y
-      | otherwise  = sub ys
+reflect = map $ sub 
+  where sub = try $ lookup' 
+    where lookup' x = lookup x (map swap reflections) `orElse` lookup x reflections 
 
 reflections =
   [ ("am",     "are"),
@@ -77,10 +74,11 @@ present :: Phrase -> String
 present = unwords
 
 prepare :: String -> Phrase
-prepare = reduce . words . map toLower . filter (not . flip elem ".,:;!#%&|") 
+prepare = reduce . words . map toLower . filter (not . flip elem ".,:;*!#%&|") 
 
 rulesCompile :: [(String, [String])] -> BotBrain
-rulesCompile xs = map (\(x,y) -> (prepare x, map(\i -> prepare i) y)) xs
+rulesCompile xs = map (\(x,y) -> (prepare' x, map(\i -> prepare' i) y)) xs
+  where prepare' = reduce . words. map toLower
 
 
 --------------------------------------
@@ -107,5 +105,6 @@ reduce = reductionsApply reductions
 reductionsApply :: [PhrasePair] -> Phrase -> Phrase
 {- TO BE WRITTEN -}
 reductionsApply _ = id
+
 
 
