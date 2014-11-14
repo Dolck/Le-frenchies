@@ -26,21 +26,17 @@ match wc (p:ps) (y:ys)
   | p == wc        = orElse (singleWildcardMatch (p:ps) (y:ys)) (longerWildcardMatch (p:ps) (y:ys))
   | otherwise      = Nothing 
    where
-    --singleWildcardMatch :: Eq a => [a] -> [a] -> Maybe [a]
     singleWildcardMatch (p:ps) (x:xs)
       | (match wc ps xs) /= Nothing = Just [x]
       | otherwise = Nothing
     longerWildcardMatch pls (xl:xls) = mmap ([xl]++) (match wc pls xls)
     longerWildcardMatch _ _ = Nothing
 
-{- TO BE WRITTEN -}
 
 -- Helper function to match
 --singleWildcardMatch, longerWildcardMatch :: Eq a => [a] -> [a] -> Maybe [a]
 --singleWildcardMatch (wc:ps) (x:xs) = Nothing
-{- TO BE WRITTEN -}
 --longerWildcardMatch (wc:ps) (x:xs) = Nothing
-{- TO BE WRITTEN -}
 
 
 
