@@ -1,4 +1,5 @@
 module Pattern where
+
 import Utilities
 
 
@@ -59,15 +60,20 @@ matchCheck = matchTest == Just testSubstitutions
 --------------------------------------------------------
 
 -- Applying a single pattern
-transformationApply :: Eq a => a -> ([a] -> [a]) -> [a] -> ([a], [a]) -> Maybe [a]
-transformationApply wc f xs (w, t) = helper $ match wc w $ xs 
+transformationApply :: Eq a => a -> ([a] -> [a]) -> ([a], [a]) -> [a]  -> Maybe [a]
+transformationApply wc f (w, t) = mmap helper . match wc w
   where
-    helper (Just a) = Just $ substitute wc t $ f a
-    helper Nothing = Nothing
+    helper = substitute wc t . f
+
+--transformationApply :: Eq a => a -> ([a] -> [a]) -> [a] -> ([a], [a]) -> Maybe [a]
+--transformationApply wc f xs (w, t) = helper . match wc w $ xs 
+--  where
+--    helper (Just a) = Just $ substitute wc t $ f a
+--    helper Nothing = Nothing
 
 -- Applying a list of patterns until one succeeds
 transformationsApply :: Eq a => a -> ([a] -> [a]) -> [([a], [a])] -> [a] -> Maybe [a]
-transformationsApply wc f ((w, t):wts) xs = transformationApply wc f xs (w,t) `orElse` transformationsApply wc f wts xs
+transformationsApply wc f ((w, t):wts) xs = transformationApply wc f (w,t) xs `orElse` transformationsApply wc f wts xs
 transformationsApply _ _ _ _ = Nothing
 
 fetLista = [("My name is *", "Je m'appelle *"), ("Jag äter *", "Je mange *")]

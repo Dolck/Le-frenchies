@@ -33,7 +33,7 @@ type BotBrain = [(Phrase, [Phrase])]
 stateOfMind :: BotBrain -> IO (Phrase -> Phrase)
 stateOfMind bb = do 
   q <- randomIO :: IO Float
-  return $ rulesApply $ randPairs q bb
+  return . rulesApply $ randPairs q bb
 
 randPairs :: Float -> BotBrain -> [PhrasePair]
 randPairs r = map (\n -> (fst n, pick r (snd n)))
@@ -42,7 +42,7 @@ rulesApply :: [PhrasePair] -> Phrase -> Phrase
 rulesApply pairs = try $ transformationsApply "*" reflect pairs 
 
 reflect :: Phrase -> Phrase
-reflect = map $ try $ lookup' 
+reflect = map . try $ lookup' 
   where lookup' x = lookup x (map swap reflections) `orElse` lookup x reflections 
 
 reflections =
@@ -102,8 +102,5 @@ reduce :: Phrase -> Phrase
 reduce = reductionsApply reductions
 
 reductionsApply :: [PhrasePair] -> Phrase -> Phrase
-{- TO BE WRITTEN -}
-reductionsApply _ = id
-
-
-
+reductionsApply reds = fix $ try transform
+  where transform = transformationsApply "*" id reds
