@@ -51,6 +51,7 @@ reflections =
     ("i'd",    "you would"),
     ("i've",   "you have"),
     ("i'll",   "you will"),
+    ("myself", "yourself"),
     ("my",     "your"),
     ("me",     "you"),
     ("are",    "am"),
@@ -75,7 +76,7 @@ prepare = reduce . words . map toLower . filter (not . flip elem ".,:;*!#%&|")
 
 rulesCompile :: [(String, [String])] -> BotBrain
 rulesCompile = map (\(x,y) -> (prepare' x, map(\i -> prepare' i) y))
-  where prepare' = words . map id 
+  where prepare' = words . map toLower
 
 
 --------------------------------------
@@ -86,6 +87,7 @@ reductions = (map.map2) (words, words)
   [ ( "please *", "*" ),
     ( "can you *", "*" ),
     ( "could you *", "*" ),
+    ( "very *", "*"),
     ( "tell me if you are *", "are you *" ),
     ( "tell me who * is", "who is *" ),
     ( "tell me what * is", "what is *" ),
