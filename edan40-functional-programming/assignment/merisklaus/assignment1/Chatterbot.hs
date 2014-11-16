@@ -3,6 +3,7 @@ import Utilities
 import Pattern
 import System.Random
 import Data.Char
+import Data.Tuple
 
 chatterbot :: String -> [(String, [String])] -> IO ()
 chatterbot botName botRules = do
@@ -30,38 +31,17 @@ type BotBrain = [(Phrase, [Phrase])]
 --stateOfMind _ = return id
 
 stateOfMind :: BotBrain -> IO (Phrase -> Phrase)
-stateOfMind bb = do 
-                    q <- randomIO :: IO Float
-                    return $ rulesApply $ randPairs q bb
+stateOfMind brain = do
+  r <- randomIO :: IO Float 
+  return . rulesApply $ map (decideResponse r) brain
+    where decideResponse r (input, responses)  = (input, pick r responses)
 
-randPairs :: Float -> BotBrain -> [PhrasePair]
-randPairs r = map (\n -> (fst n, pick r (snd n)))
-
---pickRandomPairs :: BotBrain -> IO (Phrase -> Phrase)
-pickRandomPairs x i = do 
-  return $ maybe (\i -> lookup i $ map hax x) i
-  where 
-    hax (x, y) = (x, pck y)
-
-pck xs = 
-  randomRIO (0, length xs - 1) >>=
-  return . (xs !!)
-
-rollDice :: IO Integer 
-rollDice = do
-   r <- randomIO :: IO Float
-   return $ floor (6*r+1)
-  
 rulesApply :: [PhrasePair] -> Phrase -> Phrase
-rulesApply pairs = try $ transformationsApply "*" id pairs 
+rulesApply pairs = try $ transformationsApply "*" reflect pairs 
+
 reflect :: Phrase -> Phrase
-reflect []     = []
-reflect (x:xs) = sub reflections : reflect(xs)
-  where 
-    sub [] = x
-    sub (y:ys)
-      | fst y == x = snd y
-      | otherwise  = sub ys
+reflect = map $ try lookup'
+  where lookup' x = lookup x (map swap reflections) `orElse` lookup x reflections 
 
 reflections =
   [ ("am",     "are"),
@@ -71,6 +51,7 @@ reflections =
     ("i'd",    "you would"),
     ("i've",   "you have"),
     ("i'll",   "you will"),
+    ("myself", "yourself"),
     ("my",     "your"),
     ("me",     "you"),
     ("are",    "am"),
@@ -91,10 +72,11 @@ present :: Phrase -> String
 present = unwords
 
 prepare :: String -> Phrase
-prepare = reduce . words . map toLower . filter (not . flip elem ".,:;!#%&|") 
+prepare = reduce . words . map toLower . filter (not . flip elem ".,:;*!#%&|") 
 
 rulesCompile :: [(String, [String])] -> BotBrain
-rulesCompile xs = map (\(x,y) -> (prepare x, map(\i -> prepare i) y)) xs
+rulesCompile = map (\(x,y) -> (prepare' x, map(\i -> prepare' i) y))
+  where prepare' = words . map toLower
 
 
 --------------------------------------
@@ -105,6 +87,7 @@ reductions = (map.map2) (words, words)
   [ ( "please *", "*" ),
     ( "can you *", "*" ),
     ( "could you *", "*" ),
+    ( "very *", "*"),
     ( "tell me if you are *", "are you *" ),
     ( "tell me who * is", "who is *" ),
     ( "tell me what * is", "what is *" ),
@@ -119,7 +102,7 @@ reduce :: Phrase -> Phrase
 reduce = reductionsApply reductions
 
 reductionsApply :: [PhrasePair] -> Phrase -> Phrase
-{- TO BE WRITTEN -}
-reductionsApply _ = id
+reductionsApply reds = fix $ try transform
+  where transform = transformationsApply "*" id reds
 
 
