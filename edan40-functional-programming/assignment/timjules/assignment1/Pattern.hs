@@ -13,7 +13,6 @@ substitute x (y:ys) z
 	| x == y = z ++ substitute x ys z
 	| otherwise = y : substitute x ys z
 substitute _ _ _ = []
-{- WRITTEN -}
 
 
 -- Tries to match two lists. If they match, the result consists of the sublist
