@@ -106,7 +106,7 @@ reduce :: Phrase -> Phrase
 reduce = reductionsApply reductions
 
 reductionsApply :: [PhrasePair] -> Phrase -> Phrase
-{- TO BE WRITTEN -}
+{- if phrase startswith phrasepair-}
 reductionsApply _ = id
 
 
