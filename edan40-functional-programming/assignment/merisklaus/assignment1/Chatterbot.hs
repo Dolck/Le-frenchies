@@ -71,11 +71,11 @@ present :: Phrase -> String
 present = unwords
 
 prepare :: String -> Phrase
-prepare = reduce . words . map toLower . filter (not . flip elem ".,:;!#%&|") 
+prepare = reduce . words . map toLower . filter (not . flip elem ".,:;*!#%&|") 
 
 rulesCompile :: [(String, [String])] -> BotBrain
 rulesCompile = map (\(x,y) -> (prepare' x, map(\i -> prepare' i) y))
-  where prepare' = reduce . words. map toLower
+  where prepare' = words . map id 
 
 
 --------------------------------------
@@ -100,6 +100,7 @@ reduce :: Phrase -> Phrase
 reduce = reductionsApply reductions
 
 reductionsApply :: [PhrasePair] -> Phrase -> Phrase
---reductionsApply _ = id
 reductionsApply reds = fix $ try transform
   where transform = transformationsApply "*" id reds
+
+
