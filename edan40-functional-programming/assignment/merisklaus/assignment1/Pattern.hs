@@ -33,13 +33,6 @@ match wc (p:ps) (y:ys)
     longerWildcardMatch pls (xl:xls) = mmap ([xl]++) (match wc pls xls)
     longerWildcardMatch _ _ = Nothing
 
--- Helper function to match
---singleWildcardMatch, 
---singleWildcardMatch (wc:ps) (x:xs) = Nothing
---longerWildcardMatch (wc:ps) (x:xs) = Nothing
-
-
-
 -- Test cases --------------------
 
 testPattern =  "a=*;"
