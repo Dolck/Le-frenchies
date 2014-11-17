@@ -26,10 +26,11 @@ match wc (p:ps) (y:ys)
   | p == wc        = singleWildcardMatch (p:ps) (y:ys) `orElse` longerWildcardMatch (p:ps) (y:ys)
   | otherwise      = Nothing 
    where
-    singleWildcardMatch (p:ps) (x:xs)
+    singleWildcardMatch, longerWildcardMatch :: Eq a => [a] -> [a] -> Maybe [a]
+    singleWildcardMatch (wc:ps) (x:xs)
       | (match wc ps xs) /= Nothing = Just [x]
       | otherwise = Nothing
-    longerWildcardMatch pls (xl:xls) = mmap ([xl]++) (match wc pls xls)
+    longerWildcardMatch (wc:pls) (xl:xls) = mmap ([xl]++) (match wc pls xls)
     longerWildcardMatch _ _ = Nothing
 
 -- Test cases --------------------
@@ -58,6 +59,3 @@ transformationApply wc f (w, t) = mmap helper . match wc w
 transformationsApply :: Eq a => a -> ([a] -> [a]) -> [([a], [a])] -> [a] -> Maybe [a]
 transformationsApply wc f ((w, t):wts) xs = transformationApply wc f (w,t) xs `orElse` transformationsApply wc f wts xs
 transformationsApply _ _ _ _ = Nothing
-
-fetLista = [("My name is *", "Je m'appelle *"), ("Jag äter *", "Je mange *")]
-tranz = transformationsApply  '*' id fetLista "Jag äter petit pain" 
