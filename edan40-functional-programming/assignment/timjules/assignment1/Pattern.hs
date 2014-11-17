@@ -9,11 +9,7 @@ import Data.List
 
 -- Replaces a wildcard in a list with the list given as the third argument
 substitute :: Eq(a) => a -> [a] -> [a] -> [a] 
-substitute wc ys z = concatMap subhelp ys
-  where
-    subhelp y
-      | y == wc = z
-      | otherwise = [y]
+substitute wc ys z = concatMap (\n -> if n == wc then z else [n]) ys
 
 -- Tries to match two lists. If they match, the result consists of the sublist
 -- bound to the wildcard in the pattern list.

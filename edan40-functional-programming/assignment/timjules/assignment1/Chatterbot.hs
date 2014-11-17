@@ -54,7 +54,7 @@ reflections =
     ("you're", "i am"),
     ("you've", "i have"),
     ("you'll", "i will"),
-    ("yours",  "mine"),
+    ("yours",  "mine")
   ]
 
 
