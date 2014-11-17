@@ -3,6 +3,7 @@ import Utilities
 import Pattern
 import System.Random
 import Data.Char
+import Data.Tuple
 
 chatterbot :: String -> [(String, [String])] -> IO ()
 chatterbot botName botRules = do
@@ -35,19 +36,10 @@ randPairs :: Float -> BotBrain -> [PhrasePair]
 randPairs r = map (\n -> (fst n, pick r (snd n)))
 
 rulesApply :: [PhrasePair] -> Phrase -> Phrase
-rulesApply pp = try transform
-  where 
-    transform = transformationsApply "*" reflect pp
+rulesApply pp = try $ transformationsApply "*" reflect pp
 
 reflect :: Phrase -> Phrase
-reflect [] = []
-reflect (x:xs) = helper reflections : reflect xs
-  where
-    helper [] = x
-    helper (y:ys)
-      | fst y == x = snd y
-      | snd y == x = fst y
-      | otherwise = helper ys
+reflect = map (\n -> try (\m -> lookup m reflections `orElse` lookup m (map swap reflections)) n)
 
 reflections =
   [ ("am",     "are"),
@@ -59,13 +51,10 @@ reflections =
     ("i'll",   "you will"),
     ("my",     "your"),
     ("me",     "you"),
-    ("are",    "am"),
     ("you're", "i am"),
     ("you've", "i have"),
     ("you'll", "i will"),
-    ("your",   "my"),
     ("yours",  "mine"),
-    ("you",    "me")
   ]
 
 
@@ -107,6 +96,3 @@ reduce = reductionsApply reductions
 
 reductionsApply :: [PhrasePair] -> Phrase -> Phrase
 reductionsApply r = try $ transformationsApply "*" id r
-
-
-
