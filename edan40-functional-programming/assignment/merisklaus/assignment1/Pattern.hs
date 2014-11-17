@@ -2,25 +2,24 @@ module Pattern where
 
 import Utilities
 
-
 -------------------------------------------------------
 -- Match and substitute
 --------------------------------------------------------
 
 -- Replaces a wildcard in a list with the list given as the third argument
 substitute :: Eq a => a -> [a] -> [a] -> [a]
-substitute wc (x:xs) s 
-  | wc == x   = s ++ xs
-  | otherwise = x : substitute wc xs s
-substitute _ _ _ = []
-
+substitute wc xs s = foldr sub [] xs
+  where 
+   sub x 
+    | wc == x   = (s++)
+    | otherwise = (x:)
 
 -- Tries to match two lists. If they match, the result consists of the sublist
 -- bound to the wildcard in the pattern list.
 match :: Eq a => a -> [a] -> [a] -> Maybe [a]
 match _ [] [] = Just [] 
-match _ [] xs = Nothing
-match _ ps [] = Nothing
+match _ [] _ = Nothing
+match _ _ [] = Nothing
 match wc (p:ps) (y:ys)
   | (p:ps) == [wc] = Just (y:ys)
   | p == y         = match wc ps ys
@@ -45,8 +44,6 @@ substituteCheck = substituteTest == testString
 matchTest = match '*' testPattern testString
 matchCheck = matchTest == Just testSubstitutions
 
-
-
 -------------------------------------------------------
 -- Applying patterns
 --------------------------------------------------------
@@ -56,12 +53,6 @@ transformationApply :: Eq a => a -> ([a] -> [a]) -> ([a], [a]) -> [a]  -> Maybe 
 transformationApply wc f (w, t) = mmap helper . match wc w
   where
     helper = substitute wc t . f
-
---transformationApply :: Eq a => a -> ([a] -> [a]) -> [a] -> ([a], [a]) -> Maybe [a]
---transformationApply wc f xs (w, t) = helper . match wc w $ xs 
---  where
---    helper (Just a) = Just $ substitute wc t $ f a
---    helper Nothing = Nothing
 
 -- Applying a list of patterns until one succeeds
 transformationsApply :: Eq a => a -> ([a] -> [a]) -> [([a], [a])] -> [a] -> Maybe [a]
