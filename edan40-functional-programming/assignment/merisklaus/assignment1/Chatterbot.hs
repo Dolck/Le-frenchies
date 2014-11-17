@@ -75,7 +75,7 @@ prepare :: String -> Phrase
 prepare = reduce . words . map toLower . filter (not . flip elem ".,:;*!#%&|") 
 
 rulesCompile :: [(String, [String])] -> BotBrain
-rulesCompile = map (\(x,y) -> (prepare' x, map(\i -> prepare' i) y))
+rulesCompile = map (\(x,y) -> (prepare' x, map(\i -> words i) y))
   where prepare' = words . map toLower
 
 
@@ -85,9 +85,7 @@ rulesCompile = map (\(x,y) -> (prepare' x, map(\i -> prepare' i) y))
 reductions :: [PhrasePair]
 reductions = (map.map2) (words, words)
   [ ( "please *", "*" ),
-    ( "can you *", "*" ),
-    ( "could you *", "*" ),
-    ( "very *", "*"),
+    ( "could you *", "can you *" ),
     ( "tell me if you are *", "are you *" ),
     ( "tell me who * is", "who is *" ),
     ( "tell me what * is", "what is *" ),
