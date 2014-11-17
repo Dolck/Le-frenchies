@@ -8,28 +8,24 @@ import Data.List
 --------------------------------------------------------
 
 -- Replaces a wildcard in a list with the list given as the third argument
-substitute :: Eq(a) => a -> [a] -> [a] -> [a]
-substitute x (y:ys) z
-	| x == y = z ++ substitute x ys z
-	| otherwise = y : substitute x ys z
-substitute _ _ _ = []
-{- WRITTEN -}
-
+substitute :: Eq(a) => a -> [a] -> [a] -> [a] 
+substitute wc ys z = concatMap (\n -> if n == wc then z else [n]) ys
 
 -- Tries to match two lists. If they match, the result consists of the sublist
 -- bound to the wildcard in the pattern list.
 match :: Eq a => a -> [a] -> [a] -> Maybe [a]
-match n xs ys 
+match wc xs ys 
   | xs == ys = Just []
-  | not $ n `elem` xs = Nothing
-  | [n] == xs = Just ys
-  | otherwise = matchHelper n xs ys
+  | not $ wc `elem` xs = Nothing
+  | [wc] == xs = Just ys
+  | otherwise = matchHelper xs ys
   where
-    matchHelper n (x:xs) (y:ys)
-      | x == y = matchHelper n xs ys
-      | n == x = singleWildcardMatch (x:xs) (y:ys) `orElse` longerWildcardMatch (x:xs) (y:ys)
+    matchHelper (x:xs) (y:ys)
+      | x == y = matchHelper xs ys
+      | wc == x = singleWildcardMatch (x:xs) (y:ys) `orElse` longerWildcardMatch (x:xs) (y:ys)
       | otherwise = Nothing
-    matchHelper _ _ _ = Nothing
+    matchHelper _ _ = Nothing
+
 
 singleWildcardMatch, longerWildcardMatch :: Eq a => [a] -> [a] -> Maybe [a]
 singleWildcardMatch (wc:ps) (x:xs)
