@@ -3,6 +3,7 @@ import Utilities
 import Pattern
 import System.Random
 import Data.Char
+import Data.Tuple
 
 chatterbot :: String -> [(String, [String])] -> IO ()
 chatterbot botName botRules = do
@@ -26,21 +27,21 @@ type BotBrain = [(Phrase, [Phrase])]
 
 --------------------------------------------------------
 
+--stateOfMind :: BotBrain -> IO (Phrase -> Phrase)
+--stateOfMind _ = return id
+
 stateOfMind :: BotBrain -> IO (Phrase -> Phrase)
-{- TO BE WRITTEN -}
-stateOfMind _ = return id
+stateOfMind brain = do
+  r <- randomIO :: IO Float 
+  return . rulesApply $ map (decideResponse r) brain
+    where decideResponse r (input, responses)  = (input, pick r responses)
 
 rulesApply :: [PhrasePair] -> Phrase -> Phrase
 rulesApply pairs = try $ transformationsApply "*" reflect pairs 
 
 reflect :: Phrase -> Phrase
-reflect []     = []
-reflect (x:xs) = sub reflections : reflect(xs)
-  where 
-    sub [] = x
-    sub (y:ys)
-      | fst y == x = snd y
-      | otherwise  = sub ys
+reflect = map $ try lookup'
+  where lookup' x = lookup x (map swap reflections) `orElse` lookup x reflections 
 
 reflections =
   [ ("am",     "are"),
@@ -50,6 +51,7 @@ reflections =
     ("i'd",    "you would"),
     ("i've",   "you have"),
     ("i'll",   "you will"),
+    ("myself", "yourself"),
     ("my",     "your"),
     ("me",     "you"),
     ("are",    "am"),
@@ -60,9 +62,6 @@ reflections =
     ("yours",  "mine"),
     ("you",    "me")
   ]
-
-reflecturds = map (\x -> (words $ fst x, words $ snd x)) reflections
-
 
 ---------------------------------------------------------------------------------
 
@@ -76,8 +75,8 @@ prepare :: String -> Phrase
 prepare = reduce . words . map toLower . filter (not . flip elem ".,:;*!#%&|") 
 
 rulesCompile :: [(String, [String])] -> BotBrain
-{- TO BE WRITTEN -}
-rulesCompile _ = []
+rulesCompile = map (\(x,y) -> (prepare' x, map(\i -> prepare' i) y))
+  where prepare' = words . map toLower
 
 
 --------------------------------------
@@ -88,6 +87,7 @@ reductions = (map.map2) (words, words)
   [ ( "please *", "*" ),
     ( "can you *", "*" ),
     ( "could you *", "*" ),
+    ( "very *", "*"),
     ( "tell me if you are *", "are you *" ),
     ( "tell me who * is", "who is *" ),
     ( "tell me what * is", "what is *" ),
@@ -102,7 +102,7 @@ reduce :: Phrase -> Phrase
 reduce = reductionsApply reductions
 
 reductionsApply :: [PhrasePair] -> Phrase -> Phrase
-{- TO BE WRITTEN -}
-reductionsApply _ = id
+reductionsApply reds = fix $ try transform
+  where transform = transformationsApply "*" id reds
 
 

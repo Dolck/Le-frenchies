@@ -35,8 +35,7 @@ randPairs :: Float -> BotBrain -> [PhrasePair]
 randPairs r = map (\n -> (fst n, pick r (snd n)))
 
 rulesApply :: [PhrasePair] -> Phrase -> Phrase
-rulesApply _ [] = []
-rulesApply pp p = try transform p
+rulesApply pp = try transform
   where 
     transform = transformationsApply "*" reflect pp
 
@@ -107,7 +106,7 @@ reduce :: Phrase -> Phrase
 reduce = reductionsApply reductions
 
 reductionsApply :: [PhrasePair] -> Phrase -> Phrase
-{- TO BE WRITTEN -}
-reductionsApply _ = id
+reductionsApply r = try $ transformationsApply "*" id r
+
 
 
