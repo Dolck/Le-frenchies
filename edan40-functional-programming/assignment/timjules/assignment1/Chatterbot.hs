@@ -106,7 +106,7 @@ reduce :: Phrase -> Phrase
 reduce = reductionsApply reductions
 
 reductionsApply :: [PhrasePair] -> Phrase -> Phrase
-reductionsApply r = try $ transformationsApply "*" id r
+reductionsApply r = fix $ try $ transformationsApply "*" id r
 
 
 
