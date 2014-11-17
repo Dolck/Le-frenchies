@@ -48,7 +48,7 @@ reflections =
     ("i'd",    "you would"),
     ("i've",   "you have"),
     ("i'll",   "you will"),
-    ("myself", "yourself"),
+    ("myself", "yourself"), -- added this as it seemed obvious.
     ("my",     "your"),
     ("me",     "you"),
     ("are",    "am"),
