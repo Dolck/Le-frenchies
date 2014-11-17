@@ -79,11 +79,10 @@ present :: Phrase -> String
 present = unwords
 
 prepare :: String -> Phrase
-prepare = words . map toLower . filter (not . flip elem ".,:;*!#%&|") 
---reduce . above
+prepare = reduce . words . map toLower . filter (not . flip elem ".,:;!#%&|") 
 
 rulesCompile :: [(String, [String])] -> BotBrain
-rulesCompile = map (\n -> (prepare (fst n), map (\i -> prepare i) (snd n)))
+rulesCompile = map (\(x,y) -> (prepare x, map (\i -> prepare i) y))
 
 
 --------------------------------------

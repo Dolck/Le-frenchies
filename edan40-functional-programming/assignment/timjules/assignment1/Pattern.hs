@@ -8,8 +8,7 @@ import Data.List
 --------------------------------------------------------
 
 -- Replaces a wildcard in a list with the list given as the third argument
-substitute :: Eq(a) => a -> [a] -> [a] -> [a]
-substitute x (y:ys) z
+substitute :: Eq(a) => a -> [a] -> [a] -> [a] substitute x (y:ys) z
 	| x == y = z ++ substitute x ys z
 	| otherwise = y : substitute x ys z
 substitute _ _ _ = []
