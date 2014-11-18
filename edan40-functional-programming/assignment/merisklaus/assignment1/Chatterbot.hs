@@ -27,9 +27,6 @@ type BotBrain = [(Phrase, [Phrase])]
 
 --------------------------------------------------------
 
---stateOfMind :: BotBrain -> IO (Phrase -> Phrase)
---stateOfMind _ = return id
-
 stateOfMind :: BotBrain -> IO (Phrase -> Phrase)
 stateOfMind brain = do
   r <- randomIO :: IO Float 
@@ -51,7 +48,7 @@ reflections =
     ("i'd",    "you would"),
     ("i've",   "you have"),
     ("i'll",   "you will"),
-    ("myself", "yourself"),
+    ("myself", "yourself"), -- added this as it seemed obvious.
     ("my",     "your"),
     ("me",     "you"),
     ("are",    "am"),
@@ -75,19 +72,20 @@ prepare :: String -> Phrase
 prepare = reduce . words . map toLower . filter (not . flip elem ".,:;*!#%&|") 
 
 rulesCompile :: [(String, [String])] -> BotBrain
-rulesCompile = map (\(x,y) -> (prepare' x, map(\i -> prepare' i) y))
+rulesCompile = map (\(x,y) -> (prepare' x, map(\i -> words i) y))
   where prepare' = words . map toLower
 
-
 --------------------------------------
-
 
 reductions :: [PhrasePair]
 reductions = (map.map2) (words, words)
   [ ( "please *", "*" ),
+    -- Doesn't make sense to reduce
+    -- "can you" or "could you" to "*"
+    -- since Elizas brain matches against "can you *"?!
+    -- ( "could you *", "can you *" ),
     ( "can you *", "*" ),
     ( "could you *", "*" ),
-    ( "very *", "*"),
     ( "tell me if you are *", "are you *" ),
     ( "tell me who * is", "who is *" ),
     ( "tell me what * is", "what is *" ),
@@ -104,5 +102,3 @@ reduce = reductionsApply reductions
 reductionsApply :: [PhrasePair] -> Phrase -> Phrase
 reductionsApply reds = fix $ try transform
   where transform = transformationsApply "*" id reds
-
-
