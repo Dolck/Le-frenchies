@@ -48,7 +48,6 @@ reflections =
     ("i'd",    "you would"),
     ("i've",   "you have"),
     ("i'll",   "you will"),
-    ("myself", "yourself"), -- added this as it seemed obvious.
     ("my",     "your"),
     ("me",     "you"),
     ("are",    "am"),
@@ -80,10 +79,6 @@ rulesCompile = map (\(x,y) -> (prepare' x, map(\i -> words i) y))
 reductions :: [PhrasePair]
 reductions = (map.map2) (words, words)
   [ ( "please *", "*" ),
-    -- Doesn't make sense to reduce
-    -- "can you" or "could you" to "*"
-    -- since Elizas brain matches against "can you *"?!
-    -- ( "could you *", "can you *" ),
     ( "can you *", "*" ),
     ( "could you *", "*" ),
     ( "tell me if you are *", "are you *" ),
