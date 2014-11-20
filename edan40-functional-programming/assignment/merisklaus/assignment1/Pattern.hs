@@ -30,7 +30,7 @@ singleWildcardMatch, longerWildcardMatch :: Eq a => [a] -> [a] -> Maybe [a]
 singleWildcardMatch (wc:ps) (x:xs)
   | (match wc ps xs) /= Nothing = Just [x]
   | otherwise = Nothing
-longerWildcardMatch (wc:ps) (x:xs) = mmap (x:) (match wc (wc:ps) xs)
+longerWildcardMatch (wc:ps) (x:xs) = mmap (x:) $ match wc (wc:ps) xs
 longerWildcardMatch _ _ = Nothing
 
 -- Test cases --------------------
