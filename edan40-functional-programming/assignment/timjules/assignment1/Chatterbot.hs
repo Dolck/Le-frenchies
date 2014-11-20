@@ -57,7 +57,6 @@ reflections =
     ("yours",  "mine")
   ]
 
-
 ---------------------------------------------------------------------------------
 
 endOfDialog :: String -> Bool
@@ -72,9 +71,7 @@ prepare = reduce . words . map toLower . filter (not . flip elem ".,:;!#%&|")
 rulesCompile :: [(String, [String])] -> BotBrain
 rulesCompile = map (\(x,y) -> (prepare x, map (\i -> prepare i) y))
 
-
 --------------------------------------
-
 
 reductions :: [PhrasePair]
 reductions = (map.map2) (words, words)

@@ -2,7 +2,6 @@ module Pattern where
 import Utilities
 import Data.List
 
-
 -------------------------------------------------------
 -- Match and substitute
 --------------------------------------------------------
@@ -25,7 +24,6 @@ match wc xs ys
       | wc == x = singleWildcardMatch (x:xs) (y:ys) `orElse` longerWildcardMatch (x:xs) (y:ys)
       | otherwise = Nothing
     matchHelper _ _ = Nothing
-
 
 singleWildcardMatch, longerWildcardMatch :: Eq a => [a] -> [a] -> Maybe [a]
 singleWildcardMatch (wc:ps) (x:xs)
@@ -51,12 +49,10 @@ substituteCheck = substituteTest == testString
 matchTest = match '*' testPattern testString
 matchCheck = matchTest == Just testSubstitutions
 
-
-
 -------------------------------------------------------
 -- Applying patterns
 --------------------------------------------------------
-frenchPresentation = ("My name is *", "Je m'appelle *")
+
 -- Applying a single pattern
 transformationApply :: Eq a => a -> ([a] -> [a]) -> [a] -> ([a], [a]) -> Maybe [a]
 transformationApply wc f xs p = tHelp sub
@@ -64,7 +60,6 @@ transformationApply wc f xs p = tHelp sub
     sub = match wc (fst p) xs
     tHelp Nothing = Nothing
     tHelp (Just ys) = Just $ substitute wc (snd p) $ f ys
-
 
 -- Applying a list of patterns until one succeeds
 transformationsApply :: Eq a => a -> ([a] -> [a]) -> [([a], [a])] -> [a] -> Maybe [a]
