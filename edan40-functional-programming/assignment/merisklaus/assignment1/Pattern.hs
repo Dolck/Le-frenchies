@@ -25,12 +25,13 @@ match wc (p:ps) (y:ys)
   | p == y         = match wc ps ys
   | p == wc        = singleWildcardMatch (p:ps) (y:ys) `orElse` longerWildcardMatch (p:ps) (y:ys)
   | otherwise      = Nothing 
-   where
-    singleWildcardMatch (p:ps) (x:xs)
-      | (match wc ps xs) /= Nothing = Just [x]
-      | otherwise = Nothing
-    longerWildcardMatch pls (xl:xls) = mmap ([xl]++) (match wc pls xls)
-    longerWildcardMatch _ _ = Nothing
+
+singleWildcardMatch, longerWildcardMatch :: Eq a => [a] -> [a] -> Maybe [a]
+singleWildcardMatch (wc:ps) (x:xs)
+  | (match wc ps xs) /= Nothing = Just [x]
+  | otherwise = Nothing
+longerWildcardMatch (wc:ps) (x:xs) = mmap (x:) $ match wc (wc:ps) xs
+longerWildcardMatch _ _ = Nothing
 
 -- Test cases --------------------
 
@@ -49,15 +50,12 @@ matchCheck = matchTest == Just testSubstitutions
 --------------------------------------------------------
 
 -- Applying a single pattern
-transformationApply :: Eq a => a -> ([a] -> [a]) -> ([a], [a]) -> [a]  -> Maybe [a]
-transformationApply wc f (w, t) = mmap helper . match wc w
+transformationApply :: Eq a => a -> ([a] -> [a]) -> [a] -> ([a], [a]) -> Maybe [a]
+transformationApply wc f xs (w, t) = mmap helper . match wc w $ xs
   where
     helper = substitute wc t . f
 
 -- Applying a list of patterns until one succeeds
 transformationsApply :: Eq a => a -> ([a] -> [a]) -> [([a], [a])] -> [a] -> Maybe [a]
-transformationsApply wc f ((w, t):wts) xs = transformationApply wc f (w,t) xs `orElse` transformationsApply wc f wts xs
+transformationsApply wc f ((w, t):wts) xs = transformationApply wc f xs (w,t) `orElse` transformationsApply wc f wts xs
 transformationsApply _ _ _ _ = Nothing
-
-fetLista = [("My name is *", "Je m'appelle *"), ("Jag äter *", "Je mange *")]
-tranz = transformationsApply  '*' id fetLista "Jag äter petit pain" 
