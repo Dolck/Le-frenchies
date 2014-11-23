@@ -2,12 +2,11 @@ module Twinkle where
 import Haskore
 
 
- -- note updaters for mappings
+ -- note updaters for mappings (from Childsong6.lhs)
 fd d n = n d v
 vol  n = n   v
 v      = [Volume 80]
 lmap f l = line (map f l)
-
 
 -- Main melody: (using Childsong6.lhs as the rolemodel)
 mainMelody = v1 :+: v2 :+: v2 :+: v1
