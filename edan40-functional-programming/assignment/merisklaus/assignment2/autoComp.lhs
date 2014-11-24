@@ -20,7 +20,7 @@
 Generate pattern based on which groundtone (pitchclass) and scale specified.
 
 
- generateScalePattern :: PitchClass -> ScalePattern -> [PitchClass]
- generateScalePattern pc sp = map (\x -> (concat $ repeat pitchClasses) !! (pitchClass pc + x) ) sp
+> generateScalePattern :: PitchClass -> ScalePattern -> [PitchClass]
+> generateScalePattern pc sp = map (\x -> (concat $ repeat pitchClasses) !! (pitchClass pc + x) ) $ scalePattern sp
 
 
