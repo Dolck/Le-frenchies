@@ -7,10 +7,10 @@ Some awsome imports:
 To simplify things we create the type Tone which is the same as pitch. pitch = (PitchClass, Octave)
 
 >type Tone = Pitch
->
->type Key = [PitchClass]
-
+>type Key = (Tone, [PitchClass])
 >type Position = Int
+
+
 >type BassStyle = [(Position,Dur)]
 >basic, calypso, boogie :: BassStyle
 >basic = [(0, hn), (4, hn)]
@@ -24,7 +24,7 @@ To simplify things we create the type Tone which is the same as pitch. pitch = (
 >createScale :: Tone -> String -> Scale
 >createScale n hq = map (\pos -> pitch $ (+) pos $ absPitch n) $ scalePattern hq
 
->scalePattern :: String -> [Int]
+>scalePattern :: String -> [Position]
 >scalePattern "Major" = [0, 2, 4, 5, 7, 9, 11]
 >scalePattern "Minor" = [0, 2, 3, 5, 7, 8, 10]
 >scalePattern "Ionian" = scalePattern "Major"
@@ -34,6 +34,10 @@ To simplify things we create the type Tone which is the same as pitch. pitch = (
 >scalePattern "Dorian" = [0, 2, 3, 5, 7, 9, 10]
 >scalePattern "Phrygian" = [0, 1, 3, 5, 7, 8, 10]
 
->type Chord = [Tone]
+>type TriChord = ([Tone], Dur)
+>type ChordProgression = [TriChord]
+
+>musicFromChord :: TriChord -> Music
+>musicFromChord (a, b) = foldr1 (:=:) [Note (x,y) b [Volume 40]| (x,y) <- a]
 
 --autoBass :: BassStyle -> Key -> ChordProgression -> Music
