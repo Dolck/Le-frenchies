@@ -19,9 +19,9 @@
 > -- Main Voice:
 > v1  = v1a :+: v1b
 > v2  = times 2 $ v2a 
-> v1a = lmap vol [c 4 qn, c 4 qn, g 4 qn, g 4 qn, a 4 qn, a 4 qn, g 4 hn]
-> v1b = lmap vol [f 4 qn, f 4 qn, e 4 qn, e 4 qn, d 4 qn, d 4 qn, c 4 hn]
-> v2a = lmap vol [g 4 qn, g 4 qn, f 4 qn, f 4 qn, e 4 qn, e 4 qn, d 4 hn]
+> v1a = lmap vol [c 5 qn, c 5 qn, g 5 qn, g 5 qn, a 5 qn, a 5 qn, g 5 hn]
+> v1b = lmap vol [f 5 qn, f 5 qn, e 5 qn, e 5 qn, d 5 qn, d 5 qn, c 5 hn]
+> v2a = lmap vol [g 5 qn, g 5 qn, f 5 qn, f 5 qn, e 5 qn, e 5 qn, d 5 hn]
 > mainVoice = v1 :+: v2 :+: v1
 > 
 > -- Putting it all together:
