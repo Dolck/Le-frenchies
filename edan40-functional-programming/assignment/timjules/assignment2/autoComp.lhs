@@ -8,7 +8,7 @@ To simplify things we create the type Tone which is the same as pitch. pitch = (
 
 >type Tone = Pitch
 >
->type Key = [Int]
+>type Key = [PitchClass]
 
 >type Position = Int
 >type BassStyle = [(Position,Dur)]
@@ -24,7 +24,7 @@ To simplify things we create the type Tone which is the same as pitch. pitch = (
 >createScale :: Tone -> String -> Scale
 >createScale n hq = map (\pos -> pitch $ (+) pos $ absPitch n) $ scalePattern hq
 
->scalePattern :: String -> Key
+>scalePattern :: String -> [Int]
 >scalePattern "Major" = [0, 2, 4, 5, 7, 9, 11]
 >scalePattern "Minor" = [0, 2, 3, 5, 7, 8, 10]
 >scalePattern "Ionian" = scalePattern "Major"
@@ -34,6 +34,6 @@ To simplify things we create the type Tone which is the same as pitch. pitch = (
 >scalePattern "Dorian" = [0, 2, 3, 5, 7, 9, 10]
 >scalePattern "Phrygian" = [0, 1, 3, 5, 7, 8, 10]
 
->type Chord = (Tone, Tone, Tone)
+>type Chord = [Tone]
 
 --autoBass :: BassStyle -> Key -> ChordProgression -> Music
