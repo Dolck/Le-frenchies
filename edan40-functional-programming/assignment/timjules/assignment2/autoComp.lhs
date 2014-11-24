@@ -4,27 +4,27 @@ Some awsome imports:
 >module AutoComp where
 >import Haskore hiding(Key)
 
-To simplify things we create the type Note which is the same as pitch. pitch = (PitchClass, Octave)
+To simplify things we create the type Tone which is the same as pitch. pitch = (PitchClass, Octave)
 
->type Note = Pitch
->
->type Key = [Int]
-
---type RestOrPos = Rest | Int
-
---type BassStyle = [(RestOrPos,Dur)]
-
->type Scale = [Note]
+>type Tone = Pitch
+>type Key = (Tone, [PitchClass])
+>type Position = Int
 
 
->createScale :: Note -> String -> Scale
->createScale n hq = map (createNote n) $ scalePattern hq
->	where 
->		createNote :: Note -> Int -> Note
->		createNote n pos = pitch $ (+) pos $ absPitch n
+>type BassStyle = [(Position,Dur)]
+>basic, calypso, boogie :: BassStyle
+>basic = [(0, hn), (4, hn)]
+>calypso = take 6 $ cycle [(-1, qn), (0, en), (2, en)]
+>boogie = take 8 $ cycle [(0, en), (4, en), (5, en), (4, en)]
 
 
->scalePattern :: String -> Key
+>type Scale = [Tone]
+
+
+>createScale :: Tone -> String -> Scale
+>createScale n hq = map (\pos -> pitch $ (+) pos $ absPitch n) $ scalePattern hq
+
+>scalePattern :: String -> [Position]
 >scalePattern "Major" = [0, 2, 4, 5, 7, 9, 11]
 >scalePattern "Minor" = [0, 2, 3, 5, 7, 8, 10]
 >scalePattern "Ionian" = scalePattern "Major"
@@ -34,6 +34,10 @@ To simplify things we create the type Note which is the same as pitch. pitch = (
 >scalePattern "Dorian" = [0, 2, 3, 5, 7, 9, 10]
 >scalePattern "Phrygian" = [0, 1, 3, 5, 7, 8, 10]
 
->type Chord = (Note, Note, Note)
+>type TriChord = ([Tone], Dur)
+>type ChordProgression = [TriChord]
+
+>musicFromChord :: TriChord -> Music
+>musicFromChord (a, b) = foldr1 (:=:) [Note (x,y) b [Volume 40]| (x,y) <- a]
 
 --autoBass :: BassStyle -> Key -> ChordProgression -> Music
