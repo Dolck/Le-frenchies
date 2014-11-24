@@ -9,10 +9,6 @@ vol  n = n   v
 v      = [Volume 80]
 lmap f l = line (map f l)
 
--- repeat something n times
-times  1    m = m
-times n m = m :+: (times (n - 1) m)
-
 -- Main melody: (using Childsong6.lhs as the rolemodel)
 mainMelody = v1 :+: v2 :+: v2 :+: v1
 
@@ -27,14 +23,16 @@ v2 = v2a :+: v2b
 v2a = lmap (fd qn) [g 4, g 4 , f 4, f 4, e 4, e 4]
 v2b = lmap (fd hn) [d 4]
 
-cChord, gChord, fChord :: Music
-cChord = musicFromChord ([(C, 4), (E, 4), (G, 4)], hn)
-gChord = musicFromChord ([(G, 4), (B, 4), (D, 5)], hn)
-fChord = musicFromChord ([(F, 4), (A, 4), (C, 5)], hn)
+cChord, gChord, fChord :: TriChord
+cChord = ([(C, 4), (E, 4), (G, 4)], hn)
+gChord = ([(G, 4), (B, 4), (D, 5)], hn)
+fChord = ([(F, 4), (A, 4), (C, 5)], hn)
 
-twinkleChords = c1 :+: (times 4 c2) :+: c1
-c1 = cChord :+: cChord :+: fChord :+: cChord :+: gChord :+: cChord :+: gChord :+: cChord
-c2 = cChord :+: gChord
+twinkleChords = ccf ++ take 8 (cycle cg) ++ ccf
+ccf = [cChord] ++ [cChord] ++ [fChord] ++ (take 4 (cycle cg)) ++ [cChord]
+cg = [cChord] ++ [gChord]
 
-twinkle = Instr "piano" (Tempo 3 (Phrase [Dyn SF] mainMelody)) :=: Instr "guitarr" (Tempo 3 (Phrase [Dyn SF] twinkleChords))
+chordsMusic = foldr1 (:+:) $ map musicFromChord twinkleChords
+
+twinkle = Instr "piano" (Tempo 3 (Phrase [Dyn SF] mainMelody)) :=: Instr "guitarr" (Tempo 3 (Phrase [Dyn SF] chordsMusic))
 
