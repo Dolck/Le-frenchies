@@ -1,9 +1,7 @@
 > module AutoComp where
-> import Haskore hiding (Major, Minor)
+> import Haskore hiding (Major, Minor, Key)
 > import Data.Ratio
 > import Data.List
-
-> pitchClasses = [C, Cs, D, Ds, E, F, Fs, G, Gs, A, As, B]
 
 > data ScalePattern = Ionian | Major | Lydian | Mixolonyan | Aeolian | Minor | Dorian | Phrygian  
 > scalePattern :: ScalePattern -> [Int]
@@ -17,10 +15,19 @@
 >      Major      -> scalePattern Ionian;
 >      Minor      -> scalePattern Aeolian;
 
-Generate pattern based on which groundtone (pitchclass) and scale specified.
+Generate key scale based on which groundtone (pitchclass) and scale pattern specified.
 
+> generateScalePattern :: Pitch -> ScalePattern -> [Pitch]
 
-> generateScalePattern :: PitchClass -> ScalePattern -> [PitchClass]
-> generateScalePattern pc sp = map (\x -> (concat $ repeat pitchClasses) !! (pitchClass pc + x) ) $ scalePattern sp
+> generateScalePattern p = map doMath . scalePattern 
+>   where 
+>    doMath = pitch . add p
+>    add = (+) . absPitch 
 
+Let's do the autobasss
 
+> type Key = (PitchClass, ScalePattern)
+
+data BassStyle = Basic | Calypso | Boogie 
+bassStyle :: BassStyle -> [Pitch]
+autoBass :: BassStyle -> Key -> ChordProgression -> Music
