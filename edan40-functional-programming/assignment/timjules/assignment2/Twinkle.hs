@@ -37,3 +37,4 @@ c1 = cChord :+: cChord :+: fChord :+: cChord :+: gChord :+: cChord :+: gChord :+
 c2 = cChord :+: gChord
 
 twinkle = Instr "piano" (Tempo 3 (Phrase [Dyn SF] mainMelody)) :=: Instr "guitarr" (Tempo 3 (Phrase [Dyn SF] twinkleChords))
+
