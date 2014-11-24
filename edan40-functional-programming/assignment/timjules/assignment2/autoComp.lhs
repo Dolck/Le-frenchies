@@ -6,7 +6,7 @@ Some awsome imports:
 
 To simplify things we create the type Note which is the same as pitch. pitch = (PitchClass, Octave)
 
->type Note = Pitch
+>type Tone = Pitch
 >
 >type Key = [Int]
 
@@ -14,13 +14,13 @@ To simplify things we create the type Note which is the same as pitch. pitch = (
 
 --type BassStyle = [(RestOrPos,Dur)]
 
->type Scale = [Note]
+>type Scale = [Tone]
 
 
->createScale :: Note -> String -> Scale
+>createScale :: Tone -> String -> Scale
 >createScale n hq = map (createNote n) $ scalePattern hq
 >	where 
->		createNote :: Note -> Int -> Note
+>		createNote :: Tone -> Int -> Tone
 >		createNote n pos = pitch $ (+) pos $ absPitch n
 
 
@@ -34,6 +34,6 @@ To simplify things we create the type Note which is the same as pitch. pitch = (
 >scalePattern "Dorian" = [0, 2, 3, 5, 7, 9, 10]
 >scalePattern "Phrygian" = [0, 1, 3, 5, 7, 8, 10]
 
->type Chord = (Note, Note, Note)
+>type Chord = (Tone, Tone, Tone)
 
 --autoBass :: BassStyle -> Key -> ChordProgression -> Music

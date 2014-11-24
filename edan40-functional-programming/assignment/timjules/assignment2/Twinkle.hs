@@ -22,4 +22,4 @@ v2 = v2a :+: v2b
 v2a = lmap (fd qn) [g 4, g 4 , f 4, f 4, e 4, e 4]
 v2b = lmap (fd hn) [d 4]
 
-twinkle = Instr "piano" (Tempo 3 (Phrase [Dyn SF] mainMelody))
+twinkle = Instr "piano" (Tempo 2 (Phrase [Dyn SF] mainMelody))
