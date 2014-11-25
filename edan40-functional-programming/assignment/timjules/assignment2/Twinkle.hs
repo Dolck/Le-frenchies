@@ -23,16 +23,31 @@ v2 = v2a :+: v2b
 v2a = lmap (fd qn) [g 4, g 4 , f 4, f 4, e 4, e 4]
 v2b = lmap (fd hn) [d 4]
 
-cChord, gChord, fChord :: TriChord
-cChord = ([(C, 4), (E, 4), (G, 4)], hn)
-gChord = ([(G, 4), (B, 4), (D, 5)], hn)
-fChord = ([(F, 4), (A, 4), (C, 5)], hn)
+--cChord, gChord, fChord :: TriChord
+--cChord = ([(C, 4), (E, 4), (G, 4)], hn)
+--gChord = ([(G, 4), (B, 4), (D, 5)], hn)
+--fChord = ([(F, 4), (A, 4), (C, 5)], hn)
 
-twinkleChords = ccf ++ take 8 (cycle cg) ++ ccf
-ccf = [cChord] ++ [cChord] ++ [fChord] ++ (take 4 (cycle cg)) ++ [cChord]
-cg = [cChord] ++ [gChord]
+--twinkleChords = ccf ++ take 8 (cycle cg) ++ ccf
+--ccf = [cChord] ++ [cChord] ++ [fChord] ++ (take 4 (cycle cg)) ++ [cChord]
+--cg = [cChord] ++ [gChord]
 
-chordsMusic = foldr1 (:+:) $ map musicFromChord twinkleChords
+--chordsMusic = foldr1 (:+:) $ map musicFromChord twinkleChords
 
-twinkle = Instr "piano" (Tempo 3 (Phrase [Dyn SF] mainMelody)) :=: Instr "guitarr" (Tempo 3 (Phrase [Dyn SF] chordsMusic))
+cC, gG, fF :: Chord 
+cC = (C, "Major", hn)
+gG = (G, "Major", hn)
+fF = (F, "Major", hn)
+
+chordProg = [cC, cC, fF, cC, gG, cC, gG, cC, cC, gG, cC, gG, cC, gG, cC, gG, cC, cC, fF, cC, gG, cC, gG, cC]
+key = genKey (C,4) "Major"
+boogieBass = autoBass Boogie key chordProg 
+basicBass = autoBass Basic key chordProg 
+calypsoBass = autoBass Calypso key chordProg 
+
+twinkleBoogie = Instr "piano" (Tempo 3 (Phrase [Dyn SF] mainMelody)) :=: Instr "bass" (Tempo 3 (Phrase [Dyn SF] boogieBass))
+twinkleBasic = Instr "piano" (Tempo 3 (Phrase [Dyn SF] mainMelody)) :=: Instr "bass" (Tempo 3 (Phrase [Dyn SF] basicBass))
+twinkleCalypso = Instr "piano" (Tempo 3 (Phrase [Dyn SF] mainMelody)) :=: Instr "bass" (Tempo 3 (Phrase [Dyn SF] calypsoBass))
+
+--twinkle = Instr "piano" (Tempo 3 (Phrase [Dyn SF] mainMelody)) :=: Instr "guitarr" (Tempo 3 (Phrase [Dyn SF] chordsMusic))
 

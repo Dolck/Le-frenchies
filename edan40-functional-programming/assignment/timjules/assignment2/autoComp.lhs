@@ -18,11 +18,17 @@ To simplify things we create the type Tone which is the same as pitch. pitch = (
 >genKey t s = (t, fst $ unzip $ createScale t s)
 
 
->type BassStyle = [(Position,Dur)]
->basic, calypso, boogie :: Dur -> BassStyle
+>type BassStyleM = [(Position,Dur)]
+>data BassStyle = Basic | Calypso | Boogie deriving (Read)
+>basic, calypso, boogie :: Dur -> BassStyleM
 >basic dur = take (ceiling (2 * dur)) [(0, hn), (4, hn)]
 >calypso dur = take (ceiling (6 * dur)) $ cycle [(-1, qn), (0, en), (2, en)]
 >boogie dur = take (ceiling (8 * dur)) $ cycle [(0, en), (4, en), (5, en), (4, en)]
+>
+>bassStyleM :: BassStyle -> Dur -> BassStyleM
+>bassStyleM Basic = basic
+>bassStyleM Calypso = calypso
+>bassStyleM Boogie = boogie
 
 
 >createScale :: Tone -> HarmonicQuality -> Scale
@@ -50,9 +56,9 @@ To simplify things we create the type Tone which is the same as pitch. pitch = (
 >autoBass bs k cp = foldr1 (:+:) $ map (bassFromChord bs) cp
 
 >bassFromChord :: BassStyle -> Chord -> Music
->bassFromChord bs (pc, hq, _) = foldr1 (:+:) $ map toNote (zip (snd ubs) (map ((!!) (createScale (pc, 3) hq)) $ fst ubs))
+>bassFromChord bs (pc, hq, dur) = foldr1 (:+:) $ map toNote (zip (snd ubs) (map ((!!) (createScale (pc, 3) hq)) $ fst ubs))
 >	where
->		   ubs = unzip bs
+>		   ubs = unzip $ bassStyleM bs dur
 >		   toNote :: (Dur, Tone) -> Music
 >		   toNote (d,t) = Note t d [Volume 80]
 
