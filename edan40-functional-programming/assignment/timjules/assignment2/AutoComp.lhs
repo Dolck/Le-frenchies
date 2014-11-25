@@ -86,20 +86,30 @@ Autochord takes a Key and a ChordProgression and chooses the notes in chord to b
 >	absR2 = absPitch $ snd chordRange
 
 >minChordDiff :: Maybe [Tone] -> Chord -> [Tone]
->minChordDiff Nothing c = minChord $ chordTones c
->minChordDiff (Just prev) c = calcMin prev $ filter (\ts -> allUnique $ fst $ unzip ts) $ choose3 $ chordTones c
+>minChordDiff Nothing c = minChord $ uniqueValidTrips c
+>minChordDiff (Just prev) c = calcMin prev $ uniqueValidTrips c
 >	where
->	allUnique pcs = 3 == (length $ nub pcs)
->	choose3 xs = filter (\x -> 3 == (length x)) $ subsequences xs
 >	calcMin :: [Tone] -> [[Tone]] -> [Tone]
 >	calcMin p v = minimumBy (\v1 v2 -> compare (chordDiff p v1) (chordDiff p v2)) v
 >	chordDiff c1 c2 = sum $ map (\(t1,t2) -> toneDiff t1 t2) $ zip (sortChord c1) (sortChord c2)
->	toneDiff t1 t2 = abs $ (-) (absPitch t1) $ absPitch t2
+
+>uniqueValidTrips :: Chord -> [[Tone]]
+>uniqueValidTrips c = filter (\ts -> allUnique $ fst $ unzip ts) $ choose3 $ chordTones c
+>	where	
+>	allUnique pcs = 3 == (length $ nub pcs)
+>	choose3 xs = filter (\x -> 3 == (length x)) $ subsequences xs
+
+>toneDiff :: Tone -> Tone -> Int
+>toneDiff t1 t2 = abs $ (-) (absPitch t1) $ absPitch t2
 
 >sortChord :: [Tone] -> [Tone]
 >sortChord ts = sortBy (\a b -> compare (absPitch a) (absPitch b)) ts
 
->minChord = id
+>minChord :: [[Tone]] -> [Tone]
+>minChord cs = minimumBy (\x y -> compare (distance x) $ distance y) cs
+>	where 
+>		distance :: [Tone] -> Int
+>		distance ts = let sorted = sortChord ts in toneDiff (head sorted) $ last sorted 
 
 
 
