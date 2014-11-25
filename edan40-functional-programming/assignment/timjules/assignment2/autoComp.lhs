@@ -12,6 +12,7 @@ To simplify things we create the type Tone which is the same as pitch. pitch = (
 >type Position = Int
 >data HarmonicQuality = Major | Minor | Ionian | Lydian | Mixolydian | Aeolian | Dorian | Phrygian deriving (Read, Show, Eq)
 >type Scale = [Tone]
+>type Paus = Nothing
 
 >createScale :: Tone -> HarmonicQuality -> Scale
 >createScale n hq = map (\pos -> pitch $ (+) pos $ absPitch n) $ scalePattern hq
@@ -31,7 +32,7 @@ To simplify things we create the type Tone which is the same as pitch. pitch = (
 
 >basic, calypso, boogie :: Dur -> BassStyleM
 >basic dur = take (ceiling (2 * dur)) [(0, hn), (4, hn)]
->calypso dur = take (ceiling (6 * dur)) $ cycle [(-1, qn), (0, en), (2, en)]
+>calypso dur = take (ceiling (6 * dur)) $ cycle [(Paus, qn), (0, en), (2, en)]
 >boogie dur = take (ceiling (8 * dur)) $ cycle [(0, en), (4, en), (5, en), (4, en)]
 
 >bassStyleM :: BassStyle -> Dur -> BassStyleM
