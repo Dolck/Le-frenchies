@@ -6,6 +6,7 @@
 > module TwinkleDeux where
 > import AutoComp 
 > import Haskore hiding (Major, Minor)
+> import Data.Ratio
 > 
 > -- note updaters for mappings
 > fd d n = n d v
@@ -18,9 +19,19 @@
 > times  1    m = m
 > times n m = m :+: (times (n - 1) m)
 > -- Choose Scale
-> scale :: Pitch -> ScalePattern -> Int -> Pitch
-> scale p sp x = generateScalePattern p sp !! mod x 7
->
+
+ scale :: Pitch -> ScalePattern -> Int -> Pitch
+scale p sp x = generateScalePattern p sp !! mod x 7
+
+
+> cfm = (F, Major, 1%2)
+> cgm = (G, Major, 1%2)
+> cc1m = (C, Major, 1)
+> cc2m = (C, Major, 1%2)
+> cp1 = [cc1m, cfm, cc2m, cgm, cc2m, cgm, cc2m]
+> cp2 = take 8 $ cycle [cc2m, cgm]
+> mainVoiceBass = autoBass Calypso (C, Major) (cp1++ cp2 ++ cp1)
+
 > -- Chords 
 > cC  = c 5 hn vk :=: e 5 hn vk :=: g 5 hn vk
 > cF  = f 5 hn vk :=: a 5 hn vk :=: c 5 hn vk
@@ -38,6 +49,6 @@
 > mainVoice = v1 :+: v2 :+: v1
 > 
 > -- Putting it all together:
-> twinkleTwinkle = Instr "piano" (Tempo 3 (Phrase [Dyn SF] (mainVoiceC :=: mainVoice)))
+> twinkleTwinkle = Instr "piano" (Tempo 2 (mainVoice :=: mainVoiceC :=: mainVoiceBass))
 
 \end{verbatim} }

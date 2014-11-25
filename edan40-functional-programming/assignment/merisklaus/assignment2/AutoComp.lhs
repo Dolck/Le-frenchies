@@ -51,7 +51,7 @@ We always start in the 3rd octave.
 >      Calypso  -> take 6 $ cycle [Silence (1%4), Position 0 (1%8), Position 2 (1%8)]; 
 >      Boogie   -> take 8 $ cycle [Position 0 (1%8), Position 4 (1%8), Position 5 (1%8), Position 4 (1%8)];
 
-autoBass bs key cp = foldr1 (:+:) (\x -> generateBass bs key x) cp 
+> autoBass bs key cp = foldr1 (:+:) $ map (\x -> generateBass bs key x) cp 
 
 > takePart :: [a] -> Dur -> [a]
 > takePart [] _ = []
