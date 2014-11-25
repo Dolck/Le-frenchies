@@ -34,7 +34,7 @@ stateOfMind brain = do
     where decideResponse r (input, responses)  = (input, pick r responses)
 
 rulesApply :: [PhrasePair] -> Phrase -> Phrase
-rulesApply pairs = try $ transformationsApply "*" reflect pairs 
+rulesApply = try . transformationsApply "*" reflect 
 
 reflect :: Phrase -> Phrase
 reflect = map $ try lookup'
