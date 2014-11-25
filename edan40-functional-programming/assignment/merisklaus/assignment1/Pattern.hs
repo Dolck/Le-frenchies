@@ -57,6 +57,5 @@ transformationApply wc f xs (w, t) = mmap helper . match wc w $ xs
 
 -- Applying a list of patterns until one succeeds
 transformationsApply :: Eq a => a -> ([a] -> [a]) -> [([a], [a])] -> [a] -> Maybe [a]
-transformationsApply wc f ((w, t):wts) xs = transformationApply wc f xs (w,t) `orElse` transformationsApply wc f wts xs
-transformationsApply _ _ _ _ = Nothing
+transformationsApply wc f wts xs = foldr (orElse . transformationApply wc f xs) Nothing wts
 
