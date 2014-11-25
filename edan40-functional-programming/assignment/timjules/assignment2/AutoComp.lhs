@@ -53,16 +53,16 @@ To simplify things we create the type Tone which is the same as pitch. pitch = (
 
 >bassFromChord :: BassStyle -> Chord -> Music
 >bassFromChord bs (pc, hq, dur) = foldr1 (:+:) $ map toMusic (zip (snd ubs) (maybeFunc (fst ubs) (createScale (pc, 3) hq)))
->	where
->   ubs = unzip $ bassStyleM bs dur
->   maybeFunc :: [Position] -> Scale -> [Maybe Tone]
->   maybeFunc [] _ = []
->   maybeFunc (p:ps) sc 
+>	  where
+>     ubs = unzip $ bassStyleM bs dur
+>     maybeFunc :: [Position] -> Scale -> [Maybe Tone]
+>     maybeFunc [] _ = []
+>     maybeFunc (p:ps) sc 
 >             | p == -1 = Nothing : maybeFunc ps sc
 >             | otherwise = Just (sc !! p) : maybeFunc ps sc
->   toMusic :: (Dur, Maybe Tone) -> Music
->   toMusic (d, Nothing) = Rest d
->   toMusic (d, Just t) = Note t d [Volume 80]
+>     toMusic :: (Dur, Maybe Tone) -> Music
+>     toMusic (d, Nothing) = Rest d
+>     toMusic (d, Just t) = Note t d [Volume 80]
 
 Autochord takes a Key and a ChordProgression and chooses the notes in chord to be
 1: in a limited range
@@ -70,31 +70,39 @@ Autochord takes a Key and a ChordProgression and chooses the notes in chord to b
 3: small tone steps within the chord
 
 >autoChord :: Key -> ChordProgression -> Music
->autoChord k cp = Rest 1
+>autoChord _ cp = foldr1 (:+:) $ autoHelper Nothing cp
+>   where
+>     autoHelper :: Maybe [Tone] -> ChordProgression -> [Music]
+>     autoHelper ts [c] = let prev = minChordDiff ts c in [musicFromTones prev (third c)]
+>     autoHelper ts (c:cs) = let prev = minChordDiff ts c in (musicFromTones prev (third c)) : (autoHelper (Just prev) cs)
+>     third (_,_,x) = x
+
+>musicFromTones :: [Tone] -> Dur -> Music
+>musicFromTones ts d = foldr1 (:=:) [Note x d [Volume 40] | x <- ts]
 
 >chordRange :: (Tone, Tone)
 >chordRange = ((E,4), (G,5))
 
 >chordTones :: Chord -> [Tone]
 >chordTones (pc, hq, d) = filter filt $ [(!!) (createScale(pc, o) hq) x | x <- [0,2,4], o <- [((snd $ fst chordRange)-1)..(snd $ snd chordRange)]]
->	where 
->	filt t = (absPitch t) >= absR1 && (absPitch t) <= absR2
->	absR1 = absPitch $ fst chordRange
->	absR2 = absPitch $ snd chordRange
+>	  where 
+>	    filt t = (absPitch t) >= absR1 && (absPitch t) <= absR2
+>	    absR1 = absPitch $ fst chordRange
+>	    absR2 = absPitch $ snd chordRange
 
 >minChordDiff :: Maybe [Tone] -> Chord -> [Tone]
 >minChordDiff Nothing c = minChord $ uniqueValidTrips c
 >minChordDiff (Just prev) c = calcMin prev $ uniqueValidTrips c
->	where
->	calcMin :: [Tone] -> [[Tone]] -> [Tone]
->	calcMin p v = minimumBy (\v1 v2 -> compare (chordDiff p v1) (chordDiff p v2)) v
->	chordDiff c1 c2 = sum $ map (\(t1,t2) -> toneDiff t1 t2) $ zip (sortChord c1) (sortChord c2)
+>   where
+>	    calcMin :: [Tone] -> [[Tone]] -> [Tone]
+>	    calcMin p v = minimumBy (\v1 v2 -> compare (chordDiff p v1) (chordDiff p v2)) v
+>	    chordDiff c1 c2 = sum $ map (\(t1,t2) -> toneDiff t1 t2) $ zip (sortChord c1) (sortChord c2)
 
 >uniqueValidTrips :: Chord -> [[Tone]]
 >uniqueValidTrips c = filter (\ts -> allUnique $ fst $ unzip ts) $ choose3 $ chordTones c
->	where	
->	allUnique pcs = 3 == (length $ nub pcs)
->	choose3 xs = filter (\x -> 3 == (length x)) $ subsequences xs
+>	  where	
+>	    allUnique pcs = 3 == (length $ nub pcs)
+>	    choose3 xs = filter (\x -> 3 == (length x)) $ subsequences xs
 
 >toneDiff :: Tone -> Tone -> Int
 >toneDiff t1 t2 = abs $ (-) (absPitch t1) $ absPitch t2
@@ -104,9 +112,9 @@ Autochord takes a Key and a ChordProgression and chooses the notes in chord to b
 
 >minChord :: [[Tone]] -> [Tone]
 >minChord cs = minimumBy (\x y -> compare (distance x) $ distance y) cs
->	where 
->		distance :: [Tone] -> Int
->		distance ts = let sorted = sortChord ts in toneDiff (head sorted) $ last sorted 
+>	  where 
+>		  distance :: [Tone] -> Int
+>		  distance ts = let sorted = sortChord ts in toneDiff (head sorted) $ last sorted 
 
 
 
