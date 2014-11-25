@@ -18,9 +18,9 @@ substitute wc (x:xs) s
 -- Tries to match two lists. If they match, the result consists of the sublist
 -- bound to the wildcard in the pattern list.
 match :: Eq a => a -> [a] -> [a] -> Maybe [a]
-match _ [] [] = Just [] 
-match _ [] _ = Nothing
-match _ _ [] = Nothing
+match _ ps ys
+  | ps == [] && ys == [] = Just []
+  | ps == [] || ys == [] = Nothing
 match wc (p:ps) (y:ys)
   | (p:ps) == [wc] = Just (y:ys)
   | p == y         = match wc ps ys
@@ -35,6 +35,7 @@ longerWildcardMatch (wc:ps) (x:xs) = mmap (x:) $ match wc (wc:ps) xs
 longerWildcardMatch _ _ = Nothing
 
 -- Test cases --------------------
+
 
 testPattern =  "a=*;"
 testSubstitutions = "32"
@@ -60,3 +61,4 @@ transformationApply wc f xs (w, t) = mmap helper . match wc w $ xs
 transformationsApply :: Eq a => a -> ([a] -> [a]) -> [([a], [a])] -> [a] -> Maybe [a]
 transformationsApply wc f ((w, t):wts) xs = transformationApply wc f xs (w,t) `orElse` transformationsApply wc f wts xs
 transformationsApply _ _ _ _ = Nothing
+
