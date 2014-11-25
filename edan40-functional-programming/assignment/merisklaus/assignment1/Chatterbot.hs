@@ -97,3 +97,6 @@ reduce = reductionsApply reductions
 reductionsApply :: [PhrasePair] -> Phrase -> Phrase
 reductionsApply reds = fix $ try transform
   where transform = transformationsApply "*" id reds
+
+reductionsApply' :: [PhrasePair] -> Phrase -> Phrase
+reductionsApply' = fix . try . transformationsApply "*" id 
