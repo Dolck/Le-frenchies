@@ -41,12 +41,8 @@ To simplify things we create the type Tone which is the same as pitch. pitch = (
 >bassStyleM Calypso = calypso
 >bassStyleM Boogie = boogie
 
->type TriChord = ([Tone], Dur)
 >type Chord = (PitchClass, HarmonicQuality, Dur)
 >type ChordProgression = [Chord]
-
->musicFromChord :: TriChord -> Music
->musicFromChord (a, b) = foldr1 (:=:) [Note (x,y) b [Volume 40]| (x,y) <- a]
 
 >autoBass :: BassStyle -> Key -> ChordProgression -> Music
 >autoBass bs _ cp = foldr1 (:+:) $ map (bassFromChord bs) cp
