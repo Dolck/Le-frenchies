@@ -28,14 +28,12 @@ match wc (p:ps) (y:ys)
   | otherwise      = Nothing 
 
 singleWildcardMatch, longerWildcardMatch :: Eq a => [a] -> [a] -> Maybe [a]
-singleWildcardMatch (wc:ps) (x:xs)
-  | (match wc ps xs) /= Nothing = Just [x]
-  | otherwise = Nothing
+singleWildcardMatch (wc:ps) (x:xs) = mmap (x:) $ match wc ps xs
+singleWildcardMatch _ _ = Nothing
 longerWildcardMatch (wc:ps) (x:xs) = mmap (x:) $ match wc (wc:ps) xs
 longerWildcardMatch _ _ = Nothing
 
 -- Test cases --------------------
-
 
 testPattern =  "a=*;"
 testSubstitutions = "32"
