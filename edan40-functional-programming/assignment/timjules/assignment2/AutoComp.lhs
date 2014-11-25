@@ -5,6 +5,7 @@ Some awsome imports:
 >import Haskore hiding(Key, Major, Minor)
 >import Data.Ratio
 >import Data.Maybe
+>import Data.List
 
 To simplify things we create the type Tone which is the same as pitch. pitch = (PitchClass, Octave)
 
@@ -48,7 +49,7 @@ To simplify things we create the type Tone which is the same as pitch. pitch = (
 >musicFromChord (a, b) = foldr1 (:=:) [Note (x,y) b [Volume 40]| (x,y) <- a]
 
 >autoBass :: BassStyle -> Key -> ChordProgression -> Music
->autoBass bs k cp = foldr1 (:+:) $ map (bassFromChord bs) cp
+>autoBass bs _ cp = foldr1 (:+:) $ map (bassFromChord bs) cp
 
 >try :: (a -> Maybe a) -> a -> a
 >try f x = maybe x id (f x)
@@ -66,10 +67,39 @@ To simplify things we create the type Tone which is the same as pitch. pitch = (
 >   toMusic (d, Nothing) = Rest d
 >   toMusic (d, Just t) = Note t d [Volume 80]
 
-autoChord :: Key -> ChordProgression -> Music
+Autochord takes a Key and a ChordProgression and chooses the notes in chord to be
+1: in a limited range
+2: small changes between chords 
+3: small tone steps within the chord
 
+>autoChord :: Key -> ChordProgression -> Music
+>autoChord k cp = Rest 1
 
+>chordRange :: (Tone, Tone)
+>chordRange = ((E,4), (G,5))
 
+>chordTones :: Chord -> [Tone]
+>chordTones (pc, hq, d) = filter filt $ [(!!) (createScale(pc, o) hq) x | x <- [0,2,4], o <- [((snd $ fst chordRange)-1)..(snd $ snd chordRange)]]
+>	where 
+>	filt t = (absPitch t) >= absR1 && (absPitch t) <= absR2
+>	absR1 = absPitch $ fst chordRange
+>	absR2 = absPitch $ snd chordRange
+
+>minChordDiff :: Maybe [Tone] -> Chord -> [Tone]
+>minChordDiff Nothing c = minChord $ chordTones c
+>minChordDiff (Just prev) c = calcMin prev $ filter (\ts -> allUnique $ fst $ unzip ts) $ choose3 $ chordTones c
+>	where
+>	allUnique pcs = 3 == (length $ nub pcs)
+>	choose3 xs = filter (\x -> 3 == (length x)) $ subsequences xs
+>	calcMin :: [Tone] -> [[Tone]] -> [Tone]
+>	calcMin p v = minimumBy (\v1 v2 -> compare (chordDiff p v1) (chordDiff p v2)) v
+>	chordDiff c1 c2 = sum $ map (\(t1,t2) -> toneDiff t1 t2) $ zip (sortChord c1) (sortChord c2)
+>	toneDiff t1 t2 = abs $ (-) (absPitch t1) $ absPitch t2
+
+>sortChord :: [Tone] -> [Tone]
+>sortChord ts = sortBy (\a b -> compare (absPitch a) (absPitch b)) ts
+
+>minChord = id
 
 
 
