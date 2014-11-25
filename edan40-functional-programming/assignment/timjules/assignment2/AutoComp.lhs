@@ -112,6 +112,11 @@ Autochord takes a Key and a ChordProgression and chooses the notes in chord to b
 >		  distance :: [Tone] -> Int
 >		  distance ts = let sorted = sortChord ts in toneDiff (head sorted) $ last sorted 
 
+autoComp basic (C, Major) twinkleChords
+
+>autoComp :: BassStyle -> Key -> ChordProgression -> Music
+>autoComp b k cp = (autoBass b k cp) :=: (autoChord k cp)
+
 
 
 

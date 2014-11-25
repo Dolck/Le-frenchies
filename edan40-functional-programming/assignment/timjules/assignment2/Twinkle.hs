@@ -14,25 +14,14 @@ mainMelody = v1 :+: v2 :+: v2 :+: v1
 
 --qn = quarter note, hn = half note etc..
 v1 = v1a :+: v1b :+: v1c :+: v1d
-v1a = lmap (fd qn) [c 4, c 4, g 4, g 4, a 4, a 4]
-v1b = lmap (fd hn) [g 4]
-v1c = lmap (fd qn) [f 4, f 4, e 4, e 4, d 4, d 4]
-v1d = lmap (fd hn) [c 4]
+v1a = lmap (fd qn) [c 5, c 5, g 5, g 5, a 5, a 5]
+v1b = lmap (fd hn) [g 5]
+v1c = lmap (fd qn) [f 5, f 5, e 5, e 5, d 5, d 5]
+v1d = lmap (fd hn) [c 5]
 
 v2 = v2a :+: v2b
-v2a = lmap (fd qn) [g 4, g 4 , f 4, f 4, e 4, e 4]
-v2b = lmap (fd hn) [d 4]
-
---cChord, gChord, fChord :: TriChord
---cChord = ([(C, 4), (E, 4), (G, 4)], hn)
---gChord = ([(G, 4), (B, 4), (D, 5)], hn)
---fChord = ([(F, 4), (A, 4), (C, 5)], hn)
-
---twinkleChords = ccf ++ take 8 (cycle cg) ++ ccf
---ccf = [cChord] ++ [cChord] ++ [fChord] ++ (take 4 (cycle cg)) ++ [cChord]
---cg = [cChord] ++ [gChord]
-
---chordsMusic = foldr1 (:+:) $ map musicFromChord twinkleChords
+v2a = lmap (fd qn) [g 5, g 5 , f 5, f 5, e 5, e 5]
+v2b = lmap (fd hn) [d 5]
 
 cC, gG, fF :: Chord 
 cC = (C, Major, hn)
@@ -45,10 +34,12 @@ boogieBass = autoBass Boogie key chordProg
 basicBass = autoBass Basic key chordProg 
 calypsoBass = autoBass Calypso key chordProg 
 
-twinkleBoogie = Instr "piano" (Tempo 3 (Phrase [Dyn SF] mainMelody)) :=: Instr "bass" (Tempo 3 (Phrase [Dyn SF] boogieBass))
-twinkleBasic = Instr "piano" (Tempo 3 (Phrase [Dyn SF] mainMelody)) :=: Instr "bass" (Tempo 3 (Phrase [Dyn SF] basicBass))
-twinkleCalypso = Instr "piano" (Tempo 3 (Phrase [Dyn SF] mainMelody)) :=: Instr "bass" (Tempo 3 (Phrase [Dyn SF] calypsoBass))
+--twinkleBoogie = Instr "piano" (Tempo 3 (Phrase [Dyn SF] mainMelody)) :=: Instr "bass" (Tempo 3 (Phrase [Dyn SF] boogieBass))
+--twinkleBasic = Instr "piano" (Tempo 3 (Phrase [Dyn SF] mainMelody)) :=: Instr "bass" (Tempo 3 (Phrase [Dyn SF] basicBass))
+--twinkleCalypso = Instr "piano" (Tempo 3 (Phrase [Dyn SF] mainMelody)) :=: Instr "bass" (Tempo 3 (Phrase [Dyn SF] calypsoBass))
 
-
+twinkleBasic = mainMelody :=: (autoComp Basic (C,Major) chordProg)
+twinkleCalypso = mainMelody :=: (autoComp Calypso (C,Major) chordProg)
+twinkleBoogie = mainMelody :=: (autoComp Boogie (C,Major) chordProg)
 --twinkle = Instr "piano" (Tempo 3 (Phrase [Dyn SF] mainMelody)) :=: Instr "guitarr" (Tempo 3 (Phrase [Dyn SF] chordsMusic))
 
