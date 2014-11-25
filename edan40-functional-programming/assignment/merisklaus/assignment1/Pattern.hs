@@ -8,11 +8,12 @@ import Utilities
 
 -- Replaces a wildcard in a list with the list given as the third argument
 substitute :: Eq a => a -> [a] -> [a] -> [a]
-substitute wc xs s = foldr sub [] xs
-  where 
-   sub x 
-    | wc == x   = (s++)
-    | otherwise = (x:)
+substitute _ [] _ = []
+substitute wc (x:xs) s  
+  | wc == x   = s ++  substitute wc xs s
+  | otherwise = x :   substitute wc xs s
+
+
 
 -- Tries to match two lists. If they match, the result consists of the sublist
 -- bound to the wildcard in the pattern list.
