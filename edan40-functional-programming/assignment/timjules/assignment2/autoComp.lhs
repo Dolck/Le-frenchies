@@ -8,42 +8,36 @@ Some awsome imports:
 To simplify things we create the type Tone which is the same as pitch. pitch = (PitchClass, Octave)
 
 >type Tone = Pitch
->type Key = (Tone, [PitchClass])
+>type Key = (PitchClass, HarmonicQualilty)
 >type Position = Int
->type HarmonicQuality = String
+>data HarmonicQuality = Major | Minor | Ionian | Lydian | Mixolydian | Aeolian | Dorian | Phrygian deriving (Read, Show, Eq)
 >type Scale = [Tone]
-
-
->genKey :: Tone -> String -> Key 
->genKey t s = (t, fst $ unzip $ createScale t s)
-
-
->type BassStyleM = [(Position,Dur)]
->data BassStyle = Basic | Calypso | Boogie deriving (Read)
->basic, calypso, boogie :: Dur -> BassStyleM
->basic dur = take (ceiling (2 * dur)) [(0, hn), (4, hn)]
->calypso dur = take (ceiling (6 * dur)) $ cycle [(-1, qn), (0, en), (2, en)]
->boogie dur = take (ceiling (8 * dur)) $ cycle [(0, en), (4, en), (5, en), (4, en)]
->
->bassStyleM :: BassStyle -> Dur -> BassStyleM
->bassStyleM Basic = basic
->bassStyleM Calypso = calypso
->bassStyleM Boogie = boogie
-
 
 >createScale :: Tone -> HarmonicQuality -> Scale
 >createScale n hq = map (\pos -> pitch $ (+) pos $ absPitch n) $ scalePattern hq
 
 >scalePattern :: HarmonicQuality -> [Position]
->scalePattern "Major" = [0, 2, 4, 5, 7, 9, 11]
->scalePattern "Minor" = [0, 2, 3, 5, 7, 8, 10]
->scalePattern "Ionian" = scalePattern "Major"
->scalePattern "Lydian" = [0, 2, 4, 6, 7, 9, 11]
->scalePattern "Mixolydian" = [0, 2, 4, 5, 7, 9, 10]
->scalePattern "Aeolian" = scalePattern "Minor" 
->scalePattern "Dorian" = [0, 2, 3, 5, 7, 9, 10]
->scalePattern "Phrygian" = [0, 1, 3, 5, 7, 8, 10]
+>scalePattern s = case s of Major       -> [0, 2, 4, 5, 7, 9, 11]
+>                           Minor       -> [0, 2, 3, 5, 7, 8, 10]
+>                           Ionian      -> scalePattern Major
+>                           Lydian      -> [0, 2, 4, 6, 7, 9, 11]
+>                           Mixolydian  -> [0, 2, 4, 5, 7, 9, 10]
+>                           Aeolian     -> scalePattern Minor 
+>                           Dorian      -> [0, 2, 3, 5, 7, 9, 10]
+>                           Phrygian    -> [0, 1, 3, 5, 7, 8, 10]
 
+>type BassStyleM = [(Position,Dur)]
+>data BassStyle = Basic | Calypso | Boogie deriving (Read)
+
+>basic, calypso, boogie :: Dur -> BassStyleM
+>basic dur = take (ceiling (2 * dur)) [(0, hn), (4, hn)]
+>calypso dur = take (ceiling (6 * dur)) $ cycle [(-1, qn), (0, en), (2, en)]
+>boogie dur = take (ceiling (8 * dur)) $ cycle [(0, en), (4, en), (5, en), (4, en)]
+
+>bassStyleM :: BassStyle -> Dur -> BassStyleM
+>bassStyleM Basic = basic
+>bassStyleM Calypso = calypso
+>bassStyleM Boogie = boogie
 
 >type TriChord = ([Tone], Dur)
 >type Chord = (PitchClass, HarmonicQuality, Dur)
@@ -61,5 +55,15 @@ To simplify things we create the type Tone which is the same as pitch. pitch = (
 >		   ubs = unzip $ bassStyleM bs dur
 >		   toNote :: (Dur, Tone) -> Music
 >		   toNote (d,t) = Note t d [Volume 80]
+
+>autoChord :: Key -> ChordProgression -> Music
+
+
+
+
+
+
+
+
 
 
