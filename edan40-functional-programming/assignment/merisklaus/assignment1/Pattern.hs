@@ -22,7 +22,6 @@ match _ ps ys
   | ps == [] && ys == [] = Just []
   | ps == [] || ys == [] = Nothing
 match wc (p:ps) (y:ys)
---  | (p:ps) == [wc] = Just (y:ys)
   | p == wc        = singleWildcardMatch (p:ps) (y:ys) `orElse` longerWildcardMatch (p:ps) (y:ys)
   | p == y         = match wc ps ys
   | otherwise      = Nothing 
