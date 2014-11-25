@@ -1,5 +1,5 @@
 module Twinkle where
-import Haskore
+import Haskore hiding(Major, Minor)
 import AutoComp
 
 
@@ -35,12 +35,12 @@ v2b = lmap (fd hn) [d 4]
 --chordsMusic = foldr1 (:+:) $ map musicFromChord twinkleChords
 
 cC, gG, fF :: Chord 
-cC = (C, "Major", hn)
-gG = (G, "Major", hn)
-fF = (F, "Major", hn)
+cC = (C, Major, hn)
+gG = (G, Major, hn)
+fF = (F, Major, hn)
 
 chordProg = [cC, cC, fF, cC, gG, cC, gG, cC, cC, gG, cC, gG, cC, gG, cC, gG, cC, cC, fF, cC, gG, cC, gG, cC]
-key = genKey (C,4) "Major"
+key = (C, Major)
 boogieBass = autoBass Boogie key chordProg 
 basicBass = autoBass Basic key chordProg 
 calypsoBass = autoBass Calypso key chordProg 
