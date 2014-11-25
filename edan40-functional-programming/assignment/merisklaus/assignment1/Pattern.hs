@@ -22,16 +22,14 @@ match _ ps ys
   | ps == [] && ys == [] = Just []
   | ps == [] || ys == [] = Nothing
 match wc (p:ps) (y:ys)
-  | (p:ps) == [wc] = Just (y:ys)
-  | p == y         = match wc ps ys
+--  | (p:ps) == [wc] = Just (y:ys)
   | p == wc        = singleWildcardMatch (p:ps) (y:ys) `orElse` longerWildcardMatch (p:ps) (y:ys)
+  | p == y         = match wc ps ys
   | otherwise      = Nothing 
 
 singleWildcardMatch, longerWildcardMatch :: Eq a => [a] -> [a] -> Maybe [a]
-singleWildcardMatch (wc:ps) (x:xs) = mmap (x:) $ match wc ps xs
-singleWildcardMatch _ _ = Nothing
-longerWildcardMatch (wc:ps) (x:xs) = mmap (x:) $ match wc (wc:ps) xs
-longerWildcardMatch _ _ = Nothing
+singleWildcardMatch (wc:ps) (x:xs) = mmap (const [x]) $ match wc ps xs
+longerWildcardMatch (wc:ps) (x:xs) = mmap (x:)        $ match wc (wc:ps) xs
 
 -- Test cases --------------------
 
