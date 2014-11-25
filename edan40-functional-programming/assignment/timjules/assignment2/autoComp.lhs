@@ -41,3 +41,4 @@ To simplify things we create the type Tone which is the same as pitch. pitch = (
 >musicFromChord (a, b) = foldr1 (:=:) [Note (x,y) b [Volume 40]| (x,y) <- a]
 
 --autoBass :: BassStyle -> Key -> ChordProgression -> Music
+
