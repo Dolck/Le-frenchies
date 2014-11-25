@@ -50,9 +50,6 @@ To simplify things we create the type Tone which is the same as pitch. pitch = (
 >autoBass :: BassStyle -> Key -> ChordProgression -> Music
 >autoBass bs k cp = foldr1 (:+:) $ map (bassFromChord bs) cp
 
->try :: (a -> Maybe a) -> a -> a
->try f x = maybe x id (f x)
-
 >bassFromChord :: BassStyle -> Chord -> Music
 >bassFromChord bs (pc, hq, dur) = foldr1 (:+:) $ map toMusic (zip (snd ubs) (maybeFunc (fst ubs) (createScale (pc, 3) hq)))
 >	where
@@ -66,7 +63,11 @@ To simplify things we create the type Tone which is the same as pitch. pitch = (
 >   toMusic (d, Nothing) = Rest d
 >   toMusic (d, Just t) = Note t d [Volume 80]
 
-autoChord :: Key -> ChordProgression -> Music
+>autoChord :: Key -> ChordProgression -> Music
+>
+
+>musicChord :: Chord -> Music
+>musicChord c = foldr1 (:=:)
 
 
 
