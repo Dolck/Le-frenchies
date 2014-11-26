@@ -63,13 +63,29 @@ In this case though our pattern consists of a list of positions and durations
 >calypso dur = take (ceiling (6 * dur)) $ cycle [(-1, qn), (0, en), (2, en)]
 >boogie dur = take (ceiling (8 * dur)) $ cycle [(0, en), (4, en), (5, en), (4, en)]
 
+To translate from a given baseStyle to an actual pattern we use the function below.
+
 >bStyleImpl :: BassStyle -> Dur -> BStyleImpl
 >bStyleImpl Basic = basic
 >bStyleImpl Calypso = calypso
 >bStyleImpl Boogie = boogie
 
+Next we introduce some new types Chord and ChordProgression. 
+A chord is a small set of Notes played simultaniously. These notes are chosen from a given 
+pattern from the corresponding scale. In this assigment we only handle major and minor chords which use the
+same pattern but picks from different scales. 
+
+A ChordProgression is a list of chords that should be played in sequence. 
+
 >type Chord = (PitchClass, HarmonicQuality, Dur)
 >type ChordProgression = [Chord]
+
+Finally we arrive to a little treasure in the code.
+The autoBass function creates a playable bass line for a ChordProgression.
+To do this we denote which bass style that should be used and which key the notes should be played in.
+
+Although you might think the autoBass function has a lot going on the real workhorse here is the bassFromChord function.
+bassFromChord finds the bassline during a given chord.
 
 >autoBass :: BassStyle -> Key -> ChordProgression -> Music
 >autoBass bs _ cp = foldr1 (:+:) $ map (bassFromChord bs) cp
