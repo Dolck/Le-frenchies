@@ -38,7 +38,7 @@ match wc (x:xs) (y:ys)
 --    matchHelper _ _ = Nothing
 
 singleWildcardMatch, longerWildcardMatch :: Eq a => [a] -> [a] -> Maybe [a]
-singleWildcardMatch (wc:ps) (x:xs) = mmap (x:) $ match wc ps xs
+singleWildcardMatch (wc:ps) (x:xs) = mmap (const [x]) $ match wc ps xs
 --  | match wc (x:ps) (x:xs) /= Nothing = Just [x]
 --  | otherwise = Nothing
 
@@ -74,6 +74,7 @@ transformationApply wc f xs p = mmap (substitute wc (snd p) . f) sub
 
 -- Applying a list of patterns until one succeeds
 transformationsApply :: Eq a => a -> ([a] -> [a]) -> [([a], [a])] -> [a] -> Maybe [a]
-transformationsApply wc f (p:ps) xs = transformationApply wc f xs p `orElse` transformationsApply wc f ps xs
+transformationsApply wc f ps xs = foldr (orElse . transformationApply wc f xs) Nothing ps
+--transformationsApply wc f (p:ps) xs = transformationApply wc f xs p `orElse` transformationsApply wc f ps xs
 --transformationsApply _ _ _ _ = Nothing
 

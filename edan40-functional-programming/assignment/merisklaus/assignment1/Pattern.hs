@@ -8,30 +8,27 @@ import Utilities
 
 -- Replaces a wildcard in a list with the list given as the third argument
 substitute :: Eq a => a -> [a] -> [a] -> [a]
-substitute wc xs s = foldr sub [] xs
-  where 
-   sub x 
-    | wc == x   = (s++)
-    | otherwise = (x:)
+substitute _ [] _ = []
+substitute wc (x:xs) s  
+  | wc == x   = s ++  substitute wc xs s
+  | otherwise = x :   substitute wc xs s
+
+
 
 -- Tries to match two lists. If they match, the result consists of the sublist
 -- bound to the wildcard in the pattern list.
 match :: Eq a => a -> [a] -> [a] -> Maybe [a]
-match _ [] [] = Just [] 
-match _ [] _ = Nothing
-match _ _ [] = Nothing
+match _ ps ys
+  | ps == [] && ys == [] = Just []
+  | ps == [] || ys == [] = Nothing
 match wc (p:ps) (y:ys)
-  | (p:ps) == [wc] = Just (y:ys)
-  | p == y         = match wc ps ys
   | p == wc        = singleWildcardMatch (p:ps) (y:ys) `orElse` longerWildcardMatch (p:ps) (y:ys)
+  | p == y         = match wc ps ys
   | otherwise      = Nothing 
 
 singleWildcardMatch, longerWildcardMatch :: Eq a => [a] -> [a] -> Maybe [a]
-singleWildcardMatch (wc:ps) (x:xs)
-  | (match wc ps xs) /= Nothing = Just [x]
-  | otherwise = Nothing
-longerWildcardMatch (wc:ps) (x:xs) = mmap (x:) $ match wc (wc:ps) xs
-longerWildcardMatch _ _ = Nothing
+singleWildcardMatch (wc:ps) (x:xs) = mmap (const [x]) $ match wc ps xs
+longerWildcardMatch (wc:ps) (x:xs) = mmap (x:)        $ match wc (wc:ps) xs
 
 -- Test cases --------------------
 
@@ -57,5 +54,5 @@ transformationApply wc f xs (w, t) = mmap helper . match wc w $ xs
 
 -- Applying a list of patterns until one succeeds
 transformationsApply :: Eq a => a -> ([a] -> [a]) -> [([a], [a])] -> [a] -> Maybe [a]
-transformationsApply wc f ((w, t):wts) xs = transformationApply wc f xs (w,t) `orElse` transformationsApply wc f wts xs
-transformationsApply _ _ _ _ = Nothing
+transformationsApply wc f wts xs = foldr (orElse . transformationApply wc f xs) Nothing wts
+
