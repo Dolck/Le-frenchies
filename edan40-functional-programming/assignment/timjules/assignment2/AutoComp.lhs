@@ -216,7 +216,7 @@ From this, it produces a bassline and a series of chords that should be played
 in parallel.
 
 >autoComp :: BassStyle -> Key -> ChordProgression -> Music
->autoComp b k cp = (autoBass b k cp) :=: (autoChord k cp)
+>autoComp b k cp = (Instr "bass" (Phrase [Dyn SF] $ autoBass b k cp)) :=: (Instr "piano" (Phrase [Dyn SF] $ autoChord k cp))
 
 
 
