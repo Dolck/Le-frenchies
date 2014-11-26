@@ -41,7 +41,7 @@ rulesApply pp = try $ transformationsApply "*" reflect pp
 reflect :: Phrase -> Phrase
 reflect = map (\n -> try (\m -> lookup m reflections `orElse` lookup m (map swap reflections)) n)
 
-reflections =
+reflections = 
   [ ("am",     "are"),
     ("was",    "were"),
     ("i",      "you"),
@@ -51,10 +51,13 @@ reflections =
     ("i'll",   "you will"),
     ("my",     "your"),
     ("me",     "you"),
+    ("are",    "am"),
     ("you're", "i am"),
     ("you've", "i have"),
     ("you'll", "i will"),
-    ("yours",  "mine")
+    ("your",   "my"),
+    ("yours",  "mine"),
+    ("you",    "me")
   ]
 
 ---------------------------------------------------------------------------------
