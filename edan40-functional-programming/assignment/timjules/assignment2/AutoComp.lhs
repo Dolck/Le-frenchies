@@ -60,10 +60,14 @@ To simplify things we create the type Tone which is the same as pitch. pitch = (
 >     toMusic (d, Nothing) = Rest d
 >     toMusic (d, Just t) = Note t d [Volume 80]
 
-Autochord takes a Key and a ChordProgression and chooses the notes in chord to be
+Autochord takes a Key and a ChordProgression and chooses the notes for all chords based on them beeing 
 1: in a limited range
 2: small changes between chords 
 3: small tone steps within the chord
+
+Ex. autoChord (C, Major) [(C, Major, hn),(C, Major, hn),(G, Major, hn),(C, Major, hn)]
+
+From this we will receive a series of chords that are playable as parallel notes.
 
 >autoChord :: Key -> ChordProgression -> Music
 >autoChord _ cp = foldr1 (:+:) $ autoHelper Nothing cp
@@ -73,11 +77,21 @@ Autochord takes a Key and a ChordProgression and chooses the notes in chord to b
 >     autoHelper ts (c:cs) = let prev = minChordDiff ts c in (musicFromTones prev (third c)) : (autoHelper (Just prev) cs)
 >     third (_,_,x) = x
 
+The function musicFromTones takes a list of tones that chould be combined into a chord, and a duration.
+
+Ex. musicFromTones [(C,5),(E,5),(G,5)] hn
+
 >musicFromTones :: [Tone] -> Dur -> Music
 >musicFromTones ts d = foldr1 (:=:) [Note x d [Volume 40] | x <- ts]
 
+The fixed chord range in which the produced chords are allowed to be are defined in chordRange.
+
 >chordRange :: (Tone, Tone)
 >chordRange = ((E,4), (G,5))
+
+The function chordTones takes a chord name and returns all Tones that could be played in this chord. 
+
+Ex. chordTones (C, Major, hn)
 
 >chordTones :: Chord -> [Tone]
 >chordTones (pc, hq, d) = filter filt $ [(!!) (createScale(pc, o) hq) x | x <- [0,2,4], o <- [((snd $ fst chordRange)-1)..(snd $ snd chordRange)]]
@@ -85,6 +99,11 @@ Autochord takes a Key and a ChordProgression and chooses the notes in chord to b
 >	    filt t = (absPitch t) >= absR1 && (absPitch t) <= absR2
 >	    absR1 = absPitch $ fst chordRange
 >	    absR2 = absPitch $ snd chordRange
+
+The function minChordDiff takes a possible previous chord and the name of the current chord that should be played, 
+and evaluates the chord that has the smallest combined distance to the previous one and also the smallest internal width.
+
+Ex. minChordDiff (Just [(C,5)(E,5)(G,5)]) (C, Major, hn)
 
 >minChordDiff :: Maybe [Tone] -> Chord -> [Tone]
 >minChordDiff Nothing c = minChord $ uniqueValidTrips c
@@ -94,17 +113,39 @@ Autochord takes a Key and a ChordProgression and chooses the notes in chord to b
 >	    calcMin p v = minimumBy (\v1 v2 -> compare (chordDiff p v1) (chordDiff p v2)) v
 >	    chordDiff c1 c2 = sum $ map (\(t1,t2) -> toneDiff t1 t2) $ zip (sortChord c1) (sortChord c2)
 
+The function uniqueValiedTrips takes a Chord (more like a chord name), 
+and evaluates all chords of size three that are within the given range. 
+These chords are all unique and internally sorted.
+
+Ex. uniqueValidTrips (C, Major, hn)
+
 >uniqueValidTrips :: Chord -> [[Tone]]
 >uniqueValidTrips c = filter (\ts -> allUnique $ fst $ unzip ts) $ choose3 $ chordTones c
 >	  where	
 >	    allUnique pcs = 3 == (length $ nub pcs)
 >	    choose3 xs = filter (\x -> 3 == (length x)) $ subsequences xs
 
+The function toneDiff takes two Tones and evaluates the distance between them.
+
+Ex. toneDiff (C,5) (G,5)
+
 >toneDiff :: Tone -> Tone -> Int
 >toneDiff t1 t2 = abs $ (-) (absPitch t1) $ absPitch t2
 
+The function sortChord sorts a chord (list of Tones), 
+
+Ex, sortChord [(C,5),(E,4),(G,4)]
+
+according to the absolute pitch.
+
 >sortChord :: [Tone] -> [Tone]
 >sortChord ts = sortBy (\a b -> compare (absPitch a) (absPitch b)) ts
+
+The function minChord takes a list of chord collections (list of list of Tones), 
+
+Ex. minChord [[(C,5),(E,5),(G,5)],[(E,4),(G,4),(C,5)]]
+
+and evaluates which of these chords that are minimally spread out.
 
 >minChord :: [[Tone]] -> [Tone]
 >minChord cs = minimumBy (\x y -> compare (distance x) $ distance y) cs
@@ -112,7 +153,13 @@ Autochord takes a Key and a ChordProgression and chooses the notes in chord to b
 >		  distance :: [Tone] -> Int
 >		  distance ts = let sorted = sortChord ts in toneDiff (head sorted) $ last sorted 
 
-autoComp basic (C, Major) twinkleChords
+The function autoComp takes the desired bass style (basic, calypso, or boogie), 
+the desired key that the song should be played in, and a basic chord progression.
+
+Ex. autoComp basic (C, Major) twinkleChords
+
+From this, it produces a bassline and a series of chords that should be played 
+in parallel.
 
 >autoComp :: BassStyle -> Key -> ChordProgression -> Music
 >autoComp b k cp = (autoBass b k cp) :=: (autoChord k cp)
