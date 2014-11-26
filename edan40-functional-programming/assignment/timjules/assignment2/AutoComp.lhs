@@ -54,6 +54,10 @@ The next step is to start building the BassStyles for the bass.
 In similarity to what we defined above we need some find of patterns to define how to play.
 In this case though our pattern consists of a list of positions and durations
 
+Please note that we can have position -1 which actually isn't a real position but a Rest instead. 
+And this is very naively written and doesn't handle if you can't split the base line in the given duration (Ratio)
+For example if you give dur = (1 % 4) the whole song will be out of sync when using the basic style.
+
 >type BStyleImpl = [(Position,Dur)]
 >data BassStyle = Basic | Calypso | Boogie deriving (Read)
 
