@@ -20,10 +20,6 @@
 > times n m = m :+: (times (n - 1) m)
 > -- Choose Scale
 
- scale :: Pitch -> ScalePattern -> Int -> Pitch
-scale p sp x = generateScalePattern p sp !! mod x 7
-
-
 > cfm = (F, Major, 1%2)
 > cgm = (G, Major, 1%2)
 > cc1m = (C, Major, 1)
@@ -33,7 +29,7 @@ scale p sp x = generateScalePattern p sp !! mod x 7
 > mainVoiceBass = autoBass Calypso (C, Major) (cp1++ cp2 ++ cp1)
 
 > -- Chords 
-> cC  = c 5 hn vk :=: e 5 hn vk :=: g 5 hn vk
+> cC  = c 5 hn vk :=: e 4 hn vk :=: g 4 hn vk
 > cF  = f 5 hn vk :=: a 5 hn vk :=: c 5 hn vk
 > cG  = g 5 hn vk :=: b 5 hn vk :=: d 5 hn vk
 > fp  = cC :+: cC :+: cF :+: cC :+: cG :+: cC :+: cG :+: cC
