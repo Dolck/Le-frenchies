@@ -3,7 +3,7 @@ Functional Music by Tim Dolck (dat11tdo) and Julian Kroné (dat11jkr)
 
 =======================================================================
 
-In this assignment we aim to create automatic bass and chord comp to a given piece of music.
+In this assignment we aim to create automatic comp to a given piece of music. Using automatic bass and chords. 
 
 We begin our journey through the haskell code with some imports. Theese will be used later on.
 
@@ -36,9 +36,6 @@ Below is two important functions for scales.
 Create Scale does exactly as the name denotes. It creates a list of notes in a certain scale
 To create the scale in the createScale function we use scale patterns that we get from out next function scalePattern
 
->createScale :: Tone -> HarmonicQuality -> Scale
->createScale n hq = map (\pos -> pitch $ (+) pos $ absPitch n) $ scalePattern hq
-
 >scalePattern :: HarmonicQuality -> [Position]
 >scalePattern s = case s of Major       -> [0, 2, 4, 5, 7, 9, 11]
 >                           Minor       -> [0, 2, 3, 5, 7, 8, 10]
@@ -48,6 +45,9 @@ To create the scale in the createScale function we use scale patterns that we ge
 >                           Aeolian     -> scalePattern Minor 
 >                           Dorian      -> [0, 2, 3, 5, 7, 9, 10]
 >                           Phrygian    -> [0, 1, 3, 5, 7, 8, 10]
+
+>createScale :: Tone -> HarmonicQuality -> Scale
+>createScale n hq = map (\pos -> pitch $ (+) pos $ absPitch n) $ scalePattern hq
 
 
 The next step is to start building the BassStyles for the bass.
