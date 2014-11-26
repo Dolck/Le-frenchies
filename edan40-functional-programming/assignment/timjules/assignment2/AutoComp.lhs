@@ -3,7 +3,7 @@ Functional Music by Tim Dolck (dat11tdo) and Julian Kroné (dat11jkr)
 
 =======================================================================
 
-In this assignment we aim to create automatic bass and chord comp to a given piece of music.
+In this assignment we aim to create automatic comp to a given piece of music. Using automatic bass and chords. 
 
 We begin our journey through the haskell code with some imports. Theese will be used later on.
 
@@ -37,9 +37,6 @@ Below is two important functions for scales.
 Create Scale does exactly as the name denotes. It creates a list of notes in a certain scale
 To create the scale in the createScale function we use scale patterns that we get from out next function scalePattern
 
->createScale :: Tone -> HarmonicQuality -> Scale
->createScale n = map (\pos -> pitch $ (+) pos (absPitch n)) . scalePattern
-
 >scalePattern :: HarmonicQuality -> [Position]
 >scalePattern s = case s of Major       -> [0, 2, 4, 5, 7, 9, 11]
 >                           Minor       -> [0, 2, 3, 5, 7, 8, 10]
@@ -50,10 +47,17 @@ To create the scale in the createScale function we use scale patterns that we ge
 >                           Dorian      -> [0, 2, 3, 5, 7, 9, 10]
 >                           Phrygian    -> [0, 1, 3, 5, 7, 8, 10]
 
+>createScale :: Tone -> HarmonicQuality -> Scale
+>createScale n = map (\pos -> pitch $ (+) pos (absPitch n)) . scalePattern
+
 
 The next step is to start building the BassStyles for the bass.
 In similarity to what we defined above we need some find of patterns to define how to play.
 In this case though our pattern consists of a list of positions and durations
+
+Please note that we can have position -1 which actually isn't a real position but a Rest instead. 
+And this is very naively written and doesn't handle if you can't split the base line in the given duration (Ratio)
+For example if you give dur = (1 % 4) the whole song will be out of sync when using the basic style.
 
 >type BStyleImpl = [(Position,Dur)]
 >data BassStyle = Basic | Calypso | Boogie deriving (Read)
@@ -212,7 +216,7 @@ From this, it produces a bassline and a series of chords that should be played
 in parallel.
 
 >autoComp :: BassStyle -> Key -> ChordProgression -> Music
->autoComp b k cp = (autoBass b k cp) :=: (autoChord k cp)
+>autoComp b k cp = (Instr "bass" (Phrase [Dyn SF] $ autoBass b k cp)) :=: (Instr "piano" (Phrase [Dyn SF] $ autoChord k cp))
 
 
 
