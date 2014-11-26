@@ -39,8 +39,7 @@ rulesApply :: [PhrasePair] -> Phrase -> Phrase
 rulesApply = try . transformationsApply "*" reflect
 
 reflect :: Phrase -> Phrase
---reflect = 
-reflect = map $ try (\m -> lookup m reflections `orElse` lookup m (map swap reflections))
+reflect = map $ try $ flip lookup reflections
 
 reflections =
   [ ("am",     "are"),
