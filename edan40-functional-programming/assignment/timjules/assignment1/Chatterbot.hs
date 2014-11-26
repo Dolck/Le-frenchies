@@ -32,8 +32,6 @@ stateOfMind bb = do
                     q <- randomIO :: IO Float
                     return . rulesApply $ map (map2 (id, pick q)) bb
 
---randPairs :: Float -> BotBrain -> [PhrasePair]
---randPairs r = map (\n -> (fst n, pick r (snd n)))
 
 rulesApply :: [PhrasePair] -> Phrase -> Phrase
 rulesApply = try . transformationsApply "*" reflect

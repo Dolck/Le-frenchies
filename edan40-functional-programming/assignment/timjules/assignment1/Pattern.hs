@@ -12,7 +12,6 @@ substitute _ [] _ = []
 substitute wc (y:ys) z 
     | wc == y = z ++ substitute wc ys z
     | otherwise = y : substitute wc ys z
---substitute wc ys z = concatMap (\n -> if n == wc then z else [n]) ys
 
 -- Tries to match two lists. If they match, the result consists of the sublist
 -- bound to the wildcard in the pattern list.
@@ -28,25 +27,11 @@ match wc (x:xs) (y:ys)
   | otherwise = Nothing
 
 
-
-
---  where
---    matchHelper (x:xs) (y:ys)
---      | x == y = matchHelper xs ys
---      | wc == x = singleWildcardMatch (x:xs) (y:ys) `orElse` longerWildcardMatch (x:xs) (y:ys)
---      | otherwise = Nothing
---    matchHelper _ _ = Nothing
-
 singleWildcardMatch, longerWildcardMatch :: Eq a => [a] -> [a] -> Maybe [a]
 singleWildcardMatch (wc:ps) (x:xs) = mmap (const [x]) $ match wc ps xs
---  | match wc (x:ps) (x:xs) /= Nothing = Just [x]
---  | otherwise = Nothing
 
 longerWildcardMatch (wc:ps) (x:xs) = mmap (x:) $ match wc (wc:ps) xs
---  | match wc (subs++ps) (x:xs) /= Nothing = Just subs
---  | otherwise = Nothing
---  where
---    subs = x:(takeWhile (/= head ps) xs)
+
 
 -- Test cases --------------------
 
@@ -69,12 +54,9 @@ transformationApply :: Eq a => a -> ([a] -> [a]) -> [a] -> ([a], [a]) -> Maybe [
 transformationApply wc f xs p = mmap (substitute wc (snd p) . f) sub
   where
     sub = match wc (fst p) xs
---    tHelp Nothing = Nothing
---    tHelp (Just ys) = Just $ substitute wc (snd p) $ f ys
 
 -- Applying a list of patterns until one succeeds
 transformationsApply :: Eq a => a -> ([a] -> [a]) -> [([a], [a])] -> [a] -> Maybe [a]
 transformationsApply wc f ps xs = foldr (orElse . transformationApply wc f xs) Nothing ps
---transformationsApply wc f (p:ps) xs = transformationApply wc f xs p `orElse` transformationsApply wc f ps xs
---transformationsApply _ _ _ _ = Nothing
+
 
