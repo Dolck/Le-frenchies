@@ -1,5 +1,11 @@
 
-Some awsome imports:
+Functional Music by Tim Dolck (dat11tdo) and Julian Kroné (dat11jkr)
+
+=======================================================================
+
+In this assignment we aim to create automatic bass and chord comp to a given piece of music.
+
+We begin our journey through the haskell code with some imports. Theese will be used later on.
 
 >module AutoComp where
 >import Haskore hiding(Key, Major, Minor)
@@ -7,13 +13,28 @@ Some awsome imports:
 >import Data.Maybe
 >import Data.List
 
-To simplify things we create the type Tone which is the same as pitch. pitch = (PitchClass, Octave)
+To simplify the logic and understanding of our code we create some data types.  
+- Tone is the same as Pitch in Haskore. Pitch = (PitchClass, Octave)
+- Key contains a PitchClass and a HarmonicQuality (explained soon). 
+	A key is essentially a set of all possible tones we want to play in a piece of music.
+	You could think of it as the scale from the HarmonicQuality and PitchClass for every possible Octave
+- Position is defined as a Int and should only denote the position in a scale.
+- HarmonicQuality denotes the style/feeling of Keys, Scales and Chords 
+- Scale is a list of tones. The list contains some notes between the base tone and the base tone 1 octave up.
 
 >type Tone = Pitch
 >type Key = (PitchClass, HarmonicQuality)
 >type Position = Int
 >data HarmonicQuality = Major | Minor | Ionian | Lydian | Mixolydian | Aeolian | Dorian | Phrygian deriving (Read, Show, Eq)
 >type Scale = [Tone]
+
+Scales are defined as patterns of steps from the base tone. The possible steps are t (tone) and s (semitone).
+A simple major scale has the pattern ttsttts.
+In our program though this whould be a quite inpractical pattern so we define the positions instead of the positions in our patterns.
+
+Below is two important functions for scales.
+Create Scale does exactly as the name denotes. It creates a list of notes in a certain scale
+To create the scale in the createScale function we use scale patterns that we get from out next function scalePattern
 
 >createScale :: Tone -> HarmonicQuality -> Scale
 >createScale n hq = map (\pos -> pitch $ (+) pos $ absPitch n) $ scalePattern hq
@@ -28,18 +49,23 @@ To simplify things we create the type Tone which is the same as pitch. pitch = (
 >                           Dorian      -> [0, 2, 3, 5, 7, 9, 10]
 >                           Phrygian    -> [0, 1, 3, 5, 7, 8, 10]
 
->type BassStyleM = [(Position,Dur)]
+
+The next step is to start building the BassStyles for the bass.
+In similarity to what we defined above we need some find of patterns to define how to play.
+In this case though our pattern consists of a list of positions and durations
+
+>type BStyleImpl = [(Position,Dur)]
 >data BassStyle = Basic | Calypso | Boogie deriving (Read)
 
->basic, calypso, boogie :: Dur -> BassStyleM
+>basic, calypso, boogie :: Dur -> BStyleImpl
 >basic dur = take (ceiling (2 * dur)) [(0, hn), (4, hn)]
 >calypso dur = take (ceiling (6 * dur)) $ cycle [(-1, qn), (0, en), (2, en)]
 >boogie dur = take (ceiling (8 * dur)) $ cycle [(0, en), (4, en), (5, en), (4, en)]
 
->bassStyleM :: BassStyle -> Dur -> BassStyleM
->bassStyleM Basic = basic
->bassStyleM Calypso = calypso
->bassStyleM Boogie = boogie
+>bStyleImpl :: BassStyle -> Dur -> BStyleImpl
+>bStyleImpl Basic = basic
+>bStyleImpl Calypso = calypso
+>bStyleImpl Boogie = boogie
 
 >type Chord = (PitchClass, HarmonicQuality, Dur)
 >type ChordProgression = [Chord]
@@ -50,7 +76,7 @@ To simplify things we create the type Tone which is the same as pitch. pitch = (
 >bassFromChord :: BassStyle -> Chord -> Music
 >bassFromChord bs (pc, hq, dur) = foldr1 (:+:) $ map toMusic (zip (snd ubs) (maybeFunc (fst ubs) (createScale (pc, 3) hq)))
 >	  where
->     ubs = unzip $ bassStyleM bs dur
+>     ubs = unzip $ bStyleImpl bs dur
 >     maybeFunc :: [Position] -> Scale -> [Maybe Tone]
 >     maybeFunc [] _ = []
 >     maybeFunc (p:ps) sc 
