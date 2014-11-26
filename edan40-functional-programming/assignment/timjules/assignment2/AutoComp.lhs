@@ -48,7 +48,7 @@ To create the scale in the createScale function we use scale patterns that we ge
 >                           Phrygian    -> [0, 1, 3, 5, 7, 8, 10]
 
 >createScale :: Tone -> HarmonicQuality -> Scale
->createScale n hq = map (\pos -> pitch $ (+) pos $ absPitch n) $ scalePattern hq
+>createScale n = map (\pos -> pitch $ (+) pos (absPitch n)) . scalePattern
 
 
 The next step is to start building the BassStyles for the bass.
@@ -63,16 +63,16 @@ For example if you give dur = (1 % 4) the whole song will be out of sync when us
 >data BassStyle = Basic | Calypso | Boogie deriving (Read)
 
 >basic, calypso, boogie :: Dur -> BStyleImpl
->basic dur = take (ceiling (2 * dur)) [(0, hn), (4, hn)]
->calypso dur = take (ceiling (6 * dur)) $ cycle [(-1, qn), (0, en), (2, en)]
->boogie dur = take (ceiling (8 * dur)) $ cycle [(0, en), (4, en), (5, en), (4, en)]
+>basic = flip take [(0, hn), (4, hn)] . ceiling . (2*)
+>calypso = flip take (cycle [(-1, qn), (0, en), (2, en)]) . ceiling . (4*)
+>boogie = flip take (cycle [(0, en), (4, en), (5, en), (4, en)]) . ceiling . (8*)
 
 To translate from a given baseStyle to an actual pattern we use the function below.
 
 >bStyleImpl :: BassStyle -> Dur -> BStyleImpl
->bStyleImpl Basic = basic
->bStyleImpl Calypso = calypso
->bStyleImpl Boogie = boogie
+>bStyleImpl bs = case bs of Basic   -> basic
+>                           Calypso -> calypso
+>                           Boogie  -> boogie
 
 Next we introduce some new types Chord and ChordProgression. 
 A chord is a small set of Notes played simultaniously. These notes are chosen from a given 
@@ -92,7 +92,7 @@ Although you might think the autoBass function has a lot going on the real workh
 bassFromChord finds the bassline during a given chord.
 
 >autoBass :: BassStyle -> Key -> ChordProgression -> Music
->autoBass bs _ cp = foldr1 (:+:) $ map (bassFromChord bs) cp
+>autoBass bs _ = foldr1 (:+:) . map (bassFromChord bs)
 
 >bassFromChord :: BassStyle -> Chord -> Music
 >bassFromChord bs (pc, hq, dur) = foldr1 (:+:) $ map toMusic (zip (snd ubs) (maybeFunc (fst ubs) (createScale (pc, 3) hq)))
@@ -117,7 +117,7 @@ Ex. autoChord (C, Major) [(C, Major, hn),(C, Major, hn),(G, Major, hn),(C, Major
 From this we will receive a series of chords that are playable as parallel notes.
 
 >autoChord :: Key -> ChordProgression -> Music
->autoChord _ cp = foldr1 (:+:) $ autoHelper Nothing cp
+>autoChord _ = foldr1 (:+:) . autoHelper Nothing
 >   where
 >     autoHelper :: Maybe [Tone] -> ChordProgression -> [Music]
 >     autoHelper ts [c] = let prev = minChordDiff ts c in [musicFromTones prev (third c)]
