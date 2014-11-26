@@ -106,6 +106,7 @@ From this we will receive a series of chords that are playable as parallel notes
 The function musicFromTones takes a list of tones that chould be combined into a chord, and a duration.
 
 Ex. musicFromTones [(C,5),(E,5),(G,5)] hn
+-> Note (C,5) (1 % 2) [Volume 40.0] :=: (Note (E,5) (1 % 2) [Volume 40.0] :=: Note (G,5) (1 % 2) [Volume 40.0])
 
 >musicFromTones :: [Tone] -> Dur -> Music
 >musicFromTones ts d = foldr1 (:=:) [Note x d [Volume 40] | x <- ts]
@@ -118,6 +119,7 @@ The fixed chord range in which the produced chords are allowed to be are defined
 The function chordTones takes a chord name and returns all Tones that could be played in this chord. 
 
 Ex. chordTones (C, Major, hn)
+-> [(C,5),(E,4),(E,5),(G,4),(G,5)]
 
 >chordTones :: Chord -> [Tone]
 >chordTones (pc, hq, d) = filter filt $ [(!!) (createScale(pc, o) hq) x | x <- [0,2,4], o <- [((snd $ fst chordRange)-1)..(snd $ snd chordRange)]]
@@ -129,7 +131,8 @@ Ex. chordTones (C, Major, hn)
 The function minChordDiff takes a possible previous chord and the name of the current chord that should be played, 
 and evaluates the chord that has the smallest combined distance to the previous one and also the smallest internal width.
 
-Ex. minChordDiff (Just [(C,5)(E,5)(G,5)]) (C, Major, hn)
+Ex. minChordDiff (Just [(C,5),(E,5),(G,5)]) (C, Major, hn)
+-> [(C,5),(E,5),(G,5)]
 
 >minChordDiff :: Maybe [Tone] -> Chord -> [Tone]
 >minChordDiff Nothing c = minChord $ uniqueValidTrips c
@@ -144,6 +147,7 @@ and evaluates all chords of size three that are within the given range.
 These chords are all unique and internally sorted.
 
 Ex. uniqueValidTrips (C, Major, hn)
+-> [[(C,5),(E,4),(G,4)],[(C,5),(E,5),(G,4)],[(C,5),(E,4),(G,5)],[(C,5),(E,5),(G,5)]]
 
 >uniqueValidTrips :: Chord -> [[Tone]]
 >uniqueValidTrips c = filter (\ts -> allUnique $ fst $ unzip ts) $ choose3 $ chordTones c
@@ -154,13 +158,15 @@ Ex. uniqueValidTrips (C, Major, hn)
 The function toneDiff takes two Tones and evaluates the distance between them.
 
 Ex. toneDiff (C,5) (G,5)
+-> 7
 
 >toneDiff :: Tone -> Tone -> Int
 >toneDiff t1 t2 = abs $ (-) (absPitch t1) $ absPitch t2
 
 The function sortChord sorts a chord (list of Tones), 
 
-Ex, sortChord [(C,5),(E,4),(G,4)]
+Ex. sortChord [(C,5),(E,4),(G,4)]
+-> [(E,4),(G,4),(C,5)]
 
 according to the absolute pitch.
 
@@ -170,6 +176,7 @@ according to the absolute pitch.
 The function minChord takes a list of chord collections (list of list of Tones), 
 
 Ex. minChord [[(C,5),(E,5),(G,5)],[(E,4),(G,4),(C,5)]]
+-> [(C,5)(E,5)(G,5)]
 
 and evaluates which of these chords that are minimally spread out.
 
