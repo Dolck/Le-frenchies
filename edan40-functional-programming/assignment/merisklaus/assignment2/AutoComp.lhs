@@ -2,6 +2,7 @@
 > import Haskore hiding (Major, Minor, Key)
 > import Data.Ratio
 > import Data.List
+> import Data.Ord
 
 > data HarmonicQuality = Ionian | Major | Lydian | Mixolonyan | Aeolian | Minor | Dorian | Phrygian deriving Show
 > harmonicQuality:: HarmonicQuality-> [Int]
@@ -26,15 +27,6 @@ Generate scale based on which groundtone (pitchclass) and harmonic quality speci
 >    doMath = pitch . add p
 >    add = (+) . absPitch 
 
-> type Chord = (PitchClass, HarmonicQuality, Dur)
-> getClass      :: Chord -> PitchClass
-> getClass      (c, _, _) = c
-> getHarmonics  :: Chord -> HarmonicQuality 
-> getHarmonics  (_, h, _) = h
-> getDuration   :: Chord -> Dur 
-> getDuration   (_, _, d) = d
-> type ChordProgression  = [Chord]
-> type ChordTriple       = (Chord, Chord, Chord)
 
 Let's do the autobasss
 We always start in the 3rd octave.
@@ -64,33 +56,67 @@ We always start in the 3rd octave.
 >     where n = length xs
 
 > chordRange = map pitch [absPitch (E, 4) .. absPitch (G, 5)]
-> hittaTreBoks :: PitchClass -> (PitchClass, PitchClass, PitchClass)
-> hittaTreBoks c = (fst . pitch $ a, fst . pitch $ a + 2, fst . pitch $ a + 4)
+
+> majorChordScale = [0, 2, 4]
+
+> permittedTones :: Chord -> [Pitch]
+> permittedTones (pc, hq, _) = filter inRange [(generateScalePattern (pc, oct) hq) !! x | x <- majorChordScale, oct <- [3..5]]
+>   where inRange =  flip elem (map absPitch chordRange) . absPitch 
+
+> permittedTrips :: [Pitch] -> [[Pitch]]
+> permittedTrips = (filter length3) . (filter $ length3 . uniquePitchClass) . subsequences 
 >   where
->     a = absPitch (c, 0)
+>     length3           = (3==) . length
+>     uniquePitchClass  = nub . fst . unzip
+
+> pitchDiff :: (Pitch, Pitch) -> Int
+> pitchDiff (a, b) = abs $ absPitch a - absPitch b
+
+> melodyDifference :: [Pitch] -> [Pitch] -> Int
+> melodyDifference a b = sum $ map pitchDiff (zip (sortChord a) (sortChord b))
+> sortChord :: [Pitch] -> [Pitch]
+> sortChord = sortBy (comparing absPitch)
+
+autoChord :: ChordProgression -> [[Pitch]]
+
+> type Chord = (PitchClass, HarmonicQuality, Dur)
+> getClass      :: Chord -> PitchClass
+> getClass      (c, _, _) = c
+> getHarmonics  :: Chord -> HarmonicQuality 
+> getHarmonics  (_, h, _) = h
+> getDuration   :: Chord -> Dur 
+> getDuration   (_, _, d) = d
+> type ChordProgression   = [Chord]
+> type Triple             = (Pitch, Pitch, Pitch)
+
+> autoChord :: Key -> ChordProgression -> Music
+> autoChord _ (x:xs) = foldr1 (:+:) ((chordToMusic (tighten x) x) : (doRest (tighten x) xs))
+>   where 
+>     doRest :: [Pitch] -> ChordProgression -> [Music]
+>     dorest _    []       = []
+>     doRest prev (c:curr) = [chordToMusic (resolvedChord prev c) c] ++ (doRest (resolvedChord prev c) curr)
+>     doRest _ _           = []
+>     resolvedChord :: [Pitch] -> Chord -> [Pitch] 
+>     resolvedChord p c = (minChordDiff p c)
+
+> chordToMusic :: [Pitch] -> Chord -> Music
+> chordToMusic ps (_, _, dur) = foldr1 (:=:) (map (\x -> (Note x dur [Volume 70])) ps)
 
 
- generateChordTriple :: Chord -> ChordTriple
- generateChordTriple (t,_,_) = helper ChordRange t
-   where
-     helper ((t2,o):rs) t1 
-       | t2 == t1  = (
-       | otherwise = helper rs t1
+> generateAllChords :: Chord -> [[Pitch]]
+> generateAllChords = permittedTrips . permittedTones
 
+> tighten :: Chord -> [Pitch]
+> tighten xs = getTightestChord $ generateAllChords xs 
+>  where 
+>   getTightestChord :: [[Pitch]] -> [Pitch]
+>   getTightestChord x = head $ sortBy (comparing tightness) x
+>   tightness :: [Pitch] -> Int
+>   tightness p = absPitch(last (sortChord p)) - absPitch(head (sortChord p)) 
 
-generateAllChordTriples :: Chord -> [ChordTriple]
-
- rekursivKlas :: ChordProgression -> Music
- rekursivKlas xs = helper Nothing xs
-   where
-     helper:: Chord -> ChordProgression -> Music
-     helper Nothing (x:xs) = ngt x :+: rekursivKlas x xs
-     helper prev    (x:xs) = ngt x :+: rekursivKlas x xs
-       where 
-         ngt 
-
-
-
-
-
-
+> minChordDiff :: [Pitch] -> Chord -> [Pitch]
+> minChordDiff prev = calcMin prev . generateAllChords 
+>  where
+>  calcMin :: [Pitch] -> [[Pitch]] -> [Pitch]
+>  calcMin = minimumBy . comparing . chordDiff
+>  chordDiff c1 c2 = sum $ map (pitchDiff) $ zip (sortChord c1) (sortChord c2)
