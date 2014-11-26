@@ -36,10 +36,11 @@ randPairs :: Float -> BotBrain -> [PhrasePair]
 randPairs r = map (\n -> (fst n, pick r (snd n)))
 
 rulesApply :: [PhrasePair] -> Phrase -> Phrase
-rulesApply pp = try $ transformationsApply "*" reflect pp
+rulesApply = try . transformationsApply "*" reflect
 
 reflect :: Phrase -> Phrase
-reflect = map (\n -> try (\m -> lookup m reflections `orElse` lookup m (map swap reflections)) n)
+--reflect = 
+reflect = map $ try (\m -> lookup m reflections `orElse` lookup m (map swap reflections))
 
 reflections =
   [ ("am",     "are"),
@@ -69,7 +70,7 @@ prepare :: String -> Phrase
 prepare = reduce . words . map toLower . filter (not . flip elem ".,:;!#%&|") 
 
 rulesCompile :: [(String, [String])] -> BotBrain
-rulesCompile = map (\(x,y) -> (prepare x, map (\i -> prepare i) y))
+rulesCompile = map $ map2 (prepare, map prepare)
 
 --------------------------------------
 
@@ -91,4 +92,4 @@ reductions = (map.map2) (words, words)
 reduce = reductionsApply reductions
 
 reductionsApply :: [PhrasePair] -> Phrase -> Phrase
-reductionsApply r = fix $ try $ transformationsApply "*" id r
+reductionsApply = fix . try . transformationsApply "*" id
