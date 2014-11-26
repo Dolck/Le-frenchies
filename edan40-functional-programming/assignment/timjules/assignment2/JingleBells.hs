@@ -35,4 +35,3 @@ jingleBoogie = Tempo 3 ((Instr "piano" (Phrase [Dyn SF] mainMelody)) :=: (autoCo
 jingleBasic = Tempo 3 ((Instr "piano" (Phrase [Dyn SF] mainMelody)) :=: (autoComp Basic (C,Major) chordProg))
 jingleCalypso = Tempo 3 ((Instr "piano" (Phrase [Dyn SF] mainMelody)) :=: (autoComp Calypso (C,Major) chordProg))
 
-jingle = Tempo 3 jingleBoogie
