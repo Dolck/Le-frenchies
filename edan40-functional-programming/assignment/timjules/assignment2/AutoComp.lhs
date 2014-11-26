@@ -12,6 +12,7 @@ We begin our journey through the haskell code with some imports. Theese will be 
 >import Data.Ratio
 >import Data.Maybe
 >import Data.List
+>import Data.Ord
 
 To simplify the logic and understanding of our code we create some data types.  
 - Tone is the same as Pitch in Haskore. Pitch = (PitchClass, Octave)
@@ -135,12 +136,12 @@ Ex. minChordDiff (Just [(C,5),(E,5),(G,5)]) (C, Major, hn)
 -> [(C,5),(E,5),(G,5)]
 
 >minChordDiff :: Maybe [Tone] -> Chord -> [Tone]
->minChordDiff Nothing c = minChord $ uniqueValidTrips c
->minChordDiff (Just prev) c = calcMin prev $ uniqueValidTrips c
+>minChordDiff Nothing = minChord . uniqueValidTrips
+>minChordDiff (Just prev) = calcMin prev . uniqueValidTrips
 >   where
->	    calcMin :: [Tone] -> [[Tone]] -> [Tone]
->	    calcMin p v = minimumBy (\v1 v2 -> compare (chordDiff p v1) (chordDiff p v2)) v
->	    chordDiff c1 c2 = sum $ map (\(t1,t2) -> toneDiff t1 t2) $ zip (sortChord c1) (sortChord c2)
+>     calcMin :: [Tone] -> [[Tone]] -> [Tone]
+>     calcMin = minimumBy . comparing . chordDiff
+>     chordDiff c1 c2 = sum $ map (uncurry $ toneDiff) $ zip (sortChord c1) (sortChord c2)
 
 The function uniqueValiedTrips takes a Chord (more like a chord name), 
 and evaluates all chords of size three that are within the given range. 
@@ -150,10 +151,10 @@ Ex. uniqueValidTrips (C, Major, hn)
 -> [[(C,5),(E,4),(G,4)],[(C,5),(E,5),(G,4)],[(C,5),(E,4),(G,5)],[(C,5),(E,5),(G,5)]]
 
 >uniqueValidTrips :: Chord -> [[Tone]]
->uniqueValidTrips c = filter (\ts -> allUnique $ fst $ unzip ts) $ choose3 $ chordTones c
+>uniqueValidTrips = filter (allUnique . fst . unzip) . choose3 . chordTones
 >	  where	
->	    allUnique pcs = 3 == (length $ nub pcs)
->	    choose3 xs = filter (\x -> 3 == (length x)) $ subsequences xs
+>	    allUnique = (==) 3 . length . nub
+>	    choose3 = filter ((==) 3 . length) . subsequences
 
 The function toneDiff takes two Tones and evaluates the distance between them.
 
@@ -171,7 +172,7 @@ Ex. sortChord [(C,5),(E,4),(G,4)]
 according to the absolute pitch.
 
 >sortChord :: [Tone] -> [Tone]
->sortChord ts = sortBy (\a b -> compare (absPitch a) (absPitch b)) ts
+>sortChord = sortBy $ comparing absPitch
 
 The function minChord takes a list of chord collections (list of list of Tones), 
 
@@ -181,7 +182,7 @@ Ex. minChord [[(C,5),(E,5),(G,5)],[(E,4),(G,4),(C,5)]]
 and evaluates which of these chords that are minimally spread out.
 
 >minChord :: [[Tone]] -> [Tone]
->minChord cs = minimumBy (\x y -> compare (distance x) $ distance y) cs
+>minChord = minimumBy $ comparing distance
 >	  where 
 >		  distance :: [Tone] -> Int
 >		  distance ts = let sorted = sortChord ts in toneDiff (head sorted) $ last sorted 
