@@ -1,9 +1,13 @@
+=====================================================================
 
-Functional Music by Tim Dolck (dat11tdo) and Julian Kroné (dat11jkr)
+                          Functional Music
 
-=======================================================================
+======================================================================
 
-In this assignment we aim to create automatic comp to a given piece of music. Using automatic bass and chords. 
+Authors: Tim Dolck (dat11tdo) and Julian Kroné (dat11jkr)
+Date: 2014-11-27  
+
+In this assignment we aim to create automatic accompaniment to a given piece of music. Using automatic bass and chords. 
 
 We begin our journey through the haskell code with some imports. Theese will be used later on.
 
@@ -37,6 +41,12 @@ Below is two important functions for scales.
 Create Scale does exactly as the name denotes. It creates a list of notes in a certain scale
 To create the scale in the createScale function we use scale patterns that we get from out next function scalePattern
 
+Ex1. scalePattern Major 
+-> [0, 2, 4, 5, 7, 9, 11]
+
+Ex2. createScale (C,4) Major
+-> [(C,4),(D,4),(E,4),(F,4),(G,4),(A,4),(B,4)]
+
 >scalePattern :: HarmonicQuality -> [Position]
 >scalePattern s = case s of Major       -> [0, 2, 4, 5, 7, 9, 11]
 >                           Minor       -> [0, 2, 3, 5, 7, 8, 10]
@@ -50,30 +60,6 @@ To create the scale in the createScale function we use scale patterns that we ge
 >createScale :: Tone -> HarmonicQuality -> Scale
 >createScale n = map (\pos -> pitch $ (+) pos (absPitch n)) . scalePattern
 
-
-The next step is to start building the BassStyles for the bass.
-In similarity to what we defined above we need some find of patterns to define how to play.
-In this case though our pattern consists of a list of positions and durations
-
-Please note that we can have position -1 which actually isn't a real position but a Rest instead. 
-And this is very naively written and doesn't handle if you can't split the base line in the given duration (Ratio)
-For example if you give dur = (1 % 4) the whole song will be out of sync when using the basic style.
-
->type BStyleImpl = [(Position,Dur)]
->data BassStyle = Basic | Calypso | Boogie deriving (Read)
-
->basic, calypso, boogie :: Dur -> BStyleImpl
->basic = flip take [(0, hn), (4, hn)] . ceiling . (2*)
->calypso = flip take (cycle [(-1, qn), (0, en), (2, en)]) . ceiling . (4*)
->boogie = flip take (cycle [(0, en), (4, en), (5, en), (4, en)]) . ceiling . (8*)
-
-To translate from a given baseStyle to an actual pattern we use the function below.
-
->bStyleImpl :: BassStyle -> Dur -> BStyleImpl
->bStyleImpl bs = case bs of Basic   -> basic
->                           Calypso -> calypso
->                           Boogie  -> boogie
-
 Next we introduce some new types Chord and ChordProgression. 
 A chord is a small set of Notes played simultaniously. These notes are chosen from a given 
 pattern from the corresponding scale. In this assigment we only handle major and minor chords which use the
@@ -84,12 +70,49 @@ A ChordProgression is a list of chords that should be played in sequence.
 >type Chord = (PitchClass, HarmonicQuality, Dur)
 >type ChordProgression = [Chord]
 
+
+Constructing a bass accompaniment
+
+---------------------------------
+
+The next step is to start building the BassStyles for the bass.
+In similarity to what we defined above we need some find of patterns to define how to play.
+In this case though our pattern consists of a list of positions and durations
+
+Please note that we can have position -1 which actually isn't a real position but a Rest instead. 
+And this is very naively written and doesn't handle if you can't split the base line in the given duration (Ratio)
+For example if you give dur = (1 % 4) the whole song will be out of sync when using the basic style.
+
+Ex1. boogie (1 % 2)
+-> [(0,1 % 8),(4,1 % 8),(5,1 % 8),(4,1 % 8)]
+
+Ex2. calypso 1
+-> [(-1,1 % 4),(0,1 % 8),(2,1 % 8),(-1,1 % 4),(0,1 % 8),(2,1 % 8)]
+
+>type BStyleImpl = [(Position,Dur)]
+>data BassStyle = Basic | Calypso | Boogie deriving (Read)
+
+>basic, calypso, boogie :: Dur -> BStyleImpl
+>basic = flip take [(0, hn), (4, hn)] . ceiling . (2*)
+>calypso = flip take (cycle [(-1, qn), (0, en), (2, en)]) . ceiling . (6*)
+>boogie = flip take (cycle [(0, en), (4, en), (5, en), (4, en)]) . ceiling . (8*)
+
+To translate from a given baseStyle to an actual pattern we use the function below.
+
+>bStyleImpl :: BassStyle -> Dur -> BStyleImpl
+>bStyleImpl bs = case bs of Basic   -> basic
+>                           Calypso -> calypso
+>                           Boogie  -> boogie
+
 Finally we arrive to a little treasure in the code.
 The autoBass function creates a playable bass line for a ChordProgression.
 To do this we denote which bass style that should be used and which key the notes should be played in.
 
 Although you might think the autoBass function has a lot going on the real workhorse here is the bassFromChord function.
 bassFromChord finds the bassline during a given chord.
+
+Ex. bassFromChord Basic (G, Major, 1)
+-> Note (G,3) (1 % 2) [Volume 80.0] :+: Note (D,4) (1 % 2) [Volume 80.0]
 
 >autoBass :: BassStyle -> Key -> ChordProgression -> Music
 >autoBass bs _ = foldr1 (:+:) . map (bassFromChord bs)
@@ -106,6 +129,11 @@ bassFromChord finds the bassline during a given chord.
 >     toMusic :: (Dur, Maybe Tone) -> Music
 >     toMusic (d, Nothing) = Rest d
 >     toMusic (d, Just t) = Note t d [Volume 80]
+
+
+Constructing a chord accompaniment
+
+--------------------------------
 
 Autochord takes a Key and a ChordProgression and chooses the notes for all chords based on them beeing 
 1: in a limited range
@@ -124,6 +152,7 @@ From this we will receive a series of chords that are playable as parallel notes
 >     autoHelper ts (c:cs) = let prev = minChordDiff ts c in (musicFromTones prev (third c)) : (autoHelper (Just prev) cs)
 >     third (_,_,x) = x
 
+To move between a list of Tones (a chord) and listenable music we use the following function musicFromTones:
 The function musicFromTones takes a list of tones that chould be combined into a chord, and a duration.
 
 Ex. musicFromTones [(C,5),(E,5),(G,5)] hn
@@ -138,6 +167,9 @@ The fixed chord range in which the produced chords are allowed to be are defined
 >chordRange = ((E,4), (G,5))
 
 The function chordTones takes a chord name and returns all Tones that could be played in this chord. 
+
+(Please note that it only can handle major and minor chords due to the structure of chords. If more 
+chordstyles would be added we would need more chordpatterns. )
 
 Ex. chordTones (C, Major, hn)
 -> [(C,5),(E,4),(E,5),(G,4),(G,5)]
@@ -163,7 +195,7 @@ Ex. minChordDiff (Just [(C,5),(E,5),(G,5)]) (C, Major, hn)
 >     calcMin = minimumBy . comparing . chordDiff
 >     chordDiff c1 c2 = sum $ map (uncurry $ toneDiff) $ zip (sortChord c1) (sortChord c2)
 
-The function uniqueValiedTrips takes a Chord (more like a chord name), 
+The function uniqueValidTrips takes a Chord (more like a chord name), 
 and evaluates all chords of size three that are within the given range. 
 These chords are all unique and internally sorted.
 
@@ -207,6 +239,11 @@ and evaluates which of these chords that are minimally spread out.
 >		  distance :: [Tone] -> Int
 >		  distance ts = let sorted = sortChord ts in toneDiff (head sorted) $ last sorted 
 
+
+Combining bass and chord accompaniment
+
+--------------------------------------
+
 The function autoComp takes the desired bass style (basic, calypso, or boogie), 
 the desired key that the song should be played in, and a basic chord progression.
 
@@ -217,10 +254,4 @@ in parallel.
 
 >autoComp :: BassStyle -> Key -> ChordProgression -> Music
 >autoComp b k cp = (Instr "bass" (Phrase [Dyn SF] $ autoBass b k cp)) :=: (Instr "piano" (Phrase [Dyn SF] $ autoChord k cp))
-
-
-
-
-
-
 
