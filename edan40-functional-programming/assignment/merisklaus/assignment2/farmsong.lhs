@@ -1,7 +1,8 @@
-\section{Encoding of Twinkle Twinkle}
+\section{Encoding of Old McDonald Had a Farm}
 \label{chick}
 
 {\small\begin{verbatim} 
+
 
 > module TwinkleDeux where
 > import AutoComp 
@@ -34,9 +35,6 @@
 
 > chords = cp1 ++ cp2 ++ cp3 ++ cp4 ++ cp5
 
-> mainVoiceBass = autoBass Basic (chords)
-> mainVoiceChords = autoChord (chords)
-
 > -- Main Voice:
 > scale x = Note $ generateScalePattern (C, 5) Major !! x
 > v1 = lmap vol [ 
@@ -66,6 +64,7 @@
 > mainVoice = v1 :+: v2 :+: v3 :+: v4 :+: v5 :+: v6
 > 
 > -- Putting it all together:
-> twinkleTwinkle = Instr "piano" (Tempo 3 (mainVoiceChords :=: mainVoice :=: mainVoiceBass))
+> farmSong = Instr "piano" (Tempo 3 $ mainVoice) :=: autoComp Calypso chords
+
 
 \end{verbatim} }

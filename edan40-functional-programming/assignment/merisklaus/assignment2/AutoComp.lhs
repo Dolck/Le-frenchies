@@ -136,7 +136,7 @@ bass pattern in half and proceed from there.
 >         baseLine = takePart (bassStyle bs) $ dur
 >         bassNoteToMusic :: [Pitch] -> BassNote -> Music
 >         bassNoteToMusic _ (Silence d)       = Rest d
->         bassNoteToMusic scale (Sound pos d) = Note (scale !! pos) d [Volume 70]
+>         bassNoteToMusic scale (Sound pos d) = Note (scale !! pos) d [Volume 60]
 >         getScale (pc, hms, _)  = generateScalePattern (pc, 3) $ hms 
 >         takePart :: [a] -> Ratio Int -> [a]
 >         takePart xs x = take (length xs `div` denominator x) xs
@@ -215,20 +215,36 @@ For example:
 > permittedTrips :: [Pitch] -> [[Pitch]]
 > permittedTrips x = (filter ((3==).length)) (map (nubBy ((==) `on` fst)) (subsequences x))
 
-
-In order to enforce rule of thumb #2 
+In order to enforce rule of thumb #2 we need to be able to calculate the difference
+between two pitches. 
 
 > pitchDiff :: (Pitch, Pitch) -> Int
 > pitchDiff (a, b) = abs $ absPitch a - absPitch b
 
+In order to enforce rule of thumb #3 we need to be able to calculate 
+the melodic difference between two *chords* we create the function 
+melodydifference. 
+
+Example: 
+  *AutoComp> melodyDifference [(E,4), (G,4), (C,5)] [(D,4), (G,4), (B,4)]
+  3
+
 > melodyDifference :: [Pitch] -> [Pitch] -> Int
 > melodyDifference a b = sum $ map pitchDiff (zip (sortChord a) (sortChord b))
+
+In order to easily calculate the lowest melodic difference 
+between two chords, we need to be able simply to sort the melodies 
+of the *chord*.
+
 > sortChord :: [Pitch] -> [Pitch]
 > sortChord = sortBy (comparing absPitch)
 
+As said before, for the first chord in any given ChordProgression we will
+find the tightest *chord* for the first element.
 
-> chordToMusic :: [Pitch] -> Chord -> Music
-> chordToMusic ps (_, _, dur) = foldr1 (:=:) (map (\x -> (Note x dur [Volume 70])) ps)
+For example:
+  *AutoComp> tighten (C, Major, 1)
+  [(C,5),(E,5),(G,5)]
 
 
 > tighten :: Chord -> [Pitch]
@@ -239,6 +255,9 @@ In order to enforce rule of thumb #2
 >   tightness :: [Pitch] -> Int
 >   tightness p = absPitch(last (sortChord p)) - absPitch(head (sortChord p)) 
 
+And for the remaining *chords* we need to be able to find the *chord*
+which has the lowest melodic difference in relation to the previous.
+
 > minChordDiff :: [Pitch] -> Chord -> [Pitch]
 > minChordDiff prev = calcMin prev . generateAllChords 
 >  where
@@ -246,7 +265,18 @@ In order to enforce rule of thumb #2
 >  calcMin = minimumBy . comparing . chordDiff
 >  chordDiff c1 c2 = sum $ map pitchDiff $ zip (sortChord c1) (sortChord c2)
 
+To convert our *chords* to music we will have to get the duration of the previous Chord.
+This function converts a Chord into notes played in parallel. 
 
+> chordToMusic :: [Pitch] -> Chord -> Music
+> chordToMusic ps (_, _, dur) = foldr1 (:=:) (map (\x -> (Note x dur [Volume 60])) ps)
 
 The next part of this problem is to create a function autoComp, which combines autoBass
-and autoChord 
+and autoChord:
+
+> autoComp :: BassStyle -> ChordProgression -> Music
+> autoComp bs cp = Instr "bass" (Tempo 3 $ autoBass bs cp) :=:  Instr "guitar" (Tempo 3 $ autoChord cp)
+
+
+
+

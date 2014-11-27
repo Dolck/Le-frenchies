@@ -26,26 +26,18 @@
 > cc2m = (C, Major, 1%2)
 > cp1 = [cc1m, cfm, cc2m, cgm, cc2m, cgm, cc2m]
 > cp2 = take 8 $ cycle [cc2m, cgm]
-> mainVoiceBass = autoBass Basic (cp1++ cp2 ++ cp1)
-> mainVoiceChords = autoChord (cp1++ cp2 ++ cp1)
-
-> -- Chords 
-> cC  = c 5 hn vk :=: e 4 hn vk :=: g 4 hn vk
-> cF  = f 5 hn vk :=: a 5 hn vk :=: c 5 hn vk
-> cG  = g 5 hn vk :=: b 5 hn vk :=: d 5 hn vk
-> fp  = cC :+: cC :+: cF :+: cC :+: cG :+: cC :+: cG :+: cC
-> sp  = cC :+: cG :+: cC :+: cG
-> mainVoiceC = fp :+: sp :+: sp :+: fp
+> chords = cp1 ++ cp2 ++ cp1
 
 > -- Main Voice:
+> scale x = Note $ generateScalePattern (C, 5) Major !! x
 > v1  = v1a :+: v1b
 > v2  = times 2 $ v2a 
-> v1a = lmap vol [c 5 qn, c 5 qn, g 5 qn, g 5 qn, a 5 qn, a 5 qn, g 5 hn]
-> v1b = lmap vol [f 5 qn, f 5 qn, e 5 qn, e 5 qn, d 5 qn, d 5 qn, c 5 hn]
-> v2a = lmap vol [g 5 qn, g 5 qn, f 5 qn, f 5 qn, e 5 qn, e 5 qn, d 5 hn]
+> v1a = lmap vol [scale 0 qn, scale 0 qn, scale 4 qn, scale 4 qn, scale 5 qn, scale 5 qn, scale 4 hn]
+> v1b = lmap vol [scale 3 qn, scale 3 qn, scale 2 qn, scale 2 qn, scale 1 qn, scale 1 qn, scale 0 hn]
+> v2a = lmap vol [scale 4 qn, scale 4 qn, scale 3 qn, scale 3 qn, scale 2 qn, scale 2 qn, scale 1 hn]
 > mainVoice = v1 :+: v2 :+: v1
 > 
 > -- Putting it all together:
-> twinkleTwinkle = Instr "piano" (Tempo 2 (mainVoiceChords :=: mainVoice :=: mainVoiceBass))
+> twinkleTwinkle = Instr "piano" (Tempo 3 $ mainVoice) :=: autoComp Basic chords
 
 \end{verbatim} }
