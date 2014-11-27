@@ -107,6 +107,7 @@ bassFromChord finds the bassline during a given chord.
 >     toMusic (d, Nothing) = Rest d
 >     toMusic (d, Just t) = Note t d [Volume 80]
 
+The next important function is autoChord. 
 Autochord takes a Key and a ChordProgression and chooses the notes for all chords based on them beeing 
 1: in a limited range
 2: small changes between chords 
@@ -124,6 +125,7 @@ From this we will receive a series of chords that are playable as parallel notes
 >     autoHelper ts (c:cs) = let prev = minChordDiff ts c in (musicFromTones prev (third c)) : (autoHelper (Just prev) cs)
 >     third (_,_,x) = x
 
+To move between a list of Tones (a chord) and listenable music we use the following function musicFromTones:
 The function musicFromTones takes a list of tones that chould be combined into a chord, and a duration.
 
 Ex. musicFromTones [(C,5),(E,5),(G,5)] hn
@@ -138,6 +140,9 @@ The fixed chord range in which the produced chords are allowed to be are defined
 >chordRange = ((E,4), (G,5))
 
 The function chordTones takes a chord name and returns all Tones that could be played in this chord. 
+
+(Please note that it only can handle major and minor chords due to the structure of chords. If more 
+chordstyles would be added we would need more chordpatterns. )
 
 Ex. chordTones (C, Major, hn)
 -> [(C,5),(E,4),(E,5),(G,4),(G,5)]
@@ -163,7 +168,7 @@ Ex. minChordDiff (Just [(C,5),(E,5),(G,5)]) (C, Major, hn)
 >     calcMin = minimumBy . comparing . chordDiff
 >     chordDiff c1 c2 = sum $ map (uncurry $ toneDiff) $ zip (sortChord c1) (sortChord c2)
 
-The function uniqueValiedTrips takes a Chord (more like a chord name), 
+The function uniqueValidTrips takes a Chord (more like a chord name), 
 and evaluates all chords of size three that are within the given range. 
 These chords are all unique and internally sorted.
 
