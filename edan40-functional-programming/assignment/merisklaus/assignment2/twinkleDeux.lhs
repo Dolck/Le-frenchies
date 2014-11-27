@@ -26,8 +26,8 @@
 > cc2m = (C, Major, 1%2)
 > cp1 = [cc1m, cfm, cc2m, cgm, cc2m, cgm, cc2m]
 > cp2 = take 8 $ cycle [cc2m, cgm]
-> mainVoiceBass = autoBass Basic (C, Major) (cp1++ cp2 ++ cp1)
-> mainVoiceChords = autoChord (C, Major) (cp1++ cp2 ++ cp1)
+> mainVoiceBass = autoBass Basic (cp1++ cp2 ++ cp1)
+> mainVoiceChords = autoChord (cp1++ cp2 ++ cp1)
 
 > -- Chords 
 > cC  = c 5 hn vk :=: e 4 hn vk :=: g 4 hn vk

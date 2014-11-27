@@ -34,8 +34,8 @@
 
 > chords = cp1 ++ cp2 ++ cp3 ++ cp4 ++ cp5
 
-> mainVoiceBass = autoBass Basic (C, Major) (chords)
-> mainVoiceChords = autoChord (C, Major) (chords)
+> mainVoiceBass = autoBass Basic (chords)
+> mainVoiceChords = autoChord (chords)
 
 > -- Main Voice:
 > scale x = Note $ generateScalePattern (C, 5) Major !! x
