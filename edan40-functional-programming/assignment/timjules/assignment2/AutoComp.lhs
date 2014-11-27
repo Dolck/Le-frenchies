@@ -1,9 +1,13 @@
+=====================================================================
 
-Functional Music by Tim Dolck (dat11tdo) and Julian Kroné (dat11jkr)
+                          Functional Music
 
-=======================================================================
+======================================================================
 
-In this assignment we aim to create automatic comp to a given piece of music. Using automatic bass and chords. 
+Authors: Tim Dolck (dat11tdo) and Julian Kroné (dat11jkr)
+Date: 2014-11-27  
+
+In this assignment we aim to create automatic companion to a given piece of music. Using automatic bass and chords. 
 
 We begin our journey through the haskell code with some imports. Theese will be used later on.
 
