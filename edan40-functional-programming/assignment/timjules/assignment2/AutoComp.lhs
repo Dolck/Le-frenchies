@@ -7,7 +7,7 @@
 Authors: Tim Dolck (dat11tdo) and Julian Kroné (dat11jkr)
 Date: 2014-11-27  
 
-In this assignment we aim to create automatic companion to a given piece of music. Using automatic bass and chords. 
+In this assignment we aim to create automatic accompaniment to a given piece of music. Using automatic bass and chords. 
 
 We begin our journey through the haskell code with some imports. Theese will be used later on.
 
@@ -51,9 +51,23 @@ To create the scale in the createScale function we use scale patterns that we ge
 >                           Dorian      -> [0, 2, 3, 5, 7, 9, 10]
 >                           Phrygian    -> [0, 1, 3, 5, 7, 8, 10]
 
+Next we introduce some new types Chord and ChordProgression. 
+A chord is a small set of Notes played simultaniously. These notes are chosen from a given 
+pattern from the corresponding scale. In this assigment we only handle major and minor chords which use the
+same pattern but picks from different scales. 
+
+A ChordProgression is a list of chords that should be played in sequence. 
+
+>type Chord = (PitchClass, HarmonicQuality, Dur)
+>type ChordProgression = [Chord]
+
+
+Constructing a bass accompaniment
+
+---------------------------------
+
 >createScale :: Tone -> HarmonicQuality -> Scale
 >createScale n = map (\pos -> pitch $ (+) pos (absPitch n)) . scalePattern
-
 
 The next step is to start building the BassStyles for the bass.
 In similarity to what we defined above we need some find of patterns to define how to play.
@@ -78,16 +92,6 @@ To translate from a given baseStyle to an actual pattern we use the function bel
 >                           Calypso -> calypso
 >                           Boogie  -> boogie
 
-Next we introduce some new types Chord and ChordProgression. 
-A chord is a small set of Notes played simultaniously. These notes are chosen from a given 
-pattern from the corresponding scale. In this assigment we only handle major and minor chords which use the
-same pattern but picks from different scales. 
-
-A ChordProgression is a list of chords that should be played in sequence. 
-
->type Chord = (PitchClass, HarmonicQuality, Dur)
->type ChordProgression = [Chord]
-
 Finally we arrive to a little treasure in the code.
 The autoBass function creates a playable bass line for a ChordProgression.
 To do this we denote which bass style that should be used and which key the notes should be played in.
@@ -111,7 +115,11 @@ bassFromChord finds the bassline during a given chord.
 >     toMusic (d, Nothing) = Rest d
 >     toMusic (d, Just t) = Note t d [Volume 80]
 
-The next important function is autoChord. 
+
+Constructing a chord accompaniment
+
+--------------------------------
+
 Autochord takes a Key and a ChordProgression and chooses the notes for all chords based on them beeing 
 1: in a limited range
 2: small changes between chords 
@@ -216,6 +224,11 @@ and evaluates which of these chords that are minimally spread out.
 >		  distance :: [Tone] -> Int
 >		  distance ts = let sorted = sortChord ts in toneDiff (head sorted) $ last sorted 
 
+
+Combining bass and chord accompaniment
+
+--------------------------------------
+
 The function autoComp takes the desired bass style (basic, calypso, or boogie), 
 the desired key that the song should be played in, and a basic chord progression.
 
@@ -226,10 +239,4 @@ in parallel.
 
 >autoComp :: BassStyle -> Key -> ChordProgression -> Music
 >autoComp b k cp = (Instr "bass" (Phrase [Dyn SF] $ autoBass b k cp)) :=: (Instr "piano" (Phrase [Dyn SF] $ autoChord k cp))
-
-
-
-
-
-
 
