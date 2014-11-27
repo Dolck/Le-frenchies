@@ -3,7 +3,7 @@ Functional Music by Tim Dolck (dat11tdo) and Julian Kroné (dat11jkr)
 
 =======================================================================
 
-In this assignment we aim to create automatic bass and chord comp to a given piece of music.
+In this assignment we aim to create automatic comp to a given piece of music. Using automatic bass and chords. 
 
 We begin our journey through the haskell code with some imports. Theese will be used later on.
 
@@ -37,9 +37,6 @@ Below is two important functions for scales.
 Create Scale does exactly as the name denotes. It creates a list of notes in a certain scale
 To create the scale in the createScale function we use scale patterns that we get from out next function scalePattern
 
->createScale :: Tone -> HarmonicQuality -> Scale
->createScale n = map (\pos -> pitch $ (+) pos (absPitch n)) . scalePattern
-
 >scalePattern :: HarmonicQuality -> [Position]
 >scalePattern s = case s of Major       -> [0, 2, 4, 5, 7, 9, 11]
 >                           Minor       -> [0, 2, 3, 5, 7, 8, 10]
@@ -65,9 +62,16 @@ Constructing a bass accompaniment
 
 ---------------------------------
 
+>createScale :: Tone -> HarmonicQuality -> Scale
+>createScale n = map (\pos -> pitch $ (+) pos (absPitch n)) . scalePattern
+
 The next step is to start building the BassStyles for the bass.
 In similarity to what we defined above we need some find of patterns to define how to play.
 In this case though our pattern consists of a list of positions and durations
+
+Please note that we can have position -1 which actually isn't a real position but a Rest instead. 
+And this is very naively written and doesn't handle if you can't split the base line in the given duration (Ratio)
+For example if you give dur = (1 % 4) the whole song will be out of sync when using the basic style.
 
 >type BStyleImpl = [(Position,Dur)]
 >data BassStyle = Basic | Calypso | Boogie deriving (Read)
@@ -129,6 +133,7 @@ From this we will receive a series of chords that are playable as parallel notes
 >     autoHelper ts (c:cs) = let prev = minChordDiff ts c in (musicFromTones prev (third c)) : (autoHelper (Just prev) cs)
 >     third (_,_,x) = x
 
+To move between a list of Tones (a chord) and listenable music we use the following function musicFromTones:
 The function musicFromTones takes a list of tones that chould be combined into a chord, and a duration.
 
 Ex. musicFromTones [(C,5),(E,5),(G,5)] hn
@@ -143,6 +148,9 @@ The fixed chord range in which the produced chords are allowed to be are defined
 >chordRange = ((E,4), (G,5))
 
 The function chordTones takes a chord name and returns all Tones that could be played in this chord. 
+
+(Please note that it only can handle major and minor chords due to the structure of chords. If more 
+chordstyles would be added we would need more chordpatterns. )
 
 Ex. chordTones (C, Major, hn)
 -> [(C,5),(E,4),(E,5),(G,4),(G,5)]
@@ -168,7 +176,7 @@ Ex. minChordDiff (Just [(C,5),(E,5),(G,5)]) (C, Major, hn)
 >     calcMin = minimumBy . comparing . chordDiff
 >     chordDiff c1 c2 = sum $ map (uncurry $ toneDiff) $ zip (sortChord c1) (sortChord c2)
 
-The function uniqueValiedTrips takes a Chord (more like a chord name), 
+The function uniqueValidTrips takes a Chord (more like a chord name), 
 and evaluates all chords of size three that are within the given range. 
 These chords are all unique and internally sorted.
 
@@ -226,11 +234,5 @@ From this, it produces a bassline and a series of chords that should be played
 in parallel.
 
 >autoComp :: BassStyle -> Key -> ChordProgression -> Music
->autoComp b k cp = (autoBass b k cp) :=: (autoChord k cp)
-
-
-
-
-
-
+>autoComp b k cp = (Instr "bass" (Phrase [Dyn SF] $ autoBass b k cp)) :=: (Instr "piano" (Phrase [Dyn SF] $ autoChord k cp))
 
