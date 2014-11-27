@@ -41,6 +41,12 @@ Below is two important functions for scales.
 Create Scale does exactly as the name denotes. It creates a list of notes in a certain scale
 To create the scale in the createScale function we use scale patterns that we get from out next function scalePattern
 
+Ex1. scalePattern Major 
+-> [0, 2, 4, 5, 7, 9, 11]
+
+Ex2. createScale (C,4) Major
+-> [(C,4),(D,4),(E,4),(F,4),(G,4),(A,4),(B,4)]
+
 >scalePattern :: HarmonicQuality -> [Position]
 >scalePattern s = case s of Major       -> [0, 2, 4, 5, 7, 9, 11]
 >                           Minor       -> [0, 2, 3, 5, 7, 8, 10]
@@ -50,6 +56,9 @@ To create the scale in the createScale function we use scale patterns that we ge
 >                           Aeolian     -> scalePattern Minor 
 >                           Dorian      -> [0, 2, 3, 5, 7, 9, 10]
 >                           Phrygian    -> [0, 1, 3, 5, 7, 8, 10]
+
+>createScale :: Tone -> HarmonicQuality -> Scale
+>createScale n = map (\pos -> pitch $ (+) pos (absPitch n)) . scalePattern
 
 Next we introduce some new types Chord and ChordProgression. 
 A chord is a small set of Notes played simultaniously. These notes are chosen from a given 
@@ -66,9 +75,6 @@ Constructing a bass accompaniment
 
 ---------------------------------
 
->createScale :: Tone -> HarmonicQuality -> Scale
->createScale n = map (\pos -> pitch $ (+) pos (absPitch n)) . scalePattern
-
 The next step is to start building the BassStyles for the bass.
 In similarity to what we defined above we need some find of patterns to define how to play.
 In this case though our pattern consists of a list of positions and durations
@@ -77,12 +83,18 @@ Please note that we can have position -1 which actually isn't a real position bu
 And this is very naively written and doesn't handle if you can't split the base line in the given duration (Ratio)
 For example if you give dur = (1 % 4) the whole song will be out of sync when using the basic style.
 
+Ex1. boogie (1 % 2)
+-> [(0,1 % 8),(4,1 % 8),(5,1 % 8),(4,1 % 8)]
+
+Ex2. calypso 1
+-> [(-1,1 % 4),(0,1 % 8),(2,1 % 8),(-1,1 % 4),(0,1 % 8),(2,1 % 8)]
+
 >type BStyleImpl = [(Position,Dur)]
 >data BassStyle = Basic | Calypso | Boogie deriving (Read)
 
 >basic, calypso, boogie :: Dur -> BStyleImpl
 >basic = flip take [(0, hn), (4, hn)] . ceiling . (2*)
->calypso = flip take (cycle [(-1, qn), (0, en), (2, en)]) . ceiling . (4*)
+>calypso = flip take (cycle [(-1, qn), (0, en), (2, en)]) . ceiling . (6*)
 >boogie = flip take (cycle [(0, en), (4, en), (5, en), (4, en)]) . ceiling . (8*)
 
 To translate from a given baseStyle to an actual pattern we use the function below.
@@ -98,6 +110,9 @@ To do this we denote which bass style that should be used and which key the note
 
 Although you might think the autoBass function has a lot going on the real workhorse here is the bassFromChord function.
 bassFromChord finds the bassline during a given chord.
+
+Ex. bassFromChord Basic (G, Major, 1)
+-> Note (G,3) (1 % 2) [Volume 80.0] :+: Note (D,4) (1 % 2) [Volume 80.0]
 
 >autoBass :: BassStyle -> Key -> ChordProgression -> Music
 >autoBass bs _ = foldr1 (:+:) . map (bassFromChord bs)
