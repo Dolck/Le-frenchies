@@ -1,5 +1,11 @@
 
-Functional Music by Tim Dolck (dat11tdo) and Julian Kroné (dat11jkr)
+Functional Music 
+
+by
+Tim Dolck (dat11tdo), 
+Julian Kroné (dat11jkr)
+
+2014-11-27
 
 =======================================================================
 
