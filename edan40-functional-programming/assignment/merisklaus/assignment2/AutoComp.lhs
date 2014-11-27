@@ -31,8 +31,8 @@ The Beginning - Data Types
 -------------------------------------------------------------------------------
 
 In Western Music, a scale is a subset of 7 notes from an octave consisting of 
-12 notes. The exact subset is called a Harmonic Quality and is used to 
-compose the melody of the song.
+12 notes. The exact subset determined by something called a Harmonic Quality 
+and is used to compose the melody of the song.
 
 Below we create an algebraic data structure to describe harmonic qualities:
 
@@ -276,7 +276,3 @@ and autoChord:
 
 > autoComp :: BassStyle -> ChordProgression -> Music
 > autoComp bs cp = Instr "bass" (Tempo 3 $ autoBass bs cp) :=:  Instr "guitar" (Tempo 3 $ autoChord cp)
-
-
-
-

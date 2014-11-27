@@ -4,22 +4,17 @@
 {\small\begin{verbatim} 
 
 
-> module TwinkleDeux where
+> module FarmSong where
 > import AutoComp 
 > import Haskore hiding (Major, Minor)
 > import Data.Ratio
 > 
 > -- note updaters for mappings
-> fd d n = n d v
 > vol  n = n   v
 > v      = [Volume 80]
 > lmap f l = line (map f l)
 > 
-> -- repeat something n times
-> times  1    m = m
-> times n m = m :+: (times (n - 1) m)
-> -- Choose Scale
-
+> -- transcribe the Chords.
 > cd2m = (D, Major, 1%2)
 > cd1m = (D, Major, 1  )
 > cc1m = (C, Major, 1%2)
@@ -27,6 +22,7 @@
 > cg1m = (G, Major, 1  )
 > cg2m = (G, Major, 1%2)
 
+> -- Write down the chord progression.
 > cp1 = [cg1m, cc2m, cg1m, cd2m]
 > cp2 = [cg1m, cg1m, cc2m, cg1m]
 > cp3 = [cd1m, cd1m, cd1m, cd1m]
@@ -36,6 +32,7 @@
 > chords = cp1 ++ cp2 ++ cp3 ++ cp4 ++ cp5
 
 > -- Main Voice:
+> --  We generate a C Major scale to help us transcribe the melody.
 > scale x = Note $ generateScalePattern (C, 5) Major !! x
 > v1 = lmap vol [ 
 >                 scale 4 qn, scale 4 qn, scale 4 qn, scale 1 qn, scale 2 qn, scale 2 qn, 
