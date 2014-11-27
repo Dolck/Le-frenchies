@@ -27,6 +27,8 @@ Generate scale based on which groundtone (pitchclass) and harmonic quality speci
 >    doMath = pitch . add p
 >    add = (+) . absPitch 
 
+> type Chord = (PitchClass, HarmonicQuality, Dur)
+> type ChordProgression   = [Chord]
 
 Let's do the autobasss
 We always start in the 3rd octave.
@@ -42,13 +44,13 @@ We always start in the 3rd octave.
 > autoBass bs key cp = foldr1 (:+:) $ map (\x -> generateBass bs key x) cp 
 >   where
 >     generateBass :: BassStyle -> Key -> Chord -> Music
->     generateBass bs (_, _) ch = line $ map (\x -> bassNoteTo (getScale ch) x) baseLine 
+>     generateBass bs (_, _) (pc, hs, dur) = line $ map (\x -> bassNoteTo (getScale (pc, hs, dur)) x) baseLine 
 >       where
->         baseLine = takePart (bassStyle bs) $ getDuration ch
+>         baseLine = takePart (bassStyle bs) $ dur
 >         bassNoteTo :: [Pitch] -> BassNote -> Music
 >         bassNoteTo _ (Silence d)      = Rest d
 >         bassNoteTo scale (Position pos d) = Note (scale !! pos) d [Volume 70]
->         getScale ch = generateScalePattern (getClass ch, 3) $ getHarmonics ch
+>         getScale (pc, hms, _)  = generateScalePattern (pc, 3) $ hms 
 
 > takePart :: [a] -> Ratio Int -> [a]
 > takePart [] _ = []
@@ -77,23 +79,11 @@ We always start in the 3rd octave.
 > sortChord :: [Pitch] -> [Pitch]
 > sortChord = sortBy (comparing absPitch)
 
-autoChord :: ChordProgression -> [[Pitch]]
-
-> type Chord = (PitchClass, HarmonicQuality, Dur)
-> getClass      :: Chord -> PitchClass
-> getClass      (c, _, _) = c
-> getHarmonics  :: Chord -> HarmonicQuality 
-> getHarmonics  (_, h, _) = h
-> getDuration   :: Chord -> Dur 
-> getDuration   (_, _, d) = d
-> type ChordProgression   = [Chord]
-> type Triple             = (Pitch, Pitch, Pitch)
 
 > autoChord :: Key -> ChordProgression -> Music
 > autoChord _ (x:xs) = foldr1 (:+:) ((chordToMusic (tighten x) x) : (doRest (tighten x) xs))
 >   where 
 >     doRest :: [Pitch] -> ChordProgression -> [Music]
->     dorest _    []       = []
 >     doRest prev (c:curr) = [chordToMusic (resolvedChord prev c) c] ++ (doRest (resolvedChord prev c) curr)
 >     doRest _ _           = []
 >     resolvedChord :: [Pitch] -> Chord -> [Pitch] 
@@ -101,7 +91,6 @@ autoChord :: ChordProgression -> [[Pitch]]
 
 > chordToMusic :: [Pitch] -> Chord -> Music
 > chordToMusic ps (_, _, dur) = foldr1 (:=:) (map (\x -> (Note x dur [Volume 70])) ps)
-
 
 > generateAllChords :: Chord -> [[Pitch]]
 > generateAllChords = permittedTrips . permittedTones
