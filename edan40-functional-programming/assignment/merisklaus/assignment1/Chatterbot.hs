@@ -75,6 +75,7 @@ rulesCompile = map $ map2 (words . map toLower, map words)
 --------------------------------------
 
 reductions :: [PhrasePair]
+
 reductions = (map.map2) (words, words)
   [ ( "please *", "*" ),
     ( "can you *", "*" ),
