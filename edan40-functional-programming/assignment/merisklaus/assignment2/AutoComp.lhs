@@ -208,14 +208,14 @@ To achieve this, we will first enforce the rule of thumb #3 on the first note
 in the whole ChordProgression. For the rest of the notes, we will optimize the
 difference between melodies based on the _previous_ chord.
 
-> autoChord :: ChordProgression -> Music
-> autoChord (x:xs) = foldr1 (:+:) ((chordToMusic (tighten x) x) : (doRest (tighten x) xs))
+> autoChord :: Key -> ChordProgression -> Music
+> autoChord key (x:xs) = foldr1 (:+:) ((chordToMusic (tighten key x) x) : (doRest (tighten key x) xs))
 >   where 
 >     doRest :: [Pitch] -> ChordProgression -> [Music]
 >     doRest prev (c:curr) = [chordToMusic (resolvedChord prev c) c] ++ (doRest (resolvedChord prev c) curr)
 >     doRest _ _           = []
 >     resolvedChord :: [Pitch] -> Chord -> [Pitch] 
->     resolvedChord p c = (minChordDiff p c)
+>     resolvedChord p c = (minChordDiff key p c)
 
 To enforce rule of thumb #1 we create a range of Pitches which are allowed 
 in our *chords* (also referred to as triples).
@@ -228,8 +228,8 @@ The chords will be played in a major scale.
 
 To generate all permitted *chords* given a Chord, we will create the following function:
 
-> generateAllChords :: Chord -> [[Pitch]]
-> generateAllChords = nub . permittedTrips . permittedTones
+> generateAllChords :: Key -> Chord -> [[Pitch]]
+> generateAllChords key ch = nub $ permittedTrips $ permittedTones key ch
 
 this is composed of two functions, which will be described below.
 
@@ -240,25 +240,30 @@ Example:
   *AutoComp> permittedTones (C, Major, 1)
   [(C,5),(E,4),(E,5),(G,4),(G,5)]
 
-> permittedTones :: Chord -> [Pitch]
-> permittedTones (pc, hq, _) = filter inRange [
->                                               (generateScalePattern (pc, oct) hq) !! x |
->                                               x <- majorChordScale, 
->                                               oct <- 
->                                               [(snd . head $ chordRange) .. (snd . last $ chordRange)]
->                                             ]
->   where inRange =  flip elem (map absPitch chordRange) . absPitch 
+ permittedTones :: Chord -> [Pitch]
+ permittedTones (pc, hq, _) = filter inRange [
+                                               (generateScalePattern (pc, oct) hq) !! x |
+                                               x <- majorChordScale, 
+                                               oct <- 
+                                               [(snd . head $ chordRange) .. (snd . last $ chordRange)]
+                                             ]
+   where inRange =  flip elem (map absPitch chordRange) . absPitch 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-> permittedTones' :: Key -> Chord -> [Pitch]
-> permittedTones' key (pc, hq, _) =  dropWhile ((pc/=).fst) $ sortBy (comparing absPitch) $ filter inRange 
+> permittedTones :: Key -> Chord -> [Pitch]
+> permittedTones key (pc, hq, _) =  sortBy (comparing absPitch) $ filter inRange 
 >                                     [
 >                                      (x, oct) |
->                                      x <- generateScale key, 
+>                                      x <- generateScaleOnChord key (pc, hq, 1), 
 >                                      oct <- [(snd . head $ chordRange) .. (snd . last $ chordRange)]
 >                                     ]
 >   where inRange =  flip elem (map absPitch chordRange) . absPitch 
+
+> generateScaleOnChord :: Key -> Chord -> [PitchClass]
+> generateScaleOnChord key (pc, hq, _) = [ chordScale !! x | x <- (take 3 $ harmonicQuality hq)]
+>  where chordScale = take 7 $ dropWhile ((pc/=)) $ cycle (generateScale key)
+> -- check if pc elem (generateScale key) or else this one goes on forever.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -305,8 +310,8 @@ For example:
   [(C,5),(E,5),(G,5)]
 
 
-> tighten :: Chord -> [Pitch]
-> tighten xs = getTightestChord $ generateAllChords xs 
+> tighten :: Key -> Chord -> [Pitch]
+> tighten key xs = getTightestChord $ generateAllChords key xs 
 >  where 
 >   getTightestChord :: [[Pitch]] -> [Pitch]
 >   getTightestChord = head . sortBy (comparing tightness) 
@@ -316,8 +321,8 @@ For example:
 And for the remaining *chords* we need to be able to find the *chord*
 which has the lowest melodic difference in relation to the previous.
 
-> minChordDiff :: [Pitch] -> Chord -> [Pitch]
-> minChordDiff prev = calcMin prev . generateAllChords 
+> minChordDiff :: Key -> [Pitch] -> Chord -> [Pitch]
+> minChordDiff key prev chord = calcMin prev $ generateAllChords key chord
 >  where
 >  calcMin :: [Pitch] -> [[Pitch]] -> [Pitch]
 >  calcMin = minimumBy . comparing . chordDiff
@@ -333,4 +338,4 @@ The next part of this problem is to create a function autoComp, which combines a
 and autoChord:
 
 > autoComp :: Key -> BassStyle -> ChordProgression -> Music
-> autoComp key bs cp = Instr "bass" (Tempo 3 $ autoBass key bs cp) :=:  Instr "guitar" (Tempo 3 $ autoChord cp)
+> autoComp key bs cp = Instr "bass" (Tempo 3 $ autoBass key bs cp) :=:  Instr "guitar" (Tempo 3 $ autoChord key cp)

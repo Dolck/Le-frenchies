@@ -61,7 +61,10 @@
 > mainVoice = v1 :+: v2 :+: v3 :+: v4 :+: v5 :+: v6
 > 
 > -- Putting it all together:
-> farmSong = Instr "piano" (Tempo 3 $ mainVoice) :=: autoComp Calypso chords
+
+> farmSong = Instr "piano" (Tempo 3 $ mainVoice) :=: autoComp (C, Major) Calypso chords
+
+farmSong = autoComp (C, Major) Calypso chords
 
 
 \end{verbatim} }
