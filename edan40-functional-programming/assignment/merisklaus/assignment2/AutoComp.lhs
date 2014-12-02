@@ -20,7 +20,7 @@ To help us on this assignment, we will be using several imports, one of
 them which is Haskore. Since we will create our own definitions of the types 
 Major and Minor we will exclude these.
 
-> import Haskore hiding (Major, Minor)
+> import Haskore hiding (Major, Minor, Key)
 > import Data.Ratio
 > import Data.List
 > import Data.Ord
@@ -65,6 +65,9 @@ in sequence.
 
 > type ChordProgression   = [Chord]
 
+
+> type Key = (PitchClass, HarmonicQuality)
+
 Scales
 -------------------------------------------------------------------------------
 
@@ -78,6 +81,18 @@ To help us write melodies we use a function called generateScalePattern,
 >   where 
 >    doMath = pitch . add p
 >    add = (+) . absPitch 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+> generateScale :: Key -> [PitchClass]
+> generateScale (p, hq) = map doMath (harmonicQuality hq)
+>   where 
+>    doMath = fst . pitch . add (p, 0) -- we're just converting it to 
+>                                      -- a Pitch to be able to add to it.
+>    add = (+) . absPitch 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 which will provide a scale based on the provided root and harmonic quality.
 
@@ -127,19 +142,49 @@ In the "special" case where we must generate a bass line segment for a
 chord which has a duration of for instance 1/2, we simply split the 
 bass pattern in half and proceed from there.
 
-> autoBass :: BassStyle -> ChordProgression -> Music
-> autoBass bs cp = foldr1 (:+:) $ map (\x -> generateBass bs x) cp 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+> bassRange = map pitch [absPitch (C, 3) .. absPitch (G, 4)]
+
+Create a list based on the key, in range, sorted, and pick 7 pitches starting from the chords pitch.
+
+> bassScale :: Key -> Chord -> [Pitch]
+> bassScale key (pc, hq, _) = take 7 $ dropWhile ((pc/=).fst) $ sortBy (comparing absPitch) $ filter inRange 
+>                                     [
+>                                      (x, oct) |
+>                                      x <- generateScale key, 
+>                                      oct <- [(snd . head $ bassRange) .. (snd . last $ bassRange)]
+>                                     ]
+>   where inRange =  flip elem (map absPitch bassRange) . absPitch 
+
+> autoBass :: Key -> BassStyle -> ChordProgression -> Music
+> autoBass key bs cp = foldr1 (:+:) $ map generateBass cp 
 >   where
->     generateBass :: BassStyle -> Chord -> Music
->     generateBass bs (pc, hs, dur) = line $ map (bassNoteToMusic (getScale (pc, hs, dur))) baseLine 
+>     generateBass :: Chord -> Music
+>     generateBass (pc, hs, dur) = line $ map (bassNoteToMusic $ bassScale key (pc, hs, dur) ) baseLine 
 >       where
 >         baseLine = takePart (bassStyle bs) $ dur
 >         bassNoteToMusic :: [Pitch] -> BassNote -> Music
 >         bassNoteToMusic _ (Silence d)       = Rest d
 >         bassNoteToMusic scale (Sound pos d) = Note (scale !! pos) d [Volume 60]
->         getScale (pc, hms, _)  = generateScalePattern (pc, 3) $ hms 
 >         takePart :: [a] -> Ratio Int -> [a]
 >         takePart xs x = take (length xs `div` denominator x) xs
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+ autoBass :: BassStyle -> ChordProgression -> Music
+ autoBass bs cp = foldr1 (:+:) $ map (\x -> generateBass bs x) cp 
+   where
+     generateBass :: BassStyle -> Chord -> Music
+     generateBass bs (pc, hs, dur) = line $ map (bassNoteToMusic (getScale (pc, hs, dur))) baseLine 
+       where
+         baseLine = takePart (bassStyle bs) $ dur
+         bassNoteToMusic :: [Pitch] -> BassNote -> Music
+         bassNoteToMusic _ (Silence d)       = Rest d
+         bassNoteToMusic scale (Sound pos d) = Note (scale !! pos) d [Volume 60]
+         getScale (pc, hms, _)  = generateScalePattern (pc, 3) $ hms 
+         takePart :: [a] -> Ratio Int -> [a]
+         takePart xs x = take (length xs `div` denominator x) xs
 
 
 Generating the Chord Voicing
@@ -204,6 +249,19 @@ Example:
 >                                             ]
 >   where inRange =  flip elem (map absPitch chordRange) . absPitch 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+> permittedTones' :: Key -> Chord -> [Pitch]
+> permittedTones' key (pc, hq, _) =  dropWhile ((pc/=).fst) $ sortBy (comparing absPitch) $ filter inRange 
+>                                     [
+>                                      (x, oct) |
+>                                      x <- generateScale key, 
+>                                      oct <- [(snd . head $ chordRange) .. (snd . last $ chordRange)]
+>                                     ]
+>   where inRange =  flip elem (map absPitch chordRange) . absPitch 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 This function generates all *chords* of length 3 based on a list of Pitches, 
 another requirement is that a *chord* cannot contain two pitches of the exact same pitch.
@@ -269,10 +327,10 @@ To convert our *chords* to music we will have to get the duration of the previou
 This function converts a Chord into notes played in parallel. 
 
 > chordToMusic :: [Pitch] -> Chord -> Music
-> chordToMusic ps (_, _, dur) = foldr1 (:=:) (map (\x -> (Note x dur [Volume 60])) ps)
+> chordToMusic ps (_, _, dur) = foldr1 (:=:) (map (\x -> (Note x dur [Volume 70])) ps)
 
 The next part of this problem is to create a function autoComp, which combines autoBass
 and autoChord:
 
-> autoComp :: BassStyle -> ChordProgression -> Music
-> autoComp bs cp = Instr "bass" (Tempo 3 $ autoBass bs cp) :=:  Instr "guitar" (Tempo 3 $ autoChord cp)
+> autoComp :: Key -> BassStyle -> ChordProgression -> Music
+> autoComp key bs cp = Instr "bass" (Tempo 3 $ autoBass key bs cp) :=:  Instr "guitar" (Tempo 3 $ autoChord cp)
