@@ -10,7 +10,7 @@
 > 
 > -- note updaters for mappings
 > vol  n = n   v
-> v      = [Volume 0]
+> v      = [Volume 50]
 > lmap f l = line (map f l)
 > 
 > -- repeat something n times
@@ -37,6 +37,6 @@
 > mainVoice = v1 :+: v2 :+: v1
 > 
 > -- Putting it all together:
-> twinkleTwinkle = Instr "piano" (Tempo 3 $ mainVoice) :=: autoComp (C, Major) Basic chords
+> twinkleTwinkle = (Instr "piano" (Tempo 3 $ mainVoice)) :=: autoComp (C, Major) Basic chords
 
 \end{verbatim} }
