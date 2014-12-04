@@ -1,5 +1,8 @@
 --By Tim Dolck
 
+import Data.List
+import Data.Ord
+
 --1:
 --An application of the string alignment problem to computer science is the fact that the maximal 
 --common subsequence problem (MCS) is a special case of the string alignment problem.Assuming we 
@@ -18,18 +21,48 @@ scoreMismatch = -1
 scoreSpace = -2
 
 --2a
-similarityScore :: String -> String -> Int
-similarityScore string1 = sum . zipWith score string1
-  where
-    score :: Char -> Char -> Int
+score :: Char -> Char -> Int
     score '-' _ = scoreSpace
     score _ '-' = scoreSpace
     score c1 c2
       | c1 == c2  = scoreMatch
       | otherwise = scoreMismatch
 
+similarityScore :: String -> String -> Int
+similarityScore string1 = sum . zipWith score string1
+  where
+    
 
 
+
+--2b
+--Attaches heads to both lists in a tuple for every tuple in a list
+attachHeads :: a -> a -> [([a],[a])] -> [([a],[a])] 
+attachHeads h1 h2 aList = [(h1:xs,h2:ys) | (xs,ys) <- aList]
+
+--2c
+maximaBy :: Ord b => (a -> b) -> [a] -> [a] 
+maximaBy valueFcn xs = filter scoreFilter xs
+  where
+    scoreFilter x = vMax == valueFcn x
+    vMax = maximum $ map valueFcn xs
+
+
+--2d
 type AlignmentType = (String,String)
 
---optimalAlignments :: Int -> Int -> Int -> String -> String -> [AlignmentType]
+
+optAlignments :: String -> String -> [AlignmentType]
+optAlignments string1 string2
+
+
+
+
+
+
+
+
+
+
+
+
