@@ -166,7 +166,7 @@ Create a list based on the key, in range, sorted, and pick 7 pitches starting fr
 >         baseLine = takePart (bassStyle bs) $ dur
 >         bassNoteToMusic :: [Pitch] -> BassNote -> Music
 >         bassNoteToMusic _ (Silence d)       = Rest d
->         bassNoteToMusic scale (Sound pos d) = Note (scale !! pos) d [Volume 60]
+>         bassNoteToMusic scale (Sound pos d) = Note (scale !! pos) d [Volume 80]
 >         takePart :: [a] -> Ratio Int -> [a]
 >         takePart xs x = take (length xs `div` denominator x) xs
 
@@ -251,6 +251,20 @@ Example:
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+> getChordPattern :: Key -> Chord -> HarmonicQuality
+> getChordPattern key (pc, hq, _ ) = chordPatternTable hq $ elemIndex pc (generateScale key)
+>   where
+>     chordPatternTable :: HarmonicQuality -> (Maybe Int) -> HarmonicQuality 
+>     chordPatternTable Major (Just 0)  = Ionian
+>     chordPatternTable Major (Just 1)  = Mixolonyan 
+>     chordPatternTable Major (Just 3)  = Lydian 
+>     chordPatternTable Major (Just 4)  = Mixolonyan 
+>     chordPatternTable Minor (Just 1)  = Dorian
+>     chordPatternTable Minor (Just 2)  = Phrygian
+>     chordPatternTable Minor (Just 5)  = Aeolian
+>     chordPatternTable _ Nothing       = error "AutoChord: Chord doesn't exist in key-scale"
+>     chordPatternTable _ _             = error "AutoChord: Chordpattern doesn't exist in table"
+
 > permittedTones :: Key -> Chord -> [Pitch]
 > permittedTones key (pc, hq, _) =  sortBy (comparing absPitch) $ filter inRange 
 >                                     [
@@ -261,8 +275,9 @@ Example:
 >   where inRange =  flip elem (map absPitch chordRange) . absPitch 
 
 > generateScaleOnChord :: Key -> Chord -> [PitchClass]
-> generateScaleOnChord key (pc, hq, _) = [ chordScale !! x | x <- (take 3 $ harmonicQuality hq)]
->  where chordScale = take 7 $ dropWhile ((pc/=)) $ cycle (generateScale key)
+> generateScaleOnChord key chord@(pc, hq, _) = [ chordScale !! x | x <- (take 3 $ harmonicQuality chordHarmonicQuality)]
+>  where chordScale = take 7 $ dropWhile ((pc/=)) $ cycle (generateScale (pc, chordHarmonicQuality))
+>        chordHarmonicQuality = getChordPattern key chord
 > -- check if pc elem (generateScale key) or else this one goes on forever.
 
 
@@ -332,10 +347,10 @@ To convert our *chords* to music we will have to get the duration of the previou
 This function converts a Chord into notes played in parallel. 
 
 > chordToMusic :: [Pitch] -> Chord -> Music
-> chordToMusic ps (_, _, dur) = foldr1 (:=:) (map (\x -> (Note x dur [Volume 70])) ps)
+> chordToMusic ps (_, _, dur) = foldr1 (:=:) (map (\x -> (Note x dur [Volume 40])) ps)
 
 The next part of this problem is to create a function autoComp, which combines autoBass
 and autoChord:
 
 > autoComp :: Key -> BassStyle -> ChordProgression -> Music
-> autoComp key bs cp = Instr "bass" (Tempo 3 $ autoBass key bs cp) :=:  Instr "guitar" (Tempo 3 $ autoChord key cp)
+> autoComp key bs cp = Instr "bass" (Tempo 3 $ autoBass key bs cp) :=:  Instr "piano" (Tempo 3 $ autoChord key cp)
