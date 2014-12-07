@@ -101,35 +101,3 @@ fastAlignments xs ys = snd $ getFastTable (length xs) (length ys)
     x i = xs!!(i-1)
     y j = ys!!(j-1)
 
-optLength :: String -> String -> Int
-optLength xs ys = optLen (length xs) (length ys)
-  where
-    optLen i j = optTable!!i!!j
-    optTable = [[ optEntry i j | j <- [0..]] | i <- [0..]]
-    optEntry :: Int -> Int -> Int
-    optEntry i 0 = scoreSpace * i
-    optEntry 0 j = scoreSpace * j
-    optEntry i j
-      | x == y = scoreMatch + optLen (i-1) (j-1)
-      | otherwise = maximum [scoreMismatch + optLen (i-1) (j-1), scoreSpace + optLen i (j-1), scoreSpace + optLen (i-1) j]
-      where
-        x = xs!!(i-1)
-        y = ys!!(j-1)
-
-opAlig :: String -> String -> (Int, [AlignmentType])
-opAlig xs ys = let list = opLength xs ys in (optLength (fst $ head list) (snd $ head list), list)
-  where
-    opLength :: String -> String -> [AlignmentType]
-    opLength xs ys = opLen (length xs) (length ys)
-    opLen i j = opTable!!i!!j
-    opTable = [[ opEntry i j | j <- [0..]] | i <- [0..]]
-    opEntry :: Int -> Int -> [AlignmentType]
-    opEntry 0 0 = [("","")]
-    opEntry i 0 = attachTails (x i) '-' $ opLen (i-1) 0
-    opEntry 0 j = attachTails '-' (y j) $ opLen 0 (j-1)
-    opEntry i j = maximaBy (sum . eval) $ (attachTails (x i) (y j) $ opLen (i-1) (j-1)) ++ (attachTails (x i) '-' $ opLen (i-1) j) ++ (attachTails '-' (y j) $ opLen i (j-1))
-    eval = uncurry $ zipWith score
-    x i = xs!!(i-1)
-    y j = ys!!(j-1)
-
-
