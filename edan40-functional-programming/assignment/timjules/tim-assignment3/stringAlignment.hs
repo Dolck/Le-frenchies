@@ -20,7 +20,7 @@ scoreMatch = 1
 scoreMismatch = -1
 scoreSpace = -2
 
---2a
+--2a A farily slow and dumb solution:
 score :: Char -> Char -> Int
     score '-' _ = scoreSpace
     score _ '-' = scoreSpace
