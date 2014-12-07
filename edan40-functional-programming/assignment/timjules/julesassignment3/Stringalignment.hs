@@ -1,35 +1,16 @@
---String Alignment
---Compare two strings and give all optimal alignments
-
---Input: Two strings s and t, and values for scoreMatch, scoreMismatch, and scoreSpace.
---Output: All optimal alignments between s and t.
+-- String Alignment
+-- Compare two strings and give all optimal alignments
+-- by Julian Kroné, dat11jkr
 
 import Data.List
 import Data.Ord
-import Data.Char
 type AlignmentType = (String, String)
-
--- w r i t - e r s
--- v i n t n e r -
 
 scoreMatch = 1
 scoreMismatch = -1
 scoreSpace = -2
 
--- H A S K E L L
--- P A S C A - L
--- -2
---
--- H - A S K E L L
--- - P A S C - A L
--- -5
-
-{-
-  1. If we from our algorithm solving the string alignment problem, set the score from spaces and mismatches to 0, this would result in only matches recieving score -> MCS
--}
-
-
-
+-- 1. If we from our algorithm solving the string alignment problem, set the score from spaces and mismatches to 0, this would result in only matches recieving score -> MCS
 
 -- 2.a
 similarityScore :: String -> String -> Int
@@ -37,7 +18,6 @@ similarityScore "" "" = 0
 similarityScore "" (x:xs) = scoreSpace + similarityScore "" xs
 similarityScore (x:xs) "" = scoreSpace + similarityScore xs ""
 similarityScore (x:xs) (y:ys) = maximum [score x y + similarityScore xs ys, score x '-' + similarityScore xs (y:ys), score '-' y + similarityScore (x:xs) ys]
-
 
 score :: Char -> Char -> Int
 score c1 c2
