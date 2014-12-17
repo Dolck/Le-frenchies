@@ -1,4 +1,8 @@
+--String Alignment
 --By Tim Dolck
+
+import Data.List
+import Data.Ord
 
 --1:
 --An application of the string alignment problem to computer science is the fact that the maximal 
@@ -6,30 +10,86 @@
 --had access to an algorithm for the string alignment problem, how could we use it to solve MCS for strings?
 
 --Ans: Set score match to 1 and score mismatch and score space to 0; Then if we'd run the algorithm with theese
---     values the result would be the maximal common subsequence
-align1a = "HASKELL"
-align1b = "PASCA-L"
-
-align2a = "H-ASKELL"
-align2b = "-PASC-AL"
+--     values the result would be the maximal common subsequence. Thus only matches increases the score
 
 scoreMatch = 1
 scoreMismatch = -1
 scoreSpace = -2
 
---2a
+--2a A farily slow and dumb solution:
+score :: Char -> Char -> Int
+score '-' _ = scoreSpace
+score _ '-' = scoreSpace
+score c1 c2
+  | c1 == c2  = scoreMatch
+  | otherwise = scoreMismatch
+
 similarityScore :: String -> String -> Int
-similarityScore string1 = sum . zipWith score string1
+similarityScore "" "" = 0
+similarityScore "" ys = (*) scoreSpace $ length ys
+similarityScore xs "" = (*) scoreSpace $ length xs
+similarityScore (x:xs) (y:ys) = maximum[score x y + similarityScore xs ys, 
+                                        score '-' y + similarityScore (x:xs) ys,
+                                        score x '-' + similarityScore xs (y:ys)]
+    
+
+--2b
+--Attaches heads to lists in a tuple for every tuple in the list
+attachHeads :: a -> a -> [([a],[a])] -> [([a],[a])] 
+attachHeads h1 h2 aList = [(h1:xs,h2:ys) | (xs,ys) <- aList]
+
+--2c
+maximaBy :: Ord b => (a -> b) -> [a] -> [a] 
+maximaBy valueFcn xs = filter scoreFilter xs
   where
-    score :: Char -> Char -> Int
-    score '-' _ = scoreSpace
-    score _ '-' = scoreSpace
-    score c1 c2
-      | c1 == c2  = scoreMatch
-      | otherwise = scoreMismatch
+    scoreFilter x = vMax == valueFcn x
+    vMax = maximum $ map valueFcn xs
 
 
-
+--2d
 type AlignmentType = (String,String)
 
---optimalAlignments :: Int -> Int -> Int -> String -> String -> [AlignmentType]
+optAlignments :: String -> String -> [AlignmentType]
+optAlignments "" "" = [("", "")]
+optAlignments "" (y:ys) = attachHeads '-' y $ optAlignments "" ys
+optAlignments (x:xs) "" = attachHeads x '-' $ optAlignments xs ""
+optAlignments (x:xs) (y:ys) = maximaBy sumScore allPoss
+  where
+    sumScore = sum . (uncurry $ zipWith score)
+    allPoss = poss x xs y ys ++ poss '-' (x:xs) y ys ++ poss x xs '-' (y:ys)
+      where
+        poss a as b bs = attachHeads a b $ optAlignments as bs
+
+--2e
+outputOptAlignments :: String -> String -> IO ()
+outputOptAlignments = (.) (mapM_ printAlignment) . optFastAlignments
+  where
+    printAlignment :: AlignmentType -> IO ()
+    printAlignment (a, b) = putStrLn (a ++ "\n" ++ b ++ "\n")
+
+
+--3 
+attachTails :: a -> a -> [([a],[a])] ->[([a],[a])]
+attachTails t1 t2 list = [(xs ++ [t1], ys ++ [t2]) | (xs,ys) <- list]
+
+--fast solution
+optFastAlignments :: String -> String -> [AlignmentType]
+optFastAlignments s1 s2 = snd $ tableGet (length s1) (length s2)
+  where
+    tableGet :: Int -> Int -> (Int, [AlignmentType])
+    tableGet i j = table!!i!!j
+    table :: [[(Int, [AlignmentType])]]
+    table = [[ entry i j | j <- [0..]] | i <- [0..] ]
+    attachAndAdd :: Int -> Char -> Char -> (Int, [AlignmentType]) -> (Int, [AlignmentType])
+    attachAndAdd s t1 t2 (acc, p) = (s + acc, attachTails t1 t2 p)
+    entry :: Int -> Int -> (Int, [AlignmentType])
+    entry 0 0 = (0, [("","")])
+    entry i 0 = attachAndAdd scoreSpace (s1s i) '-' $ tableGet (i-1) 0
+    entry 0 j = attachAndAdd scoreSpace '-' (s2s j) $ tableGet 0 (j-1)
+    entry i j = (fst $ head maxis, concatMap snd maxis)
+      where
+        maxis = maximaBy fst [attachAndAdd (score (s1s i) (s2s j)) (s1s i) (s2s j) $ tableGet (i-1) (j-1),
+                              attachAndAdd scoreMismatch (s1s i) '-' $ tableGet (i-1) j,
+                              attachAndAdd scoreMismatch '-' (s2s j) $ tableGet i (j-1)]
+    s1s i = s1 !! (i-1)
+    s2s j = s2 !! (j-1)
