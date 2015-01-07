@@ -22,5 +22,26 @@
         | even i = "even"
         | otherwise = "strange"
 ```
-* **Local definitions** - functions that can only be used loacally (within function), use with "where".
+* **Local definitions** - functions that can only be used loacally (within function), use with "where" or "let-in".
+* **Indentation** - denotes continuation
+* **Polymorphic types** - The type of *(.)* is *(b -> c) -> (a -> b) -> a -> c*... (f.g) x = f (g x) 
+* **Type variables begin with a lowercase letter**
+* **Tuples** - Fixed number of elements, may be of different types. *(4,"four") :: (Int, String)*. Triples, quadruples, etc. analogously
+* **Lists** - Arbitrary number of elements of the same type *[1,2,3,4], [1..10], [1,3..10], [2..] :: [Int]*
+* **Strings** - A list of chars, *String = [Char]*
+* **List comprehensions** - allIntPairs = [ (i,j) | i<-[0..], j<-[0..i]]
+* **Type synonyms** - type Name = String
+* **Enumerated types** - data Color = Red | Green | Blue | Yellow | Black | White
+* **Algebraic datatypes** - data Price = Euro Int Int | Dollar Int Int
+* **Recursive type definitions** - data IntTree = IntEmpty | IntNode Int IntTree IntTree
+* **Type classes** - Somewhat like Java interfaces
+* **Input/Output** - The abstract datatype IO a of I/O actions. putChar :: char -> IO ()
+* **Do-notation** - 
+```
+    greeting :: IO ()
+    greeting = do
+        putStrLn "Enter your name"
+        name <- getLine
+        putStrLn ("You " ++ name ++ ", me Haskell!")
+```
 * 
