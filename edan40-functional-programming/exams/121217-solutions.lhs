@@ -51,3 +51,31 @@ From the soltions:
 
 4.
 
+Q: Assuming m is a monadic object, show how fmap f m can be 
+implemented with a do expression. Then rewrite using bind.
+
+A:
+
+fm :: Functor f => (a -> b) -> f a -> f b
+
+> fm f m = do x <- m 
+>             return (f x)
+
+rewritten using bind:
+
+> fm' f m = m >>= \x -> return (f x)
+
+
+5:
+
+Q: Are the following two expressions equivalent?
+
+> h = [ (x,y) | x <- [1..10000], x == 2000, y <- [1..100], odd y]
+> h' = [ (x,y) | x <- [1..10000], y <- [1..100], x == 2000, odd y]
+
+A: Their result are equivalent. The actual computations might not 
+	be equivalent?
+
+
+6:
+
