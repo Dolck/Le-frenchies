@@ -79,3 +79,21 @@ A: Their result are equivalent. The actual computations might not
 
 6:
 
+Q: Implement a data type Tree and a predicate subTree 
+
+A:
+
+> data Tree = Leaf String | Node String Tree Tree
+> t1 = Node "one" (Leaf "two") t2
+> t2 = Leaf "three"
+> t3 = Node "over" t1 t2
+
+> subTree :: Tree -> Tree -> Bool
+> subTree (Node _ _ _) (Leaf _) = False
+> subTree (Leaf str1) (Leaf str2) = str1 == str2
+> subTree t1@(Leaf str1) (Node str2 t21 t22)
+> 	| str1 == str2 = True
+> 	| otherwise = (||) (subTree t1 t21) $ subTree t1 t22
+> subTree t1@(Node str1 t11 t12) (Node str2 t21 t22)
+>	| str1 == str2 && ((&&) (subTree t11 t21) $ subTree t12 t22) = True
+> 	| otherwise = (||) (subTree t1 t21) $ subTree t1 t22
