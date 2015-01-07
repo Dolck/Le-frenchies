@@ -32,8 +32,8 @@ instead of list comprehensions.
 
 A:
 
-> h' f ys = map f $ map (4+) $ takeWhile (<5) ys
+> h' f ys = map f $ map (4+) $ filter (<5) ys
 
 or even nicer:
 
-> h'' f ys = map (f . (4+)) $ takeWhile (<5) ys
+> h'' f ys = map (f . (4+)) $ filter (<5) ys
