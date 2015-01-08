@@ -93,8 +93,12 @@ A:
 
 zipWith :: (a->b->c) -> [a]->[b]->[c]
 map :: (a -> b) -> [a] -> [b] 
+(.) :: (b -> c) -> (a -> b) -> a -> c
 
 zipWith map :: [(a -> b)] -> [[a]] -> [[b]]
 takes a list of functions which is applied to every [a] in [[a]] respectivly
 
 map zipWith :: [(a -> b -> c)] -> [[a] -> [b] -> [c]]
+takes a list of functions (a -> b -> c) and returns a list of functions that each take two list and transforms them into a third.
+
+map.zipWith :: (a -> b -> c) -> [[a]] -> [[b] -> [c]]
