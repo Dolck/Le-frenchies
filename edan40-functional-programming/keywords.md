@@ -74,3 +74,9 @@
     m >>= return = m
     m >>= (\x -> k x >>= h) = (m >>= k) >>= h
 ```
+* **Functor** - The Functor class is defined like this:
+```
+    class Functor f where
+        fmap :: (a -> b) -> f a -> f b
+```
+* 
