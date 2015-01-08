@@ -43,3 +43,58 @@ c)
 Nothing
 
 
+3.
+
+Q: 3. Haskell defines functions in so called curried form. Explain what that means and
+what its main advantage is.
+
+A: In haskell every function only takes one argument. 
+In a function that looks like it takes more than one argument there is actually several functions where functions
+are passed between as output/argument. example map :: (a -> b) -> [a] -> [b]. where (a -> b) -> [a] is one function which is
+then used as input to the last function that returns [b].
+
+In real world it is benefitial to use curried functions when you want to partially apply functions.
+Example:
+
+> q = (1+)
+
+> p = map q [1,2,3]
+
+where 1 is partially applied to (+). This returns a function that increases the input by 1.
+
+
+4.
+
+Q: The standard prelude contains the function
+
+replicate' :: (Enum a) => Int -> a -> [a]
+
+The following might seem like reasonable definition for it
+
+> replicate' n x = take n [x,x..]
+
+But it is actually not sufficient. Why not?
+
+A: x must be enumerable!
+
+better solution:
+
+> replicate'' n x = take n $ repeat x
+
+
+5.
+
+Q: Give the types of these three expressions. Also explain what each of the expressions mean.
+zipWith map
+map zipWith
+map.zipWith
+
+A:
+
+zipWith :: (a->b->c) -> [a]->[b]->[c]
+map :: (a -> b) -> [a] -> [b] 
+
+zipWith map :: [(a -> b)] -> [[a]] -> [[b]]
+takes a list of functions which is applied to every [a] in [[a]] respectivly
+
+map zipWith :: [(a -> b -> c)] -> [[a] -> [b] -> [c]]
