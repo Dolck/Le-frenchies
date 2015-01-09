@@ -74,9 +74,32 @@
     m >>= return = m
     m >>= (\x -> k x >>= h) = (m >>= k) >>= h
 ```
+* **READ SLIDES ABOUT MONADS!**
+* **Strict vs non-strict**- If something evaluates to bottom (an error or endless loop), then strict languages will always find the bottom value, non-strict languages not need to!
+* **Laziness** - Evaluate an expression only when its value is needed. Common implementation technique for non-strict languages. Not generally amenable to parallelisation
+* **Lenient evaluation** - Alternative to lazy, somewhere between lazy and strict — more promising for parallelisation.
+* **Normal form** - An expression in normal form is fully evaluated, and no sub-expression could be evaluated any further (i.e. it contains no un-evaluated thunks).
+* ** Weak Head Normal form** - An expression in weak head normal form has been evaluated to the outermost data constructor or lambda abstraction (the head). Sub-expressions may or may not have been evaluated. Therefore, every normal form expression is also in weak head normal form, though the opposite does not hold in general. To determine whether an expression is in weak head normal form, we only have to look at the outermost part of the expression. If it's a data constructor or a lambda, it's in weak head normal form. If it's a function application, it's not.
+* **Consequences of laziness** 
+  * *Space leaks* - foldl (+) 0 (1:2:3:[]) =  (((0 + 1) + 2) + 3), thunks stored until evaluation. Force evaluation using seq
+  * *Short-circuiting*
+```
+    (&&) :: Bool -> Bool -> Bool
+    True && x = x
+    False && _ = False
+```
+  * infinite data structures
+  * efficient pipelining
+  * dynamic programming “for free” (Assignment 3)
+* **Categories** - A category C consists of 
+  1. a class ob(C) of objects
+  2. a class hom(C) of morphisms (also called arrows or maps). Each morphism f has a unique source object a and a target object b. The expression f : a -> b is read "f is a morphism from a to b". hom(a,b) denotes the class of all morphisms from a to b.
+  3. a binary operator o, called compositions of morphisms such that
+   * **Associativity** - if f:a->b, g:b->c, h:c->d, then h o (g o f) = (h o g) o f and
+   * **Identity** - for every object x there exists a morphism 1x:x->x called the identity morphism of x, such that for every morphism f:a->b we have 1b o f = f = f o 1a
 * **Functor** - The Functor class is defined like this:
 ```
     class Functor f where
         fmap :: (a -> b) -> f a -> f b
 ```
-* 
+  Functors are structure-preserving maps between categories
