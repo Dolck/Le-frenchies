@@ -7,11 +7,20 @@ Exam 081022
 Q: Explain what the following expression means:
 
 > n = map (:) 
-> n1 = n [1,2,3]
 
 A:
 
 n :: [a] -> [[a] -> [a]]
+
+Creates one function of every element in the inputted list.
+These functions takes a list as input and prepends it with the element
+
+Example:
+
+ntest (n [1,2,3]) [4,5,6] -> [[1,4,5,6], [2,4,5,6], [3,4,5,6]]
+
+> ntest [] _ = []
+> ntest (f:fs) ys = [f ys] ++ (ntest fs ys)
 
 
 2.
