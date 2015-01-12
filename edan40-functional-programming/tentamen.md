@@ -15,6 +15,7 @@ Typical subjects
 map (const (++))
 const (map (++))
 ----------------  
+```
 (++) :: [a] -> [a] -> [a]
 const :: c -> b -> c
 const (++) :: b -> [a] -> [a] -> [a]
@@ -22,15 +23,18 @@ map :: (d -> e) -> [d] -> [e]
 map (const (++)) :: [b] -> [[a] -> [a] -> [a]]
 map (++) :: [[a]] -> [[a] -> [a]]
 const (map (++)) :: b -> [[a]] -> [[a] -> [a]]
+```
 Start from the innermost function, and work yourself outwards...
 
 2.
+```
 do [1,2,3,4]; "curry"         -> [Char]
 do [1,2,3,4]; return "curry"  -> [[Char]]
 >>= :: m a -> (a -> m b) -> m b
 >>= <=> concatMap
-
+```
 3.
+```
 type churchNatural a = (a -> a) -> (a -> a)
 zeroC, oneC, twoZ :: churchNatural a
 zeroC f = id
@@ -48,4 +52,4 @@ f.(succC twoC f)  ==>
 f.(threeC f)      ==>
 succC threeC f    ==>
 fourC f
-
+```
