@@ -8,10 +8,15 @@ Q: Rewrite into point-free form.
 
 A:
 
-> f' = curry $ ((+) 3) . (uncurry $ flip (/))
+> f' = curry $ (3+) . (uncurry $ flip (/))
 
 > g' x y = map y $ takeWhile ((>=) x) [1..]
-> g'' = flip map . (flip takeWhile [1..]) . (>=)
+> g'' x = flip map $ takeWhile ((>=) x) [1..]
+> g''' = flip map . flip takeWhile [1..] . (>=)
+
+without enumeration:
+
+> g'''' = flip map . flip takeWhile (iterate (1+) 1) . (>=)
 
 
 2.
@@ -31,7 +36,7 @@ a) (.)(:) :: (a -> b) -> a -> [b] -> [b]
 b) (:(.)) :: ?????
 c) ((.):) :: [(b -> c) -> (a -> b) -> a -> c] -> [(b -> c) -> (a -> b) -> a -> c]
 d) ((:):) :: [a -> [a] -> [a]] -> [a -> [a] -> [a]]
-e) (.)(.) :: ?????
+e) (.)(.) :: (a -> b -> c) -> a -> (a1 -> b) -> a1 -> c
 
 
 3.
