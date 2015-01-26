@@ -10,14 +10,14 @@ public class lab1 {
 		Store store = new Store();
 
 		/*
-		 * Beef Patty 	50 17 220 $0.25 
-		 * Bun 			330 9 260 $0.15 
-		 * Cheese 310 6 70 $0.10
-		 * Onions 1 2 10 $0.09 
-		 * Pickles 260 0 5 $0.03 
-		 * Lettuce 3 0 4 $0.04 
-		 * Ketchup 160 0 20 $0.02 
-		 * Tomato 3 0 9 $0.04
+		 * Beef Patty 	50 	17 	220 $0.25 
+		 * Bun 			330 9 	260 $0.15 
+		 * Cheese 		310 6 	70 	$0.10
+		 * Onions 		1 	2 	10 	$0.09 
+		 * Pickles		260 0 	5 	$0.03 
+		 * Lettuce 		3 	0 	4 	$0.04 
+		 * Ketchup 		160 0 	20 	$0.02 
+		 * Tomato 		3 	0 	9 	$0.04
 		 */
 
 		IntVar bp = new IntVar(store, "Beef Patty", 0, 9);
