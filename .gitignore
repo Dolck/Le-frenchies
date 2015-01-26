@@ -3,3 +3,4 @@
 *.o
 *.mid
 .DS_Store
+.metadata
