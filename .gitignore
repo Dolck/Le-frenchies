@@ -4,3 +4,4 @@
 *.mid
 .DS_Store
 .metadata
+*/bin
