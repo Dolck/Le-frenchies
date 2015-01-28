@@ -10,14 +10,9 @@ public class lab1 {
 		Store store = new Store();
 
 		/*
-		 * Beef Patty 	50 	17 	220 $0.25 
-		 * Bun 			330 9 	260 $0.15 
-		 * Cheese 		310 6 	70 	$0.10
-		 * Onions 		1 	2 	10 	$0.09 
-		 * Pickles		260 0 	5 	$0.03 
-		 * Lettuce 		3 	0 	4 	$0.04 
-		 * Ketchup 		160 0 	20 	$0.02 
-		 * Tomato 		3 	0 	9 	$0.04
+		 * Beef Patty 50 17 220 $0.25 Bun 330 9 260 $0.15 Cheese 310 6 70 $0.10
+		 * Onions 1 2 10 $0.09 Pickles 260 0 5 $0.03 Lettuce 3 0 4 $0.04 Ketchup
+		 * 160 0 20 $0.02 Tomato 3 0 9 $0.04
 		 */
 
 		IntVar bp = new IntVar(store, "Beef Patty", 1, 5);
@@ -47,36 +42,27 @@ public class lab1 {
 				new IntVar[] { bp, bun, c, o, p, l, k, t }, new int[] { 220,
 						260, 70, 10, 5, 4, 20, 9 }, "<=", 3000));
 
-    IntVar cost = new IntVar(store, "cost", -10000, 0);
-    int[] costs = new int[]{-25, -15, -10, -9, -3, -4, -2, -4};
-    IntVar[] allCosts =  new IntVar[8];
-    for (int i = 0; i < 8; i++){
-      IntVar tmp = new IntVar(store, -1000, 0);
-      store.impose(new XmulCeqZ(vars[i], costs[i], tmp));
-      allCosts[i] = tmp;
-    }
-    store.impose(new Sum(allCosts, cost));
-		// Cost
-		//store.impose(new Linear(store,
-		//		new IntVar[] { bp, bun, c, o, p, l, k, t }, new int[] { -25,
-		//				-15, -10, -9, -3, -4, -2, -4 }, "<", 0));
+		IntVar cost = new IntVar(store, "cost", -10000, 0);
+		int[] costs = new int[] { -25, -15, -10, -9, -3, -4, -2, -4 };
+
+		store.impose(new SumWeight(vars, costs, cost ));
 
 		Search<IntVar> label = new DepthFirstSearch<IntVar>();
 
 		SelectChoicePoint<IntVar> select = new SimpleSelect<IntVar>(vars,
 				new SmallestDomain<IntVar>(), new IndomainMin<IntVar>());
-		
+
 		label.setSolutionListener(new PrintOutListener<IntVar>());
 		label.getSolutionListener().searchAll(true);
-		
+
 		boolean result = label.labeling(store, select, cost);
-		
-		if(result) {
+
+		if (result) {
 			System.out.println("Solution: " + Arrays.asList(vars));
-      System.out.println("Total cost: " + cost);
-    } else {
+			System.out.println("Total cost: " + cost);
+		} else {
 			System.out.println("NOOOO!");
-    }
+		}
 	}
 
 }
