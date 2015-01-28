@@ -20,14 +20,14 @@ public class lab1 {
 		 * Tomato 		3 	0 	9 	$0.04
 		 */
 
-		IntVar bp = new IntVar(store, "Beef Patty", 0, 9);
-		IntVar bun = new IntVar(store, "Bun", 0, 10);
-		IntVar c = new IntVar(store, "Cheese", 0, 10);
-		IntVar o = new IntVar(store, "Onion", 0, 75);
-		IntVar p = new IntVar(store, "Pickles", 0, 12);
-		IntVar l = new IntVar(store, "Lettuce", 0, 750);
-		IntVar k = new IntVar(store, "Ketchup", 0, 19);
-		IntVar t = new IntVar(store, "Tomato", 0, 334);
+		IntVar bp = new IntVar(store, "Beef Patty", 1, 5);
+		IntVar bun = new IntVar(store, "Bun", 1, 5);
+		IntVar c = new IntVar(store, "Cheese", 1, 5);
+		IntVar o = new IntVar(store, "Onion", 1, 5);
+		IntVar p = new IntVar(store, "Pickles", 1, 5);
+		IntVar l = new IntVar(store, "Lettuce", 1, 5);
+		IntVar k = new IntVar(store, "Ketchup", 1, 5);
+		IntVar t = new IntVar(store, "Tomato", 1, 5);
 
 		IntVar[] vars = { bp, bun, c, o, p, l, k, t };
 
@@ -46,10 +46,20 @@ public class lab1 {
 		store.impose(new Linear(store,
 				new IntVar[] { bp, bun, c, o, p, l, k, t }, new int[] { 220,
 						260, 70, 10, 5, 4, 20, 9 }, "<=", 3000));
+
+    IntVar cost = new IntVar(store, "cost", -10000, 0);
+    int[] costs = new int[]{-25, -15, -10, -9, -3, -4, -2, -4};
+    IntVar[] allCosts =  new IntVar[8];
+    for (int i = 0; i < 8; i++){
+      IntVar tmp = new IntVar(store, -1000, 0);
+      store.impose(new XmulCeqZ(vars[i], costs[i], tmp));
+      allCosts[i] = tmp;
+    }
+    store.impose(new Sum(allCosts, cost));
 		// Cost
-		store.impose(new Linear(store,
-				new IntVar[] { bp, bun, c, o, p, l, k, t }, new int[] { -25,
-						-15, -10, -9, -3, -4, -2, -4 }, "<", 0));
+		//store.impose(new Linear(store,
+		//		new IntVar[] { bp, bun, c, o, p, l, k, t }, new int[] { -25,
+		//				-15, -10, -9, -3, -4, -2, -4 }, "<", 0));
 
 		Search<IntVar> label = new DepthFirstSearch<IntVar>();
 
@@ -59,12 +69,14 @@ public class lab1 {
 		label.setSolutionListener(new PrintOutListener<IntVar>());
 		label.getSolutionListener().searchAll(true);
 		
-		boolean result = label.labeling(store, select);
+		boolean result = label.labeling(store, select, cost);
 		
-		if(result)
+		if(result) {
 			System.out.println("Solution: " + Arrays.asList(vars));
-		else
+      System.out.println("Total cost: " + cost);
+    } else {
 			System.out.println("NOOOO!");
+    }
 	}
 
 }
