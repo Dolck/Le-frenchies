@@ -59,7 +59,7 @@ insert into Movies values
 insert into Theaters values
     ('SF', 10);
 
-insert into Performances values
+insert into Performances(movieTitle, pDate, theaterName) values
     ('Star Wars', curdate(), 'SF');
 
 insert into Reservations(userName, movieTitle, pDate) values
