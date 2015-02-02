@@ -32,8 +32,10 @@ attachHeads h1 h2 aList = [(h1:xs,h2:ys) | (xs,ys) <- aList]
 
 -- 2.c
 maximaBy :: Ord b => (a -> b) -> [a] -> [a]
-maximaBy f = head . groupBy equality . sortBy (flip $ comparing f)
-  where equality a b = f a == f b
+maximaBy f xs = filter isMax xs
+  where
+    isMax x = max == f x
+    max = f $ maximumBy (comparing f) xs
 
 -- 2.d unoptimized
 optAlignments :: String -> String -> [AlignmentType]
@@ -58,7 +60,26 @@ outputOptAlignments s1 s2 = putStrLn $ format s1 s2
 attachTails :: a -> a -> [([a],[a])] ->[([a],[a])]
 attachTails t1 t2 aList = [(xs++[t1],ys++[t2]) | (xs,ys) <- aList]
 
--- Optimized
+-- Optimized similarity score
+fastSimilarityScore :: String -> String -> Int
+fastSimilarityScore xs ys = getScore (length xs) (length ys)
+  where
+    getScore :: Int -> Int -> Int
+    getScore i j = scoreTable!!i!!j
+    scoreTable :: [[Int]]
+    scoreTable = [[scoreEntry i j | j <- [0..]] | i <- [0..]]
+    scoreEntry :: Int -> Int -> Int
+    scoreEntry 0 0 = 0
+    scoreEntry i 0 = scoreSpace*i
+    scoreEntry 0 j = scoreSpace*j
+    scoreEntry i j = maximum [score x y + getScore (i-1) (j-1),
+                              score x '-' + getScore (i-1) j, 
+                              score '-' y + getScore i (j-1)]
+      where
+        x = xs!!(i-1)
+        y = ys!!(j-1)
+
+-- Optimized string alignment
 fastAlignments :: String -> String -> [AlignmentType]
 fastAlignments xs ys = snd $ getFastTable (length xs) (length ys)
   where
@@ -75,8 +96,8 @@ fastAlignments xs ys = snd $ getFastTable (length xs) (length ys)
         (acc2, vec2) = getFastTable i (j-1)
         (acc3, vec3) = getFastTable (i-1) j
         current = maximaBy fst [((score (x i) (y j)) + acc1, attachTails (x i) (y j) vec1), 
-                                (scoreMismatch + acc2, attachTails '-' (y j) vec2),
-                                (scoreMismatch + acc3, attachTails (x i) '-' vec3)]
+                                ((score '-' (y j)) + acc2, attachTails '-' (y j) vec2),
+                                ((score (x i) '-') + acc3, attachTails (x i) '-' vec3)]
 
     x i = xs!!(i-1)
     y j = ys!!(j-1)
