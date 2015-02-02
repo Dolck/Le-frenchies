@@ -23,8 +23,8 @@ create table Movies (
 );
 
 create table Theaters (
-    name        varchar(30),
-    nbrSeats    int unsigned,
+    name        varchar(30) not null,
+    nbrSeats    int unsigned not null,
     primary key (name)
 );
 
@@ -32,6 +32,7 @@ create table Performances (
     movieTitle  varchar(30) not null,
     pDate       date not null,
     theaterName varchar(30) not null,
+    availSeats  integer not null,
     primary key (movieTitle, pDate),
     foreign key (movieTitle) references Movies(title),
     foreign key (theaterName) references Theaters(name)
@@ -51,7 +52,8 @@ start transaction;
 
 -- Insert data into the tables.
 insert into Users values
-    ('user1', 'name1', null, '0123456789');
+    ('user1', 'name1', 'address1', '0123456789'),
+    ('user2', 'name2', null, '0123456788');
 
 insert into Movies values
     ('Star Wars');
@@ -59,8 +61,8 @@ insert into Movies values
 insert into Theaters values
     ('SF', 10);
 
-insert into Performances(movieTitle, pDate, theaterName) values
-    ('Star Wars', curdate(), 'SF');
+insert into Performances(movieTitle, pDate, theaterName, availSeats) values
+    ('Star Wars', curdate(), 'SF', (select nbrSeats from Theaters where name = 'SF'));
 
 insert into Reservations(userName, movieTitle, pDate) values
     ('user1', 'Star Wars', curDate());
