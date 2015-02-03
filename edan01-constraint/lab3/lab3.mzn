@@ -17,3 +17,20 @@ dist = [|99, 10, 11,  6, 99, 99, 99, 99, 99, 99,
 array[1..10] of int: fuel;
 
 fuel = [10, 10, 8, 12, 13, 9, 10, 11, 12, 8];
+
+var 1..4: one;
+var 1..4: two;
+var 1..6: three;
+var 1..7: four;
+var 3..7: five;
+var 3..8: six;
+var 4..9: seven;
+var 6..10: eight;
+var 7..10: nine;
+var 8..10: ten;
+
+array[1..10]of var int: fd = [one,two,three,four,five,six,seven,eight,nine,ten];
+
+
+
+
