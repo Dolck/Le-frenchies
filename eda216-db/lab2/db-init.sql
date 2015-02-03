@@ -48,6 +48,8 @@ create table Reservations (
     foreign key (movieTitle, pDate) references Performances(movieTitle, pDate)
 );
 
+set foreign_key_checks = 1;
+
 start transaction;
 
 -- Insert data into the tables.
@@ -62,11 +64,9 @@ insert into Theaters values
     ('SF', 10);
 
 insert into Performances(movieTitle, pDate, theaterName, availSeats) values
-    ('Star Wars', curdate(), 'SF', (select nbrSeats from Theaters where name = 'SF'));
+    ('Star Wars', '2015-02-03', 'SF', (select nbrSeats from Theaters where name = 'SF'));
 
 insert into Reservations(userName, movieTitle, pDate) values
-    ('user1', 'Star Wars', curDate());
+    ('user1', 'Star Wars', '2015-02-03');
 
 commit;
-
-set foreign_key_checks = 1;
