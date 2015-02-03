@@ -29,7 +29,7 @@ public class lab1 {
 		store.impose(new XeqY(l, k));
 		store.impose(new XeqY(p, t));
 
-		// Sodium
+		// Sodiumcost
 		store.impose(new Linear(store,
 				new IntVar[] { bp, bun, c, o, p, l, k, t }, new int[] { 50,
 						330, 310, 1, 260, 3, 160, 3 }, "<=", 3000));
