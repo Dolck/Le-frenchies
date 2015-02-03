@@ -13,6 +13,7 @@ int: ten = 11;
 int: root = 1;
 
 var 1..10000: totalDistance;
+var 1..10000: totalCost;
 
 int: maxTank = 10;
 array[1..11, 1..11] of int: dist;
@@ -29,15 +30,23 @@ dist = [|99, 10, 11,  6, 99, 99, 99, 99, 99, 99,  0,
         |99, 99, 99, 99, 99, 99, 99,  9,  2,  0,  0,
         | 0, 99, 99, 99, 99, 99, 99, 99, 99,  0, 99|];
 
-array[1..11] of int: fuel = [10, 10, 8, 12, 13, 9, 10, 11, 12, 8, 99];
+array[1..11] of int: fuelPrice = [10, 10, 8, 12, 13, 9, 10, 11, 12, 8, 99];
 
 array[1..11] of var int: fd = [one,two,three,four,five,six,seven,eight,nine,ten,root];
 
+array[1..11] of var 0..maxTank: filling;
 
-constraint sum (i in fd) (dist[i,fd[i]]) = totalDistance;
+array[1..11] of var 0..maxTank: ag;
+
+
+constraint ag[1] = 0;
+constraint forall (i in 1..10) (ag[fd[i]] = ag[i]-dist[i,fd[i]]+filling[fd[i]]);
+constraint forall (i in 1..11) (filling[i] <= maxTank-ag[i] /\ filling[i] >= ag[i]-dist[i,fd[i]]);
+constraint sum (i in 1..11) (filling[i]*fuelPrice[i]) = totalCost;
+%constraint sum (i in fd) (dist[i,fd[i]]) = totalDistance;
 constraint subcircuit(fd);
 
-solve minimize totalDistance;
+solve minimize totalCost;
 
 output[show(fd)];
 
