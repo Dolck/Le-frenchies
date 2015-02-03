@@ -41,13 +41,12 @@ array[1..11] of var 0..maxTank: ag;
 
 constraint ag[1] = 0;
 constraint forall (i in 1..10) (ag[fd[i]] = ag[i]-dist[i,fd[i]]+filling[fd[i]]);
-constraint forall (i in 1..11) (filling[i] <= maxTank-ag[i] /\ filling[i] >= ag[i]-dist[i,fd[i]]);
+constraint forall (i in 1..11) (filling[i] <= maxTank-ag[i] /\ filling[i] >= dist[i,fd[i]] - ag[i]);
 constraint sum (i in 1..11) (filling[i]*fuelPrice[i]) = totalCost;
-%constraint sum (i in fd) (dist[i,fd[i]]) = totalDistance;
+constraint sum (i in fd) (dist[i,fd[i]]) = totalDistance;
 constraint subcircuit(fd);
 
 solve minimize totalCost;
 
-output[show(fd)];
-
+output[show(fd), show(filling), show(ag)];
 
