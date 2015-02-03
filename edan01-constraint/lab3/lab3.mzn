@@ -14,7 +14,7 @@ int: root = 1;
 
 var 1..10000: totalDistance;
 
-int: tank = 10;
+int: maxTank = 10;
 array[1..11, 1..11] of int: dist;
 
 dist = [|99, 10, 11,  6,99,99,99,99,99,99,0,
@@ -33,8 +33,8 @@ array[1..11] of int: fuel = [10, 10, 8, 12, 13, 9, 10, 11, 12, 8, 99];
 
 array[1..11] of var int: fd = [one,two,three,four,five,six,seven,eight,nine,ten,root];
 
-constraint sum (i in fd) (dist[i,fd[i]]) = totalDistance;
 
+constraint sum (i in fd) (dist[i,fd[i]]) = totalDistance;
 constraint subcircuit(fd);
 
 solve minimize totalDistance;
