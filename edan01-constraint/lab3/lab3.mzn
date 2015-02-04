@@ -1,7 +1,7 @@
 include "globals.mzn";
 
 %Can remove root and simply redirect the successor of ten -> one with cost 0.
-var 2..4: one;
+/*var 2..4: one;
 var 1..4: two;
 var 1..6: three;
 var 1..7: four;
@@ -12,11 +12,12 @@ var 6..10: eight;
 var 7..10: nine;
 int: ten = 11;
 int: root = 1;
+int: N = 11;
 
 var 1..10000: totalCost;
 
-int: maxTank = 15;
-array[1..11, 1..11] of int: dist;
+int: maxTank = 10;
+array[1..N, 1..N] of int: dist;
 
 dist = [|99, 10, 11,  6, 99, 99, 99, 99, 99, 99,  0,
         |10,  0,  5,  8, 99, 99, 99, 99, 99, 99, 99,
@@ -30,15 +31,23 @@ dist = [|99, 10, 11,  6, 99, 99, 99, 99, 99, 99,  0,
         |99, 99, 99, 99, 99, 99, 99,  9,  2,  0,  0,
         | 0, 99, 99, 99, 99, 99, 99, 99, 99,  0, 99|];
 
-array[1..11] of int: fuelPrice = [10, 10, 8, 12, 13, 9, 10, 11, 12, 8, 99];
-array[1..11] of var int: fd = [one,two,three,four,five,six,seven,eight,nine,ten,root];
-array[1..11] of var 0..maxTank: filling;
-array[1..11] of var 0..maxTank: ag;
+array[1..N] of int: fuelPrice = [10, 10, 8, 12, 13, 9, 10, 11, 12, 8, 99];
+array[1..N] of var int: fd = [one,two,three,four,five,six,seven,eight,nine,ten,root];
+*/
+
+int: maxTank;
+int: N;
+array[1..N] of var set of int: fd;
+array[1..N,1..N] of int: dist;
+array[1..N] of int: fuelPrice;
+
+array[1..N] of var 0..maxTank: filling;
+array[1..N] of var 0..maxTank: ag;
 
 constraint ag[1] = 0;
-constraint forall (i in 1..10) (ag[fd[i]] = ag[i] + filling[i] - dist[i,fd[i]]);
-constraint forall (i in 1..9) (filling[i] <= (maxTank - ag[i]) /\ filling[i] >= (dist[i,fd[i]] - ag[i]));
-constraint sum (i in 1..11) (filling[i] * fuelPrice[i]) == totalCost;
+constraint forall (i in 1..N) (ag[fd[i]] = ag[i] + filling[i] - dist[i,fd[i]]);
+constraint forall (i in 1..N) (filling[i] <= (maxTank - ag[i]) /\ filling[i] >= (dist[i,fd[i]] - ag[i]));
+constraint sum (i in 1..N) (filling[i] * fuelPrice[i]) == totalCost;
 constraint subcircuit(fd);
 
 solve minimize totalCost;
