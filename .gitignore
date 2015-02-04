@@ -7,6 +7,6 @@
 bin/
 .settings/
 .classpath
-**/target/
+target/
 *.class
 *.cache
