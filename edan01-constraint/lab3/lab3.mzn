@@ -1,6 +1,7 @@
 include "globals.mzn";
 
-var 1..4: one;
+%Can remove root and simply redirect the successor of ten -> one with cost 0.
+var 2..4: one;
 var 1..4: two;
 var 1..6: three;
 var 1..7: four;
@@ -12,10 +13,9 @@ var 7..10: nine;
 int: ten = 11;
 int: root = 1;
 
-var 1..10000: totalDistance;
 var 1..10000: totalCost;
 
-int: maxTank = 10;
+int: maxTank = 15;
 array[1..11, 1..11] of int: dist;
 
 dist = [|99, 10, 11,  6, 99, 99, 99, 99, 99, 99,  0,
@@ -31,22 +31,17 @@ dist = [|99, 10, 11,  6, 99, 99, 99, 99, 99, 99,  0,
         | 0, 99, 99, 99, 99, 99, 99, 99, 99,  0, 99|];
 
 array[1..11] of int: fuelPrice = [10, 10, 8, 12, 13, 9, 10, 11, 12, 8, 99];
-
 array[1..11] of var int: fd = [one,two,three,four,five,six,seven,eight,nine,ten,root];
-
 array[1..11] of var 0..maxTank: filling;
-
 array[1..11] of var 0..maxTank: ag;
 
-
 constraint ag[1] = 0;
-constraint forall (i in 1..10) (ag[fd[i]] = ag[i] - dist[i,fd[i]] + filling[fd[i]]);
-constraint forall (i in 1..11) (filling[i] <= maxTank - ag[i] /\ filling[i] >= dist[i,fd[i]] - ag[i]);
-constraint sum (i in 1..11) (filling[i] * fuelPrice[i]) = totalCost;
-constraint sum (i in fd) (dist[i,fd[i]]) = totalDistance;
+constraint forall (i in 1..10) (ag[fd[i]] = ag[i] + filling[i] - dist[i,fd[i]]);
+constraint forall (i in 1..9) (filling[i] <= (maxTank - ag[i]) /\ filling[i] >= (dist[i,fd[i]] - ag[i]));
+constraint sum (i in 1..11) (filling[i] * fuelPrice[i]) == totalCost;
 constraint subcircuit(fd);
 
 solve minimize totalCost;
 
-output[show(fd), show(filling), show(ag), show(totalCost)];
+output[show(fd),"\n", show(filling),"\n", show(ag),"\n", show(totalCost)];
 
