@@ -72,4 +72,24 @@ public class Database {
 
 	/* --- insert own code here --- */
 
+	public boolean login(String userName){
+		String sql = "select username from users where username =?";
+		PreparedStatement ps = null;
+		try {
+			ps = conn.prepareStatement(sql);
+			ps.setString(1, userName);
+			ResultSet rs = ps.executeQuery();
+			return rs.next();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if(ps != null)
+					ps.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return false;
+	}
 }
