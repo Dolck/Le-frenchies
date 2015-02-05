@@ -174,7 +174,36 @@ public class Database {
 	}
 
 	public int bookTicket(String movieTitle, String date, String userName){
-		//TODO: fill in
-		return 0;
+		String sql = "insert into Reservations(userName, movieTitle, pDate) " +
+			" values('?', '?', '?')";
+		PreparedStatement ps = null;
+		int ticketID = -1;
+		try{
+			Savepoint save1 = conn.setSavepoint();
+
+			//Use this for rollback: conn.rollback(save1);
+			conn.setAutoCommit(false);
+			ps = conn.prepareStatement(sql);
+			ps.setString(1,username);
+			ps.setString(2,movieTitle);
+			java.sql.Date sqlDate = java.sql.Date.valueOf(date);
+			ps.setDate(3, sqlDate);
+			ResultSet rs = ps.executeUpdate();
+			conn.commit();
+			
+		}catch(SQLException e){
+			e.printStackTrace();
+		}catch(IllegalArgumentException e){
+			e.printStackTrace();
+		} finally {
+			try{
+				conn.setAutoCommit(true);
+				if(ps != null)
+					ps.close();
+			}catch (SQLException e){
+				e.printStackTrace();
+			}
+		}
+		return ticketID;
 	}
 }
