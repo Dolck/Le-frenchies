@@ -212,6 +212,10 @@ public class BookingPane extends BasicPane {
 		fields[FREE_SEATS].setText(p.availSeats + "");
 	}
 
+	private void reserveTicket(String movieTitle, String date){
+		String userName = CurrentUser.instance().getCurrentUserId();
+	}
+
 	/**
 	 * A class that listens for clicks in the name list.
 	 */
@@ -281,6 +285,7 @@ public class BookingPane extends BasicPane {
 			String movieName = nameList.getSelectedValue();
 			String date = dateList.getSelectedValue();
 			/* --- insert own code here --- */
+			reserveTicket(movieName, date);
 		}
 	}
 }

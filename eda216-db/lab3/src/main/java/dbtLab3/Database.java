@@ -172,4 +172,9 @@ public class Database {
 		}
 		return output;
 	}
+
+	public int bookTicket(String movieTitle, String date, String userName){
+		//TODO: fill in
+		return 0;
+	}
 }
