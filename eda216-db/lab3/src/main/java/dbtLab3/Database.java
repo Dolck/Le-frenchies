@@ -174,32 +174,75 @@ public class Database {
 	}
 
 	public int bookTicket(String movieTitle, String date, String userName){
-		String sql = "insert into Reservations(userName, movieTitle, pDate) " +
-			" values('?', '?', '?')";
-		PreparedStatement ps = null;
+		String query = "select availSeats from performances where movieTitle=? and pDate=?";
+		String reserve = "insert into Reservations(userName, movieTitle, pDate) values(?, ?, ?)";
+		String seats = "update performances set availSeats=? where movieTitle=? and pDate=?";
+		String id = "select id from reservations order by id desc limit 1";
+		PreparedStatement q = null;
+		PreparedStatement r = null;
+		PreparedStatement s = null;
+		PreparedStatement i = null;
 		int ticketID = -1;
 		try{
+			conn.setAutoCommit(false);
 			Savepoint save1 = conn.setSavepoint();
 
-			//Use this for rollback: conn.rollback(save1);
-			conn.setAutoCommit(false);
-			ps = conn.prepareStatement(sql);
-			ps.setString(1,username);
-			ps.setString(2,movieTitle);
+			q = conn.prepareStatement(query);
+			q.setString(1,movieTitle);
 			java.sql.Date sqlDate = java.sql.Date.valueOf(date);
-			ps.setDate(3, sqlDate);
-			ResultSet rs = ps.executeUpdate();
-			conn.commit();
-			
+			q.setDate(2,sqlDate);
+			ResultSet rs = q.executeQuery();
+			if(rs.next()){
+				int nbrSeats = rs.getInt("availSeats");
+				if(nbrSeats > 0){
+					r = conn.prepareStatement(reserve);
+					r.setString(1,userName);
+					r.setString(2,movieTitle);
+					r.setDate(3, sqlDate);
+					if(r.executeUpdate() == 1){
+						s = conn.prepareStatement(seats);
+						s.setInt(1, nbrSeats-1);
+						s.setString(2, movieTitle);
+						s.setDate(3, sqlDate);
+						if(s.executeUpdate() == 1){
+							i = conn.prepareStatement(id);
+							ResultSet ids = i.executeQuery();
+							ids.next();
+							ticketID = ids.getInt("id");
+							conn.commit();
+						}else{
+							System.out.println("1");
+							conn.rollback(save1);
+						}
+					}else{
+						System.out.println("2");
+						conn.rollback(save1);
+					}
+				}
+			}else{
+				System.out.println("3");
+				conn.rollback(save1);
+			}
+
+				//Use this for rollback: conn.rollback(save1);
 		}catch(SQLException e){
+				//conn.rollback(save1);
 			e.printStackTrace();
 		}catch(IllegalArgumentException e){
+				//conn.rollback(save1);
 			e.printStackTrace();
 		} finally {
 			try{
+				if(q != null)
+					q.close();
+				if(r != null)
+					r.close();
+				if(s != null)
+					s.close();
+				if(i != null)
+					i.close();
+
 				conn.setAutoCommit(true);
-				if(ps != null)
-					ps.close();
 			}catch (SQLException e){
 				e.printStackTrace();
 			}

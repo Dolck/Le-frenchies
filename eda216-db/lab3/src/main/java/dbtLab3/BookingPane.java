@@ -214,6 +214,13 @@ public class BookingPane extends BasicPane {
 
 	private void reserveTicket(String movieTitle, String date){
 		String userName = CurrentUser.instance().getCurrentUserId();
+		//TODO: fill in
+		int id = db.bookTicket(movieTitle, date, CurrentUser.instance().getCurrentUserId());
+		fillPerformanceFields(movieTitle, date);
+		if(id != -1)
+			displayMessage("Booked a ticket. Ticketnbr: " + id);
+		else
+			displayMessage("No seat is booked. Not enough seats available");
 	}
 
 	/**
