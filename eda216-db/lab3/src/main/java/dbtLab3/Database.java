@@ -1,6 +1,7 @@
 package dbtLab3;
 
 import java.sql.*;
+import java.util.*;
 
 /**
  * Database is a class that specifies the interface to the movie database. Uses
@@ -91,5 +92,84 @@ public class Database {
 			}
 		}
 		return false;
+	}
+
+	public ArrayList<String> getMovies(){
+		String sql = "select title from movies";
+		PreparedStatement ps = null;
+		ArrayList<String> movies = new ArrayList<String>();
+		try{
+			ps = conn.prepareStatement(sql);
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()){
+				movies.add(rs.getString("title"));
+			}
+		}catch(SQLException e){
+			e.printStackTrace();
+		} finally {
+			try{
+				if(ps != null)
+					ps.close();
+			}catch (SQLException e){
+				e.printStackTrace();
+			}
+		}
+		return movies;
+	}
+
+	public ArrayList<String> getPerfDates(String movieTitle){
+		String sql = "select pDate from performances where movieTitle=?";
+		PreparedStatement ps = null;
+		ArrayList<String> movies = new ArrayList<String>();
+		try{
+			ps = conn.prepareStatement(sql);
+			ps.setString(1,movieTitle);
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()){
+				movies.add(rs.getString("pDate"));
+			}
+		}catch(SQLException e){
+			e.printStackTrace();
+		} finally {
+			try{
+				if(ps != null)
+					ps.close();
+			}catch (SQLException e){
+				e.printStackTrace();
+			}
+		}
+		return movies;
+	}
+
+	public Performance getPerformance(String movieTitle, String date){
+		String sql = "select movieTitle, pDate, theaterName, availSeats from performances where movieTitle=? and pDate=?";
+		PreparedStatement ps = null;
+		Performance output = null;
+		try{
+			ps = conn.prepareStatement(sql);
+			ps.setString(1,movieTitle);
+			java.sql.Date sqlDate = java.sql.Date.valueOf(date);
+			ps.setDate(2, sqlDate);
+			ResultSet rs = ps.executeQuery();
+			if(rs.next()){
+				String oTitle = rs.getString("movieTitle");
+				String oDate = rs.getString("pDate");
+				String oTheater = rs.getString("theaterName");
+				int oSeats = rs.getInt("availSeats");
+				output = new Performance(oTitle, oDate, oTheater, oSeats);
+			}
+		} catch(SQLException e) {
+			e.printStackTrace();
+		} catch(IllegalArgumentException e) {
+			e.printStackTrace();
+		} finally {
+			try{
+				if(ps != null)
+					ps.close();
+			}catch (SQLException e){
+				e.printStackTrace();
+			}
+		}
+		return output;
 	}
 }
