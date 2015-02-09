@@ -55,9 +55,9 @@ vector<string> Dictionary::get_suggestions(const string& word) const {
 void Dictionary::add_trigram_suggestions(vector<string>& suggestions, const string& word) const{
 	//get size of word
 	int size = word.size();
-	vector<string> wordtris;
 
 	if(size > 2){
+    vector<string> wordtris;
 		//get trigrams
 		for(unsigned long i = 0; i <= word.length() - 3; ++i){
 			wordtris.push_back(word.substr(i, 3));
@@ -103,7 +103,6 @@ void Dictionary::rank_suggestions(vector<string>& suggestions, const string& wor
 
 	suggestions.clear();
 
-	//trim top 5
 	for (auto p : pairs)
 	{
 		suggestions.push_back(p.first);
