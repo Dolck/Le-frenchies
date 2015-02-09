@@ -1,5 +1,6 @@
 #ifndef DICTIONARY_H
 #define DICTIONARY_H
+#define MAX_SIZE (25)
 
 #include <string>
 #include <vector>
@@ -14,7 +15,8 @@ public:
 	bool contains(const std::string& word) const;
 	std::vector<std::string> get_suggestions(const std::string& word) const;
 private:
-	unordered_set<string> words;
+	unordered_set<string> allwords;
+	vector<Word> words[MAX_SIZE]; 
 };
 
 #endif
