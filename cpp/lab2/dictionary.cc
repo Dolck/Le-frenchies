@@ -48,10 +48,11 @@ vector<string> Dictionary::get_suggestions(const string& word) const {
 	vector<string> suggestions;
 	add_trigram_suggestions(suggestions, word);
 	rank_suggestions(suggestions, word);
+  trim_suggestions(suggestions);
 	return suggestions;
 }
 
-void Dictionary::add_trigram_suggestions(vector<string> suggestions, const string& word) const{
+void Dictionary::add_trigram_suggestions(vector<string>& suggestions, const string& word) const{
 	//get size of word
 	int size = word.size();
 	vector<string> wordtris;
@@ -75,7 +76,7 @@ void Dictionary::add_trigram_suggestions(vector<string> suggestions, const strin
 	}
 }
 
-void Dictionary::rank_suggestions(vector<string> suggestions, const string& word) const{
+void Dictionary::rank_suggestions(vector<string>& suggestions, const string& word) const{
 	vector<pair<string, int>> pairs;
 
 	for(string s : suggestions){
@@ -90,7 +91,7 @@ void Dictionary::rank_suggestions(vector<string> suggestions, const string& word
 		{
 			for (int y = 1; y <= s.length(); ++y)
 			{
-				int diag = word[x] == s[y] ? d[x-1][y-1] : 1 + d[x-1][y-1];
+				int diag = word[x-1] == s[y-1] ? d[x-1][y-1] : 1 + d[x-1][y-1];
 				d[x][y] = min(min(diag, d[x-1][y] + 1), d[x][y-1] + 1);
 			}
 		}
@@ -104,10 +105,16 @@ void Dictionary::rank_suggestions(vector<string> suggestions, const string& word
 	suggestions.clear();
 
 	//trim top 5
-	for (int i = 0; i < 5; ++i)
+	for (auto p : pairs)
 	{
-		suggestions.push_back(pairs[i].first);
+		suggestions.push_back(p.first);
 	}
+}
+
+void Dictionary::trim_suggestions(vector<string>& suggestions) const{
+  if(suggestions.size() > 5){
+    suggestions.erase(suggestions.begin()+5, suggestions.end());
+  }
 }
 
 bool Dictionary::compair(const pair<string,int>& p1, const pair<string,int>& p2){
