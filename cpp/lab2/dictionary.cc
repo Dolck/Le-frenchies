@@ -86,9 +86,9 @@ void Dictionary::rank_suggestions(vector<string>& suggestions, const string& wor
 			d[0][x] = x;
 		}
 
-		for (int x = 1; x <= word.length(); ++x)
+		for (unsigned long x = 1; x <= word.length(); ++x)
 		{
-			for (int y = 1; y <= s.length() && y < 26; ++y)
+			for (unsigned long y = 1; y <= s.length() && y < 26; ++y)
 			{
 				int diag = word[x-1] == s[y-1] ? d[x-1][y-1] : 1 + d[x-1][y-1];
 				d[x][y] = min(min(diag, d[x-1][y] + 1), d[x][y-1] + 1);
