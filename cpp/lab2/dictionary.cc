@@ -15,7 +15,7 @@ Dictionary::Dictionary() {
 		while(getline (in, line)){
 			size_t pos = 0;
 			pos = line.find(" ");
-			words.insert(line.substr(0, pos));
+			allwords.insert(line.substr(0, pos));
 			line.erase(0, pos + 1);
 			// Läs in resten här
 		}
@@ -24,7 +24,7 @@ Dictionary::Dictionary() {
 }
 
 bool Dictionary::contains(const string& word) const {
-	auto found = words.find(word);
+	auto found = allwords.find(word);
 
 	return found != words.end();
 }
