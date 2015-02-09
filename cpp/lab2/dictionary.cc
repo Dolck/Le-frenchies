@@ -15,9 +15,24 @@ Dictionary::Dictionary() {
 		while(getline (in, line)){
 			size_t pos = 0;
 			pos = line.find(" ");
-			allwords.insert(line.substr(0, pos));
+			string word = line.substr(0, pos);
+			allwords.insert(word);
 			line.erase(0, pos + 1);
-			// Läs in resten här
+			
+			pos = line.find(" ");
+			int c = stoi(line.substr(0, pos));
+			line.erase(0, pos + 1);
+
+			vector<string> trigrams;
+			for (int i = 0; i < c; ++i)
+			{
+				pos = line.find(" ");
+				push_back(line.substr(0, pos));
+				line.erase(0, pos + 1);
+			}
+			Word w(word, trigrams);
+			if(word.length() <= MAX_SIZE)
+				words[words.length()].push_back(w);
 		}
 	}
 
