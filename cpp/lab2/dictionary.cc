@@ -111,7 +111,7 @@ void Dictionary::rank_suggestions(vector<string>& suggestions, const string& wor
 
 void Dictionary::trim_suggestions(vector<string>& suggestions) const{
   if(suggestions.size() > 5){
-    suggestions.erase(suggestions.begin()+5, suggestions.end());
+    suggestions.resize(5);
   }
 }
 
