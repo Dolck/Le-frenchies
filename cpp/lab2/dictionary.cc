@@ -9,8 +9,6 @@
 using namespace std;
 
 Dictionary::Dictionary() {
-	//Load word-file here :)
-
 	ifstream in("words.txt");
 	if(in.is_open()){
 		string line;
