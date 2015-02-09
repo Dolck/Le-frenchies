@@ -6,6 +6,8 @@
 #include <unordered_set>
 #include "word.h"
 
+using namespace std;
+
 class Dictionary {
 public:
 	Dictionary();
