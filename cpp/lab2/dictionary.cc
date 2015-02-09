@@ -51,7 +51,7 @@ vector<string> Dictionary::get_suggestions(const string& word) const {
 	return suggestions;
 }
 
-void Dictionary::add_trigram_suggestions(vector<string> suggestions, const string& word) const{
+void Dictionary::add_trigram_suggestions(vector<string>& suggestions, const string& word) const{
 	//get size of word
 	int size = word.size();
 	vector<string> wordtris;
@@ -75,9 +75,8 @@ void Dictionary::add_trigram_suggestions(vector<string> suggestions, const strin
 	}
 }
 
-void Dictionary::rank_suggestions(vector<string> suggestions, const string& word) const{
+void Dictionary::rank_suggestions(vector<string>& suggestions, const string& word) const{
 	vector<pair<string, int>> pairs;
-
 	for(string s : suggestions){
 		int d[26][26];
 		d[0][0] = 0;
@@ -88,7 +87,7 @@ void Dictionary::rank_suggestions(vector<string> suggestions, const string& word
 
 		for (int x = 1; x <= word.length(); ++x)
 		{
-			for (int y = 1; y <= s.length(); ++y)
+			for (int y = 1; y <= s.length() && y < 26; ++y)
 			{
 				int diag = word[x] == s[y] ? d[x-1][y-1] : 1 + d[x-1][y-1];
 				d[x][y] = min(min(diag, d[x-1][y] + 1), d[x][y-1] + 1);
