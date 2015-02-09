@@ -30,7 +30,7 @@ int main()
 			for(string t : trigrams){
 				out << " " << t;
 			}
-			out << endl;
+			out << " " << endl;
 		}
 	}else{
 		cout << "Couldnt open file" << endl;
