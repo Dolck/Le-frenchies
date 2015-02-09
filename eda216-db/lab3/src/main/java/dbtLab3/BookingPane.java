@@ -6,6 +6,8 @@ import javax.swing.event.*;
 import java.awt.*;
 import java.awt.event.*;
 
+import java.util.*;
+
 /**
  * The GUI pane where a user books tickets for movie performances. It contains
  * one list of movies and one of performance dates. The user selects a
@@ -173,15 +175,23 @@ public class BookingPane extends BasicPane {
 	private void fillNameList() {
 		nameListModel.removeAllElements();
         /* --- insert own code here --- */
+        ArrayList<String> movies = db.getMovies();
+        for(String movie : movies){
+        	nameListModel.addElement(movie);
+        }
 	}
 
 	/**
 	 * Fetch performance dates from the database and display them in the date
 	 * list.
 	 */
-	private void fillDateList() {
+	private void fillDateList(String movieTitle) {
 		dateListModel.removeAllElements();
         /* --- insert own code here --- */
+        ArrayList<String> dates = db.getPerfDates(movieTitle);
+        for(String date : dates){
+        	dateListModel.addElement(date);
+        }
 	}
 
 	/**
@@ -191,6 +201,26 @@ public class BookingPane extends BasicPane {
 		for (int i = 0; i < fields.length; i++) {
 			fields[i].setText("");
 		}
+	}
+
+	private void fillPerformanceFields(String movieTitle, String date){
+		clearFields();
+		Performance p = db.getPerformance(movieTitle, date);
+		fields[MOVIE_NAME].setText(p.movieTitle);
+		fields[PERF_DATE].setText(p.date);
+		fields[THEATER_NAME].setText(p.theater);
+		fields[FREE_SEATS].setText(p.availSeats + "");
+	}
+
+	private void reserveTicket(String movieTitle, String date){
+		String userName = CurrentUser.instance().getCurrentUserId();
+		//TODO: fill in
+		int id = db.bookTicket(movieTitle, date, CurrentUser.instance().getCurrentUserId());
+		fillPerformanceFields(movieTitle, date);
+		if(id != -1)
+			displayMessage("Booked a ticket. Ticketnbr: " + id);
+		else
+			displayMessage("No seat is booked. Not enough seats available");
 	}
 
 	/**
@@ -209,8 +239,10 @@ public class BookingPane extends BasicPane {
 			if (nameList.isSelectionEmpty()) {
 				return;
 			}
-			String movieName = nameList.getSelectedValue();
+			String movieTitle = nameList.getSelectedValue();
 			/* --- insert own code here --- */
+			fillDateList(movieTitle);
+
 		}
 	}
 
@@ -233,6 +265,7 @@ public class BookingPane extends BasicPane {
 			String movieName = nameList.getSelectedValue();
 			String date = dateList.getSelectedValue();
 			/* --- insert own code here --- */
+			fillPerformanceFields(movieName, date);
 		}
 	}
 
@@ -259,6 +292,7 @@ public class BookingPane extends BasicPane {
 			String movieName = nameList.getSelectedValue();
 			String date = dateList.getSelectedValue();
 			/* --- insert own code here --- */
+			reserveTicket(movieName, date);
 		}
 	}
 }

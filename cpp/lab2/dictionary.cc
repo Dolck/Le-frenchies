@@ -1,0 +1,24 @@
+#include <string>
+#include <vector>
+#include <fstream>
+#include <iostream>
+#include <algorithm>
+#include "word.h"
+#include "dictionary.h"
+
+using namespace std;
+
+Dictionary::Dictionary() {
+	//Load word-file here :)
+}
+
+bool Dictionary::contains(const string& word) const {
+	auto found = words.find(word);
+
+	return found != words.end();
+}
+
+vector<string> Dictionary::get_suggestions(const string& word) const {
+	vector<string> suggestions;
+	return suggestions;
+}
