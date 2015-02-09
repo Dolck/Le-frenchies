@@ -15,7 +15,7 @@ Dictionary::Dictionary() {
 		while(getline (in, line)){
 			size_t pos = 0;
 			pos = line.find(" ");
-			words.push_back(line.substr(0, pos));
+			words.insert(line.substr(0, pos));
 			line.erase(0, pos + 1);
 			// Läs in resten här
 		}
