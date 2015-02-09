@@ -1,4 +1,3 @@
-include "globals.mzn";
 
 %Can remove root and simply redirect the successor of ten -> one with cost 0.
 /*var 2..4: one;
@@ -14,7 +13,6 @@ int: ten = 11;
 int: root = 1;
 int: N = 11;
 
-var 1..10000: totalCost;
 
 int: maxTank = 10;
 array[1..N, 1..N] of int: dist;
@@ -34,17 +32,20 @@ dist = [|99, 10, 11,  6, 99, 99, 99, 99, 99, 99,  0,
 array[1..N] of int: fuelPrice = [10, 10, 8, 12, 13, 9, 10, 11, 12, 8, 99];
 array[1..N] of var int: fd = [one,two,three,four,five,six,seven,eight,nine,ten,root];
 */
+include "globals.mzn";
 
+var 1..10000: totalCost;
 int: maxTank;
 int: N;
-array[1..N] of var set of int: fd;
+
+array[1..N] of var 1..N: fd;
 array[1..N,1..N] of int: dist;
 array[1..N] of int: fuelPrice;
-
 array[1..N] of var 0..maxTank: filling;
 array[1..N] of var 0..maxTank: ag;
 
 constraint ag[1] = 0;
+constraint fd[N] = 1;
 constraint forall (i in 1..N) (ag[fd[i]] = ag[i] + filling[i] - dist[i,fd[i]]);
 constraint forall (i in 1..N) (filling[i] <= (maxTank - ag[i]) /\ filling[i] >= (dist[i,fd[i]] - ag[i]));
 constraint sum (i in 1..N) (filling[i] * fuelPrice[i]) == totalCost;
