@@ -117,5 +117,16 @@ class Database {
 	/*
 	 * *** Add functions ***
 	 */
+
+	public function getMovieNames() {
+		$sql = "select title from movies";
+		$result = $this->executeQuery($sql, array());
+		
+		$movies = array();
+		foreach ($result as $res) {
+			array_push($movies, $res[0]);
+		}
+		return $movies;
+	}
 }
 ?>
