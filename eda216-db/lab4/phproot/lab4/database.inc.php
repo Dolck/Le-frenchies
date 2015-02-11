@@ -96,6 +96,7 @@ class Database {
 			$stmt->execute($param);
 			return $stmt->rowCount();
 		} catch(PDOException $e) {
+			$error = "*** Internal error: " . $e->getMessage() . "<p>" . $query;
 			die($error);
 		}
 	}
