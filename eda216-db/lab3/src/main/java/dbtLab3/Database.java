@@ -174,7 +174,7 @@ public class Database {
 	}
 
 	public int bookTicket(String movieTitle, String date, String userName){
-		String query = "select availSeats from performances where movieTitle=? and pDate=?";
+		String query = "select availSeats from performances where movieTitle=? and pDate=? for update";
 		String reserve = "insert into Reservations(userName, movieTitle, pDate) values(?, ?, ?)";
 		String seats = "update performances set availSeats=? where movieTitle=? and pDate=?";
 		String id = "select id from reservations order by id desc limit 1";
