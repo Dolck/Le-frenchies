@@ -1,10 +1,11 @@
 <?php
 	require_once('database.inc.php');
-	var_dump($_POST);
-	session_start();
+
+  session_start();
 	$db = $_SESSION['db'];
   $userId = $_SESSION['userId'];
   $movieTitle = $_POST['movieName'];
+  $_SESSION['movieTitle'] = $movieTitle;
 	$db->openConnection();
 	
 	$pDates = $db->getPerformanceDates($movieTitle);
@@ -12,28 +13,29 @@
 ?>
 
 <html>
-<head><title>Booking 1</title><head>
-<body><h1>Booking 1</h1>
-	Current user: <?php print $userId ?>
+<head><title>Booking 2</title><head>
+<body><h1>Booking 2</h1>
+  Current user: <?php print $userId ?>
+  Selected movie: <?php print $movieTitle?>
 	<p>
-	Movies showing:
+	Performances:
 	<p>
-	<form method=post action="booking2.php">
-		<select name="movieName" size=10>
+	<form method=post action="booking3.php">
+		<select name="perfDates" size=10>
 		<?php
 			$first = true;
-			foreach ($movieNames as $name) {
+			foreach ($pDates as $date) {
 				if ($first) {
 					print "<option selected>";
 					$first = false;
 				} else {
 					print "<option>";
 				}
-				print $name;
+				print $date;
 			}
 		?>
 		</select>		
-		<input type=submit value="Select movie">
+		<input type=submit value="Select date">
 	</form>
 </body>
 </html>

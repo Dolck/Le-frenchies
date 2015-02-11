@@ -6,33 +6,25 @@
 	$userId = $_SESSION['userId'];
 	$db->openConnection();
 	
-	$movieNames = $db->getMovieNames();
+  $performance = $_SESSION['performance'];
+  $tickedId = $db->bookTicket($userId, $performance);
+  var_dump($ticketId);
 	$db->closeConnection();
 ?>
 
 <html>
-<head><title>Booking 1</title><head>
-<body><h1>Booking 1</h1>
-	Current user: <?php print $userId ?>
+<head><title>Booking 4</title><head>
+<body><h1>Booking 4</h1>
+  <?php
+  if($ticketId > 1){
+    print("One ticket booked. Booking number: " . $ticketId);
+  } else {
+    print("Failed to book ticket.");
+  }
+  ?> 
 	<p>
-	Movies showing:
-	<p>
-	<form method=post action="booking2.php">
-		<select name="movieName" size=10>
-		<?php
-			$first = true;
-			foreach ($movieNames as $name) {
-				if ($first) {
-					print "<option selected>";
-					$first = false;
-				} else {
-					print "<option>";
-				}
-				print $name;
-			}
-		?>
-		</select>		
-		<input type=submit value="Select movie">
+	<form method=post action="booking1.php">
+		<input type=submit value="New booking">
 	</form>
 </body>
 </html>

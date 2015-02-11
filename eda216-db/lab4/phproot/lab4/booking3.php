@@ -3,36 +3,42 @@
 	
 	session_start();
 	$db = $_SESSION['db'];
-	$userId = $_SESSION['userId'];
+  $userId = $_SESSION['userId'];
+  $pDate = $_POST['perfDates'];
+  $movieTitle = $_SESSION['movieTitle'];
 	$db->openConnection();
 	
-	$movieNames = $db->getMovieNames();
+  $performance = $db->getPerformance($movieTitle, $pDate);
+  $_SESSION['performance'] = $performance;
+  $theater = $performance[2];
+  $availSeats = $performance[3];
 	$db->closeConnection();
 ?>
 
 <html>
-<head><title>Booking 1</title><head>
-<body><h1>Booking 1</h1>
-	Current user: <?php print $userId ?>
+<head><title>Booking 3</title><head>
+<body><h1>Booking 3</h1>
+  Current user: <?php print $userId ?>
+  <p>
+  Data for selected performance:
 	<p>
-	Movies showing:
+	<table border=1>
+	  <tr>
+    <td>Movie:</td> <td><?php print $movieTitle ?></td>
+    </tr>
+    <tr>
+    <td>Date:</td> <td><?php print $pDate ?></td>
+    </tr>
+    <tr>
+    <td>Theater:</td> <td><?php print $theater ?></td>
+    </tr>
+    <tr>
+    <td>Free seats:</td> <td><?php print $availSeats ?></td>
+    </tr>
+  </table>
 	<p>
-	<form method=post action="booking2.php">
-		<select name="movieName" size=10>
-		<?php
-			$first = true;
-			foreach ($movieNames as $name) {
-				if ($first) {
-					print "<option selected>";
-					$first = false;
-				} else {
-					print "<option>";
-				}
-				print $name;
-			}
-		?>
-		</select>		
-		<input type=submit value="Select movie">
+	<form method=post action="booking4.php">
+		<input type=submit value="Book ticket">
 	</form>
 </body>
 </html>
