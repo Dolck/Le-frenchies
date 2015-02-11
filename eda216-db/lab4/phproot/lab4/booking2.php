@@ -1,12 +1,13 @@
 <?php
 	require_once('database.inc.php');
-	
+	var_dump($_POST);
 	session_start();
 	$db = $_SESSION['db'];
-	$userId = $_SESSION['userId'];
+  $userId = $_SESSION['userId'];
+  $movieTitle = $_POST['movieName'];
 	$db->openConnection();
 	
-	$movieNames = $db->getMovieNames();
+	$pDates = $db->getPerformanceDates($movieTitle);
 	$db->closeConnection();
 ?>
 
