@@ -96,6 +96,7 @@ class Database {
 			$stmt->execute($param);
 			return $stmt->rowCount();
 		} catch(PDOException $e) {
+			$error = "*** Internal error: " . $e->getMessage() . "<p>" . $query;
 			die($error);
 		}
 	}
@@ -108,7 +109,7 @@ class Database {
 	 * @return true if the user exists, false otherwise.
 	 */
 	public function userExists($userId) {
-		$sql = "select userId from Users where userId = ?";
+		$sql = "select userName from Users where userName = ?";
 		$result = $this->executeQuery($sql, array($userId));
 		return count($result) == 1; 
 	}
