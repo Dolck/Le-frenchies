@@ -121,12 +121,23 @@ class Database {
 	public function getMovieNames() {
 		$sql = "select title from movies";
 		$result = $this->executeQuery($sql, array());
-		
+
 		$movies = array();
 		foreach ($result as $res) {
 			array_push($movies, $res[0]);
 		}
 		return $movies;
+	}
+
+	public function getPerformanceDates($movieTitle){
+		$sql = "select pDate from performances where movieTitle=?";
+		$result = $this->executeQuery($sql, array($movieTitle));
+
+		$dates = array();
+		foreach ($result as $res) {
+			array_push($dates, $res[0]);
+		}
+		return $dates;	
 	}
 }
 ?>
