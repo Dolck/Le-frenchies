@@ -173,13 +173,14 @@ class Database {
           $id = (int)$idp[0][0];
         } else {
           $this->conn->rollback();
+          return $id;
         }
       } else {
         $this->conn->rollback();
+        return $id;
       }
     }
-    var_dump($id);
-    return 43;
+    return $id;
   }
 }
 ?>

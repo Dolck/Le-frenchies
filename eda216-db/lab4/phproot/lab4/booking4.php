@@ -7,7 +7,7 @@
 	$db->openConnection();
 	
   $performance = $_SESSION['performance'];
-  $tickedId = $db->bookTicket($userId, $performance);
+  $ticketId = $db->bookTicket($userId, $performance);
   var_dump($ticketId);
 	$db->closeConnection();
 ?>

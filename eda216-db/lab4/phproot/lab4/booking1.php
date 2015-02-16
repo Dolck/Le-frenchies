@@ -6,7 +6,8 @@
 	$userId = $_SESSION['userId'];
 	$db->openConnection();
 	
-	$movieNames = $db->getMovieNames();
+  $movieNames = $db->getMovieNames();
+  var_dump($_SESSION);
 	$db->closeConnection();
 ?>
 
