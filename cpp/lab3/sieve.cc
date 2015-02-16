@@ -1,16 +1,10 @@
-#include <iostream>
-#include <regex>
-//#include "tagremover.h"
+#include "sieve.h"
 
 using namespace std;
 
-int main() {
-  int M;
-  cout << "Please enter the top value: ";
-  cin >> M;
-
-  string seq(M+1, 'P');
-  seq.replace(0, 2, "CC");
+Sieve::Sieve(int M): M(M){
+  seq = string(M+1, 'P');
+  seq.replace(0,2,"CC");
 
   for(int i = 0; i <= M/2; ++i){
     if(seq[i] == 'P'){
@@ -19,5 +13,25 @@ int main() {
       }
     }
   }
+}
+
+vector<int> Sieve::getPrimes() const {
+  vector<int> primes;
+  return primes;
+}
+
+int Sieve::getTopPrime() const {
+  return 0;
+}
+
+int main() {
+  int val;
+  cout << "Please enter the top value: ";
+  cin >> val;
+
+  Sieve s1(val);
+
+  int t = s1.getTopPrime();
+  cout << t << endl;
 
 }
