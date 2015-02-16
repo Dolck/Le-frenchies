@@ -11,7 +11,26 @@ Date::Date() {
 	day = locTime->tm_mday;
 }
 
-Date::Date(int y, int m, int d) {}
+Date::Date(int y, int m, int d){
+  if(y > 999 && y <= 9999){
+    year = y;
+    if(m > 0 && m <=12){
+      month = m;
+      if(d > 0 && d <= daysPerMonth[month]){
+        day = d;
+      } else{
+        cerr << "Wrong day format.." << endl;
+        exit(1);
+      }
+    } else {
+      cerr << "Wrong month format.." << endl;
+      exit(1);
+    }
+  } else {
+    cerr << "Wrong year format.." << endl;
+    exit(1);
+  }
+}
 
 int Date::getYear() const {
 	return 0;
