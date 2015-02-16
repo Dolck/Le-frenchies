@@ -8,10 +8,10 @@ void TagRemover::print(ostream& out) const {
 	istreambuf_iterator<char> eos;
 	string test(std::istreambuf_iterator<char>(in), eos);
 	test = regex_replace(test, regex("(<.*?(\n.*)*?>)"), "");
-	test = regex_replace(test, regex("&lt"), "<");
-	test = regex_replace(test, regex("&gt"), ">");
-	test = regex_replace(test, regex("&nbsp"), " ");
-	test = regex_replace(test, regex("&amp"), "&");
+	test = regex_replace(test, regex("&lt;"), "<");
+	test = regex_replace(test, regex("&gt;"), ">");
+	test = regex_replace(test, regex("&nbsp;"), " ");
+	test = regex_replace(test, regex("&amp;"), "&");
 	out << test;
 }
 
