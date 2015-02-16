@@ -16,7 +16,7 @@ Date::Date(int y, int m, int d){
     year = y;
     if(m > 0 && m <=12){
       month = m;
-      if(d > 0 && d <= daysPerMonth[month]){
+      if(d > 0 && d <= daysPerMonth[month-1]){
         day = d;
       } else{
         cerr << "Wrong day format.." << endl;
@@ -33,17 +33,25 @@ Date::Date(int y, int m, int d){
 }
 
 int Date::getYear() const {
-	return 0;
+	return year;
 }
 
 int Date::getMonth() const {
-	return 0;
+	return month;
 }
 
 int Date::getDay() const {
-	return 0;
+	return day;
 }
 
 void Date::next() {
+  day++;
+  if(day > daysPerMonth[month - 1]){
+    day = 1;
+    month++;
+    if(month > 12){
+      month = 1;
+      year++;
+    }
+  }
 }
-
