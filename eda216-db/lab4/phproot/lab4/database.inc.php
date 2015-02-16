@@ -157,12 +157,10 @@ class Database {
 		$movieTitle = $performance[0];
 		$pDate = $performance[1];
 		$availSeats = $performance[3];
-
 		$insert = "insert into Reservations(userName, movieTitle, pDate) values (?,?,?)";
 		$update = "update performances set availSeats=? where movieTitle=? and pDate =?";
 		$query = "select id from reservations order by id desc limit 1";
 		$id = -1;
-		
 		if($availSeats >0){
 			$nr1 = $this->executeUpdate($insert, array($user, $movieTitle, $pDate));
 			if($nr1 == 1){
@@ -173,12 +171,13 @@ class Database {
 					$id = (int)$idp[0][0];
 				} else {
 					$this->conn->rollback();
+					return $id;
 				}
 			} else {
 				$this->conn->rollback();
+				return $id;
 			}
 		}
-		var_dump($id);
 		return $id;
 	}
 }
