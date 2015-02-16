@@ -1,6 +1,12 @@
 #ifndef DATE_H
 #define DATE_H
 
+#include <iostream>
+#include <iomanip>
+#include <ctime>
+
+using namespace std;
+
 class Date {
 public:
 	Date();                    // today's date

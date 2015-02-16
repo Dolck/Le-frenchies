@@ -17,13 +17,14 @@ LDFLAGS =   -g
 #LDFLAGS +=  -stdlib=libc++
 
 # Targets
-PROGS = tagremover sieve
+PROGS = tagremover sieve date
 
 all: $(PROGS)
 
 # Targets rely on implicit rules for compiling and linking
 tagremover: tagremover.o
 sieve: sieve.o
+date: date.o date_test.o
 
 # Phony targets
 .PHONY: all clean
