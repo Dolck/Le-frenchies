@@ -36,7 +36,7 @@ class Database {
 	public function openConnection() {
 		try {
 			$this->conn = new PDO("mysql:host=$this->host;dbname=$this->database", 
-					$this->userName,  $this->password);
+				$this->userName,  $this->password);
 			$this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		} catch (PDOException $e) {
 			$error = "Connection error: " . $e->getMessage();
@@ -136,50 +136,50 @@ class Database {
 		$dates = array();
 		foreach ($result as $res) {
 			array_push($dates, $res[0]);
-    }
+		}
 		return $dates;	
-  }
+	}
 
-  public function getPerformance($movieTitle, $pDate){
-    $sql = "select movieTitle, pDate, theaterName, availSeats from performances where movieTitle=? and pDate=? for update";
+	public function getPerformance($movieTitle, $pDate){
+		$sql = "select movieTitle, pDate, theaterName, availSeats from performances where movieTitle=? and pDate=? for update";
 		$result = $this->executeQuery($sql, array($movieTitle, $pDate));
 
 		$perf = array();
 		for ($i = 0; $i < 4; $i++) {
 			array_push($perf, $result[0][$i]);
-    }
+		}
 		return $perf;	
 
-  }
+	}
 
-  public function bookTicket($user, $performance){
-    $this->conn->beginTransaction();
-    $movieTitle = $performance[0];
-    $pDate = $performance[1];
-    $availSeats = $performance[3];
+	public function bookTicket($user, $performance){
+		$this->conn->beginTransaction();
+		$movieTitle = $performance[0];
+		$pDate = $performance[1];
+		$availSeats = $performance[3];
 
-    $insert = "insert into Reservations(userName, movieTitle, pDate) values (?,?,?)";
-    $update = "update performances set availSeats=? where movieTitle=? and pDate =?";
-    $query = "select id from reservations order by id desc limit 1";
-    $id = -1;
-
-    if($availSeats >0){
-      $nr1 = $this->executeUpdate($insert, array($user, $movieTitle, $pDate));
-      if($nr1 == 1){
-        $nr2 = $this->executeUpdate($update, array($availSeats-1, $movieTitle, $pDate));
-        if($nr2 == 1){
-          $idp = $this->executeQuery($query, array());
-          $this->conn->commit();
-          $id = (int)$idp[0][0];
-        } else {
-          $this->conn->rollback();
-        }
-      } else {
-        $this->conn->rollback();
-      }
-    }
-    var_dump($id);
-    return 43;
-  }
+		$insert = "insert into Reservations(userName, movieTitle, pDate) values (?,?,?)";
+		$update = "update performances set availSeats=? where movieTitle=? and pDate =?";
+		$query = "select id from reservations order by id desc limit 1";
+		$id = -1;
+		
+		if($availSeats >0){
+			$nr1 = $this->executeUpdate($insert, array($user, $movieTitle, $pDate));
+			if($nr1 == 1){
+				$nr2 = $this->executeUpdate($update, array($availSeats-1, $movieTitle, $pDate));
+				if($nr2 == 1){
+					$idp = $this->executeQuery($query, array());
+					$this->conn->commit();
+					$id = (int)$idp[0][0];
+				} else {
+					$this->conn->rollback();
+				}
+			} else {
+				$this->conn->rollback();
+			}
+		}
+		var_dump($id);
+		return $id;
+	}
 }
 ?>
