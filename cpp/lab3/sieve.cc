@@ -17,21 +17,35 @@ Sieve::Sieve(int M): M(M){
 
 vector<int> Sieve::getPrimes() const {
   vector<int> primes;
+  for (int i = 0; i <= M; ++i){
+    if(seq[i] == 'P'){
+      primes.push_back(i);
+    }
+  }
+
   return primes;
 }
 
 int Sieve::getTopPrime() const {
-  return 0;
+  return seq.find_last_of("P");
 }
 
 int main() {
   int val;
   cout << "Please enter the top value: ";
   cin >> val;
+  cout << endl;
 
   Sieve s1(val);
 
   int t = s1.getTopPrime();
-  cout << t << endl;
+  cout << "Top prime: " << t << endl;
+
+  cout << "All primes:";
+  vector<int> p = s1.getPrimes();
+  for (auto it = p.cbegin(); it != p.cend(); ++it){
+    cout << ' ' << *it;
+  }
+  cout << endl;
 
 }
