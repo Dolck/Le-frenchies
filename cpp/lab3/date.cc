@@ -70,7 +70,9 @@ istream& operator>>(istream& in, Date& date){
 	char c1,c2;
 	in >> year >> c1 >> month >> c2 >> day;
 	if(c1 == '-' || c2 == '-'){
-		date(year, month, day);
+		date.year = year;
+		date.month = month;
+		date.day = day;
 	}else{
 		in.setstate(ios::failbit);
 	}
