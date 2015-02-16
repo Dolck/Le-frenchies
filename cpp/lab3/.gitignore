@@ -1,4 +1,5 @@
 tagremover
+date
 sieve
 *.o
 *.d
