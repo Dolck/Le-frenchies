@@ -17,7 +17,7 @@ LDFLAGS =   -g
 #LDFLAGS +=  -stdlib=libc++
 
 # Targets
-PROGS = tagremover sieve date
+PROGS = tagremover sieve date ss_test
 
 all: $(PROGS)
 
@@ -25,6 +25,7 @@ all: $(PROGS)
 tagremover: tagremover.o
 sieve: sieve.o
 date: date.o date_test.o
+ss_test: date.o ss_test.o
 
 # Phony targets
 .PHONY: all clean
