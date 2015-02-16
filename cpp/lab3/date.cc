@@ -65,8 +65,15 @@ ostream& operator<<(ostream& out, const Date& date) {
 	return out;
 }
 
-istream& operator>>(istream& is, Date& date){
+istream& operator>>(istream& in, Date& date){
 	int year, month, day;
-	return is;
+	char c1,c2;
+	in >> year >> c1 >> month >> c2 >> day;
+	if(c1 == '-' || c2 == '-'){
+		date(year, month, day);
+	}else{
+		in.setstate(ios::failbit);
+	}
+	return in;
 }
 
