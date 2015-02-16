@@ -1,6 +1,3 @@
-#include <ctime>  // time and localtime
-#include <iomanip>
-#include <iostream>
 #include "date.h"
 
 int Date::daysPerMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};

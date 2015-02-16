@@ -10,9 +10,7 @@ using namespace std;
  *
  */
 void print(const Date& d) {
-	cout << setw(4) << setfill('0') << d.getYear() << '-';
-	cout << setw(2) << setfill('0') << d.getMonth() << '-';
-	cout << setw(2) << setfill('0') << d.getDay();
+	cout << d;
 }
 
 int main() {
