@@ -66,7 +66,11 @@ istream& operator>>(istream& in, Date& date){
 	int year, month, day;
 	char c1,c2;
 	in >> year >> c1 >> month >> c2 >> day;
-	if(c1 == '-' || c2 == '-'){
+	if(c1 == '-' && c2 == '-' && year > 999 
+		&& year < 10000 && month > 0 
+		&& month < 13 && day > 0 
+		&& day <= date.daysPerMonth[month-1]){
+		
 		date.year = year;
 		date.month = month;
 		date.day = day;
