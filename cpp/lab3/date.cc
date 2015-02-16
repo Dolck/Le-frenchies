@@ -28,3 +28,7 @@ int Date::getDay() const {
 void Date::next() {
 }
 
+ostream& operator<<(ostream& out, const Date& date) {
+	
+	return out;
+}
