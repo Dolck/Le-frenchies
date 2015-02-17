@@ -7,7 +7,7 @@
 	$db->openConnection();
 	
   $movieNames = $db->getMovieNames();
-  var_dump($_SESSION);
+
 	$db->closeConnection();
 ?>
 
