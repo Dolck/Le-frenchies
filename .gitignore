@@ -10,3 +10,4 @@ bin/
 **/target/
 *.class
 *.cache
+*tar.gz
