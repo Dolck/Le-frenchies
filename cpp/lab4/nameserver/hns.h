@@ -2,6 +2,7 @@
 #define HNS_H
 
 #include <vector>
+#include <algorithm>
 #include "nameserverinterface.h"
 
 using namespace std;
