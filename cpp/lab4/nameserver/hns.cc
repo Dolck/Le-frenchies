@@ -23,5 +23,5 @@ IPAddress HNS::lookup(const HostName& hn) const {
 }
 
 size_t HNS::hash(const HostName& hn) const {
-   return hash<string>()(hn) % MAX_SIZE;
+   return std::hash<string>(hn) % MAX_SIZE;
 }
