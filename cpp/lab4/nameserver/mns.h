@@ -1,6 +1,7 @@
 #ifndef MNS_H
 #define MNS_H
 
+#include <map>
 #include "nameserverinterface.h"
 
 using namespace std;

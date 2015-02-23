@@ -17,13 +17,17 @@ LDFLAGS =   -g
 #LDFLAGS +=  -stdlib=libc++
 
 # Targets
-PROGS = nstest nstime
+PROGS = nstest
 
 all: $(PROGS)
 
 # Targets rely on implicit rules for compiling and linking
-nstest: vns.o mns.o umns.h hns.o nstest.o
-nstime: vns.o mns.o umns.h hns.o nstime.o
+vns: vns.o
+mns: mns.o
+umns: umns.o
+hns: umns.o
+nstest: nameserverinterface.o vns.o mns.o umns.o hns.o nstest.o
+nstime: vns.o mns.o umns.o hns.o nstime.o
 
 
 # Phony targets

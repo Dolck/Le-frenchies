@@ -1,6 +1,7 @@
 #ifndef UMNS_H
 #define UMNS_H
 
+#include <unordered_map>
 #include "nameserverinterface.h"
 
 using namespace std;

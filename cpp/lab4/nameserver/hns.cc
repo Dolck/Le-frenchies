@@ -7,7 +7,9 @@ HNS::HNS(unsigned long ms) : MAX_SIZE(ms) {
 }
 
 void HNS::insert(const HostName& hn, const IPAddress& ip) {
-	//TODO: implement
+  size_t hsh = hash(hn);
+	auto p = make_pair(hn, ip);
+	dnsTable[hsh].push_back(p);
 }
 
 bool HNS::remove(const HostName& hn) {
@@ -21,5 +23,5 @@ IPAddress HNS::lookup(const HostName& hn) const {
 }
 
 size_t HNS::hash(const HostName& hn) const {
-   return hash<string>()(hn);
+   return hash<string>()(hn) % MAX_SIZE;
 }

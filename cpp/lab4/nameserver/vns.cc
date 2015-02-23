@@ -1,7 +1,3 @@
-#include <utility>
-#include <vector>
-#include <iostream>
-#include <algorithm>
 #include "vns.h"
 
 using namespace std;

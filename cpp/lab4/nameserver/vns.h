@@ -1,6 +1,9 @@
 #ifndef VNS_H
 #define VNS_H 
 
+#include <algorithm>
+#include <utility>
+#include <vector>
 #include "nameserverinterface.h"
 
 using namespace std;

@@ -3,11 +3,11 @@
 using namespace std;
 
 UMNS::UMNS() {
-	dnsTable = map<HostName, IPAddress> ();
+	dnsTable = unordered_map<HostName, IPAddress> ();
 }
 
 void UMNS::insert(const HostName& hn, const IPAddress& ip) {
-	dnsTable.insert(hn, ip);
+	dnsTable.insert(make_pair(hn, ip));
 }
 
 bool UMNS::remove(const HostName& hn) {

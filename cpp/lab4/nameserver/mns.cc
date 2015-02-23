@@ -7,7 +7,7 @@ MNS::MNS() {
 }
 
 void MNS::insert(const HostName& hn, const IPAddress& ip) {
-	dnsTable.insert(hn, ip);
+	dnsTable.insert(make_pair(hn, ip));
 }
 
 bool MNS::remove(const HostName& hn) {
