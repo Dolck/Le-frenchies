@@ -13,8 +13,18 @@ void HNS::insert(const HostName& hn, const IPAddress& ip) {
 }
 
 bool HNS::remove(const HostName& hn) {
-	//TODO: implement
-	return false;
+  size_t h = hsh(hn);
+  auto vec = dnsTable[h];
+  
+  auto pred = [hn](pair<HostName, IPAddress> p){return hn == p.first; };
+	auto toRemove = remove_if(vec.begin(), vec.end(), pred);
+	
+	if(toRemove == vec.end()){
+		return false;
+	}else{
+		vec.erase(toRemove);
+		return true;
+	}
 }
 
 IPAddress HNS::lookup(const HostName& hn) const {
