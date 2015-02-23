@@ -13,7 +13,6 @@ T string_cast(const string& s){
 	in >> result;
 	if(!in){
 		in.clear();
-		in.ignore(numeric_limits<streamsize>::max(), '\n');
 		throw std::invalid_argument("Invalid syntax.");
 	}
 	return result;
