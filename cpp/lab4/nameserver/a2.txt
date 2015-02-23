@@ -1,0 +1,13 @@
+              290024    1000000
+vector        0.667     2.3       O(n)
+map           0.00096   0.00105   O(log(n))
+unordered     0.00036   0.00036   O(1) w/o collisions
+hash          0.00031   0.00107   O(n/size_hashtable)
+
+our   vvvvvvvvvvvvvvvvvvvvvvvvv
+
+              290024    1000000
+vector        3.117     10.747
+map           0.00117   0.00129
+unordered     0.00025   0.00025
+hash          0.00099   0.00341
