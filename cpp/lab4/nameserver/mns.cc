@@ -11,13 +11,14 @@ void MNS::insert(const HostName& hn, const IPAddress& ip) {
 }
 
 bool MNS::remove(const HostName& hn) {
-	auto it = dnsTable.find(hn);
+	return dnsTable.erase(hn);
+	/*auto it = dnsTable.find(hn);
 	if(it == dnsTable.end()){
 		return false
 	}else{
 		dnsTable.erase (it); 
 		return true;
-	}
+	}*/
 }
 
 IPAddress MNS::lookup(const HostName& hn) const {
