@@ -14,8 +14,8 @@ public:
 	IPAddress lookup(const HostName&) const;
 private:
 	unsigned long MAX_SIZE;
-	vector<vector<HostName, IPAddress>> dnsTable;
-	size_t hash(const HostName&) const;
+	vector<vector<std::pair<HostName, IPAddress>>> dnsTable;
+	size_t hsh(const HostName&) const;
 };
 
 #endif

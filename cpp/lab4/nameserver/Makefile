@@ -25,7 +25,7 @@ all: $(PROGS)
 vns: vns.o
 mns: mns.o
 umns: umns.o
-hns: umns.o
+hns: hns.o
 nstest: nameserverinterface.o vns.o mns.o umns.o hns.o nstest.o
 nstime: vns.o mns.o umns.o hns.o nstime.o
 
