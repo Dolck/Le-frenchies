@@ -18,8 +18,16 @@ bool HNS::remove(const HostName& hn) {
 }
 
 IPAddress HNS::lookup(const HostName& hn) const {
-	//TODO: implement
-	return NON_EXISTING_ADDRESS;
+	size_t h = hsh(hn);
+	auto tmp = dnsTable[h];
+	
+	auto pred = [hn](pair<HostName, IPAddress> p){return hn == p.first; };
+	auto it = find_if(tmp.begin(), tmp.end(), pred);
+	if (it == tmp.end()) {
+		return NON_EXISTING_ADDRESS;
+	}else{
+		return (*it).second;
+	}
 }
 
 size_t HNS::hsh(const HostName& hn) const {
