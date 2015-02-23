@@ -9,7 +9,7 @@ HNS::HNS(unsigned long ms) : MAX_SIZE(ms) {
 void HNS::insert(const HostName& hn, const IPAddress& ip) {
 	size_t h = hsh(hn);
 	auto p = make_pair(hn, ip);
-	dnsTable[hsh].push_back(p);
+	dnsTable[h].push_back(p);
 }
 
 bool HNS::remove(const HostName& hn) {
