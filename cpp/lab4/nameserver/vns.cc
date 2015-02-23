@@ -29,10 +29,10 @@ bool VNS::remove(const HostName& hn) {
 
 IPAddress VNS::lookup(const HostName& hn) const {
 	auto pred = [hn](pair<HostName, IPAddress> p){return hn == p.first; };
-	auto res = find_if(dnsTable.begin(), dnsTable.end(), pred);
-	if (res == dnsTable.end()) {
+	auto it = find_if(dnsTable.begin(), dnsTable.end(), pred);
+	if (it == dnsTable.end()) {
 		return NON_EXISTING_ADDRESS;
 	}else{
-		return res.second;
+		return (*it).second;
 	}
 }
