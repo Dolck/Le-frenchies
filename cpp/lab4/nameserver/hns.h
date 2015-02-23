@@ -1,18 +1,20 @@
-#ifndef MNS_H
-#define MNS_H
+#ifndef HNS_H
+#define HNS_H
 
 #include "nameserverinterface.h"
 
 using namespace std;
 
-class MNS : public NameServerInterface {
+class HNS : public nameserverinterface {
 public:
-	MNS();
+	HNS();
 	void insert(const HostName&, const IPAddress&);
 	bool remove(const HostName&);
 	IPAddress lookup(const HostName&) const;
 private:
-	map<HostName, IPAddress> dnsTable;
+	unsigned long MAX_SIZE;
+	vector<vector<HostName, IPAddress>> dnsTable;
+	size_t hash(const HostName&) const;
 };
 
 #endif
