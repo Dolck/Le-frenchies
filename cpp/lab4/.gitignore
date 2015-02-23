@@ -1,2 +1,6 @@
 nameserver/nstest
 nameserver/nstime
+*.d
+bitset/simplebitsettest
+bitset/bitsettest1
+bitset/bitsettest2
