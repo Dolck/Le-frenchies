@@ -9,4 +9,8 @@ object Application extends Controller {
     Ok(views.html.index("Your new application is ready."))
   }
 
+  def pallet = Action {
+    Ok(views.html.index("This is a pallet"))
+  }
+
 }

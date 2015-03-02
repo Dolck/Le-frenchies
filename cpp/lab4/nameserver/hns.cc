@@ -15,7 +15,7 @@ void HNS::insert(const HostName& hn, const IPAddress& ip) {
 bool HNS::remove(const HostName& hn) {
   size_t h = hsh(hn);
   
-  auto pred = [hn](pair<HostName, IPAddress> p){return hn == p.first; };
+  auto pred = [&hn](pair<HostName, IPAddress> &p){return hn == p.first; };
 	auto toRemove = remove_if(dnsTable[h].begin(), dnsTable[h].end(), pred);
 	
 	if(toRemove == dnsTable[h].end()){
@@ -28,9 +28,9 @@ bool HNS::remove(const HostName& hn) {
 
 IPAddress HNS::lookup(const HostName& hn) const {
 	size_t h = hsh(hn);
-	auto tmp = dnsTable[h];
+	auto& tmp = dnsTable[h];
 	
-	auto pred = [hn](pair<HostName, IPAddress> p){return hn == p.first; };
+	auto pred = [&hn](const pair<HostName, IPAddress> &p){return hn == p.first; };
 	auto it = find_if(tmp.begin(), tmp.end(), pred);
 	if (it == tmp.end()) {
 		return NON_EXISTING_ADDRESS;
