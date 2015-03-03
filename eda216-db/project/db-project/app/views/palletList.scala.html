@@ -1,0 +1,33 @@
+@(pallets: Array[Pallet])
+
+@tableRow(infoMap: Map[String, String]) = {
+	<tr>
+		<td>@infoMap.get("Id")</td>
+		<td>@infoMap.get("Production time")</td>
+		<td>@infoMap.get("Cookie name")</td>
+		<td>@infoMap.get("Status")</td>
+		<td><a href="@routes.Application.pallet(infoMap get "Id" getOrElse "0" toInt)">info</a></td>
+	</tr>
+}
+
+@main("PalletListing") {
+
+	<h1>Pallet listing</h1>
+	<form method="post">
+	<!--some form to change filtering-->
+	</form>
+
+	<table border="1">
+		<tr>
+			<th>Id</th>
+			<th>Prod. time</th>
+			<th>Cookie</th>
+			<th>Status</th>
+			<th>More info</th>
+		</tr>
+
+		@for(pallet <- pallets){
+			@tableRow(pallet.getInfoAsMap())
+		}
+	</table>
+}

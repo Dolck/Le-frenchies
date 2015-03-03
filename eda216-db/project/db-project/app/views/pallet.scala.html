@@ -4,7 +4,7 @@
 @main("Pallet") {
 	<h1>Pallet info:</h1>
 	<table>
-		@for((k,v) <- pallet.getInfoAsMap()) {
+		@for((k,v) <- pallet.getInfoAsMap) {
 			<tr>
 				<td>@k</td>
 				<td>@v</td>
