@@ -1,13 +1,26 @@
-@(pallet: Map[String, String])
+@(pallet: Pallet)
 @import models._
 
 @main("Pallet") {
+	<h1>Pallet info:</h1>
 	<table>
-		@for((k,v) <- pallet) {
+		@for((k,v) <- pallet.getInfoAsMap()) {
 			<tr>
 				<td>@k</td>
 				<td>@v</td>
 			</tr>
 		}
 	</table>
+	<div>
+		<h3>Change status</h3>
+		<form method="post">
+			<select name="status">
+				@for(status <- PalletStatus.values){
+					<option value="@status" @if(status == pallet.pStatus){selected}>@status</option>
+				}
+			</select>
+			<input type="hidden" name="id" value="@pallet.pId">
+			<input type="submit">
+		</form>
+	</div>
 }

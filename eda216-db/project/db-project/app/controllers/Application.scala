@@ -4,6 +4,8 @@ import play.api._
 import play.api.mvc._
 import java.util.Date
 import models._
+import play.api.data._
+import play.api.data.Forms._
 
 object Application extends Controller {
 
@@ -12,9 +14,22 @@ object Application extends Controller {
   }
 
   def pallet = Action {
-  	println("Hej")
   	val p: Pallet = new Pallet(1, new Date(), "Cookie1", PalletStatus.Free)
-    Ok(views.html.pallet(p.getInfoAsMap()))
+    Ok(views.html.pallet(p))
+  }
+
+  val palletForm = Form(
+    tuple(
+      "status" -> text,
+      "id" -> text
+    )
+  )
+
+  def updatePallet = Action { implicit request =>
+    val (status, id) = palletForm.bindFromRequest.get
+    //Call database here and update pallet status
+    //Then show pallet view again
+    Ok("Pallet updated")
   }
 
 }

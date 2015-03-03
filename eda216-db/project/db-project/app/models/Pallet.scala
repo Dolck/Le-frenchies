@@ -18,7 +18,6 @@ class Pallet(val id: Int, val prodTime: Date, val cookieName:String, var status:
 	}
 
 	def getInfoAsMap(): Map[String,String] = {
-		println("GetInfo!")
 		val info = Map("Id" -> pId.toString,
 					"Production time" -> pProdTime.toString,
 					"Cookie name" -> pCookie,
