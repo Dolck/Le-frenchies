@@ -13,8 +13,8 @@ object Application extends Controller {
     Ok(views.html.index("Your new application is ready."))
   }
 
-  def pallet = Action {
-  	val p: Pallet = new Pallet(1, new Date(), "Cookie1", PalletStatus.Free)
+  def pallet(id: Int) = Action {
+  	val p: Pallet = new Pallet(id, new Date(), "Cookie1", PalletStatus.Free)
     Ok(views.html.pallet(p))
   }
 
