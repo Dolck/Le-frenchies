@@ -1,0 +1,13 @@
+@(pallet: Map[String, String])
+@import models._
+
+@main("Pallet") {
+	<table>
+		@for((k,v) <- pallet) {
+			<tr>
+				<td>@k</td>
+				<td>@v</td>
+			</tr>
+		}
+	</table>
+}

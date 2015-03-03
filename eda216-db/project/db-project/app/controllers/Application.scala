@@ -2,6 +2,8 @@ package controllers
 
 import play.api._
 import play.api.mvc._
+import java.util.Date
+import models._
 
 object Application extends Controller {
 
@@ -10,7 +12,9 @@ object Application extends Controller {
   }
 
   def pallet = Action {
-    Ok(views.html.index("This is a pallet"))
+  	println("Hej")
+  	val p: Pallet = new Pallet(1, new Date(), "Cookie1", PalletStatus.Free)
+    Ok(views.html.pallet(p.getInfoAsMap()))
   }
 
 }
