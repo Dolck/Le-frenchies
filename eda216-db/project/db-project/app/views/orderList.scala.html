@@ -6,13 +6,13 @@
 		<td>@order.iDate</td>
 		<td>@order.dDate</td>
 		<td>order.getAllCookies()</td>
-		<td><a href="/chooseCookie">Choose Order</a></td>
+		<td><a href="@routes.Application.chooseCookie(order.oId)">Choose</a></td>
 	</tr>
 }
 
-@main("Order Listing") {
+@main("Choose order") {
 
-	<h1>Order listing</h1>
+	<h1>Choose order</h1>
 
 	<table border="1">
 		<tr>

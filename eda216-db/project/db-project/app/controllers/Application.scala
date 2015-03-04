@@ -74,7 +74,15 @@ object Application extends Controller {
   )
 
   def listOrders = Action {
+    val p1: Pallet = new Pallet(1, new Date(), "Cookie", PalletStatus.free, 101)
+    val od1: OrderDetails = new OrderDetails("Cookie", 2, Array(p1))
+    val aod: Array[OrderDetails] = Array(od1)
+    val o1: Order = new Order(101, new Date(), new Date(), "Customer", "Address", aod)
 
-    Ok("lists orders")
+    Ok(views.html.orderList(Array(o1)))
+  }
+
+  def chooseCookie(oId: Int) = Action {
+    Ok("Choose cookie")
   }
 }
