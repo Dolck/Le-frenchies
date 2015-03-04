@@ -34,11 +34,11 @@ object DatabaseConn{
     );
     return query().map(row => new Order(
       row[Int]("orderId"),
-      row[String]("incomeDate"),
-      row[String]("delivDate"),
+      row[Date]("incomeDate"),
+      row[Date]("delivDate"),
       row[String]("custName"),
       row[String]("custAddress"),
-      new Array[OrderDetails]
+      new Array[OrderDetails] (10)
     )).toList;
   }
 
