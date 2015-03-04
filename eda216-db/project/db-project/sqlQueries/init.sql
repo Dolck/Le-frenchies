@@ -46,8 +46,10 @@ create table Pallets (
     prodTime    datetime not null,
     cookieName  varchar(20) not null,
     status      enum('free', 'blocked', 'ordered', 'delivered') not null default 'free',
+    orderId     integer not null
     primary key (id),
-    foreign key (cookieName) references CookieNames(cookieName)
+    foreign key (cookieName) references CookieNames(cookieName),
+    foreign key (orderId) references OrderDetails(orderId)
 );
 
 create table Customers (
@@ -63,8 +65,8 @@ create table Orders (
     delivDate   datetime not null,
     cName       varchar(30) not null,
     cAddress    varchar(30) not null,
-    primary key (orderId)
-
+    primary key (orderId),
+    foreign key (cName, cAddress) references Customers(cName, cAddress),
 );
 
 create table OrderDetails (
