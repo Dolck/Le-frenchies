@@ -8,11 +8,12 @@ import anorm.SqlParser._
 
 object DatabaseConn{
   def getPallets() = DB.withConnection { implicit c =>
-    SQL(
+    val pallets = SQL(
         """
-        SELECT palletId
+        SELECT *
         FROM pallets;
         """
-       ).execute()
+       )
+    val palletsAsList = pallets().map(row => row[String]("palletId") -> row[String]("cookieName")).toList
   }
 }
