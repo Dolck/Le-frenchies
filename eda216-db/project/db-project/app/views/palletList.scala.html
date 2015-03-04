@@ -1,0 +1,46 @@
+@(pallets: Array[Pallet], fDate: String, tDate: String, fstatus: String, cookie: String)
+
+@tableRow(infoMap: Map[String, String]) = {
+	<tr>
+		<td>@infoMap.get("Id")</td>
+		<td>@infoMap.get("Production time")</td>
+		<td>@infoMap.get("Cookie name")</td>
+		<td>@infoMap.get("Status")</td>
+		<td><a href="@routes.Application.pallet(infoMap get "Id" getOrElse "0" toInt)">info</a></td>
+	</tr>
+}
+
+@main("PalletListing") {
+
+	<h1>Pallet listing</h1>
+	<form method="get">
+		From date:
+		<input type="datetime-local" name="fromDate" value="@fDate">
+		To date:
+		<input type="datetime-local" name="toDate" value="@tDate">
+		Cookie name:
+		<input type="text" name="cookie" value="@cookie">
+		Status:
+		<select name="status">
+			<option value"Any" @if(fstatus == "Any" || fstatus == ""){ selected }>Any</option>
+			@for(status <- PalletStatus.values){
+				<option value="@status" @if(fstatus == status){ selected }>@status</option>
+			}
+		</select>
+		<input type="submit" value="Filter">
+	</form>
+
+	<table border="1">
+		<tr>
+			<th>Id</th>
+			<th>Prod. time</th>
+			<th>Cookie</th>
+			<th>Status</th>
+			<th>More info</th>
+		</tr>
+
+		@for(pallet <- pallets){
+			@tableRow(pallet.getInfoAsMap())
+		}
+	</table>
+}

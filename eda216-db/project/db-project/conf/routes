@@ -4,7 +4,9 @@
 
 # Home page
 GET     /                           controllers.Application.index
-GET     /pallet                     controllers.Application.pallet
+GET     /pallets                    controllers.Application.listPallets(fromDate: String ?= "", toDate: String ?= "", status: String ?= "", cookie: String ?= "")
+GET     /pallet                     controllers.Application.pallet(id: Int)
+POST    /pallet                     controllers.Application.updatePallet
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
