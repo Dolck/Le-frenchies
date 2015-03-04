@@ -1,0 +1,30 @@
+@(orders: Array[Order])
+
+@tableRow(order: Order) = {
+	<tr>
+		<td>@order.oId</td>
+		<td>@order.iDate</td>
+		<td>@order.dDate</td>
+		<td>@order.getAllCookies()</td>
+		<td><a href="/chooseCookie">Choose Order</a></td>
+	</tr>
+}
+
+@main("Order Listing") {
+
+	<h1>Order listing</h1>
+
+	<table border="1">
+		<tr>
+			<th>Id</th>
+			<th>Incoming time</th>
+			<th>Delivery time</th>
+			<th>Cookiekinds</th>
+			<th>Choose</th>
+		</tr>
+
+		@for(order <- orders){
+			@tableRow(order)
+		}
+	</table>
+}

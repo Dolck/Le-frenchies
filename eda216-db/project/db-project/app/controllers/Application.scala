@@ -72,4 +72,9 @@ object Application extends Controller {
       "id" -> text
     )
   )
+
+  def listOrders = Action {
+
+    Ok("lists orders")
+  }
 }
