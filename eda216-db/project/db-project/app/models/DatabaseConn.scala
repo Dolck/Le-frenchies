@@ -23,4 +23,24 @@ object DatabaseConn{
           row[Int]("orderId"))
         ).toList 
   }
+
+  def getOrders(): List[(Order)] = DB.withConnection {
+    implicit c =>
+    val query = SQL(
+      """
+        SELECT *
+        FROM orders;
+      """
+    );
+    return query().map(row => new Order(
+      row[Int]("orderId"),
+      row[String]("incomeDate"),
+      row[String]("delivDate"),
+      row[String]("custName"),
+      row[String]("custAddress"),
+      new Array[OrderDetails]
+    )).toList;
+  }
+
+
 }
