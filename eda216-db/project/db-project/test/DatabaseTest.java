@@ -16,7 +16,7 @@ public class DatabaseTest {
   public void simpleCheck() {
     running(fakeApplication(), new Runnable() {
       public void run() {
-        DatabaseConn.getPallets();
+        System.out.println(DatabaseConn.getPallets());
       }
     });
   }
