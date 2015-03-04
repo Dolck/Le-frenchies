@@ -16,13 +16,15 @@ object Application extends Controller {
   }
 
   def listPallets(fromDate: String, toDate: String, status: String, cookie: String) = Action {
-  	var format: DateFormat = new SimpleDateFormat("yyyyMMdd:HHmmss")
+  	//Dateformat: YYYYY-MM-DD + 'T' + HH:mm
+  	var format: DateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm")
   	var fDate: Date = new Date(Long.MinValue)
-  	var tDate: Date = new Date(Long.MinValue)
+  	var tDate: Date = new Date(Long.MaxValue) //Just really big and small default values
   	if(fromDate != "")
 		fDate = format.parse(fromDate)
   	if(toDate != "")
   		tDate = format.parse(toDate)
+
   	//Call database and retreive list of pallets
 
   	//temp data:
@@ -31,8 +33,8 @@ object Application extends Controller {
   	val p3: Pallet = new Pallet(3, new Date(), "Cookie", PalletStatus.Free)
   	val p4: Pallet = new Pallet(4, new Date(), "Cookie", PalletStatus.Free)
   	val ps = Array(p1, p2, p3, p4)
-  	
-  	Ok(views.html.palletList(ps))
+
+  	Ok(views.html.palletList(ps, fromDate, toDate, status, cookie))
 
   }
 
