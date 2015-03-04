@@ -40,10 +40,10 @@ object Application extends Controller {
   	//Call database and retreive list of pallets here
 
   	//temp data:
-  	val p1: Pallet = new Pallet(1, new Date(), "Cookie", PalletStatus.Free, 101)
-  	val p2: Pallet = new Pallet(2, new Date(), "Cookie", PalletStatus.Free, 102)
-  	val p3: Pallet = new Pallet(3, new Date(), "Cookie", PalletStatus.Free, 103)
-  	val p4: Pallet = new Pallet(4, new Date(), "Cookie", PalletStatus.Free, 104)
+  	val p1: Pallet = new Pallet(1, new Date(), "Cookie", PalletStatus.free, 101)
+  	val p2: Pallet = new Pallet(2, new Date(), "Cookie", PalletStatus.free, 102)
+  	val p3: Pallet = new Pallet(3, new Date(), "Cookie", PalletStatus.free, 103)
+  	val p4: Pallet = new Pallet(4, new Date(), "Cookie", PalletStatus.free, 104)
   	val ps = Array(p1, p2, p3, p4)
   	
   	val fd:String = format.format(fDate)
@@ -55,7 +55,7 @@ object Application extends Controller {
 
   def pallet(id: Int) = Action {
   	//Retreive pallet from database here
-  	val p: Pallet = new Pallet(id, new Date(), "Cookie1", PalletStatus.Free, 101)
+  	val p: Pallet = new Pallet(id, new Date(), "Cookie1", PalletStatus.free, 101)
     Ok(views.html.pallet(p))
   }
 

@@ -1,7 +1,7 @@
 package models
 
 object PalletStatus extends Enumeration {
-	val Free, Blocked, Ordered, Delivered = Value
+	val free, blocked, ordered, delivered = Value
 }
 
 import java.util.Date
