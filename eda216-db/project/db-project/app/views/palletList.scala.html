@@ -13,7 +13,21 @@
 @main("PalletListing") {
 
 	<h1>Pallet listing</h1>
-	<form method="post">
+	<form method="get">
+		From date:
+		<input type="datetime-local" name="fromDate">
+		To date:
+		<input type="datetime-local" name="toDate">
+		Cookie name:
+		<input type="text" name="cookie">
+		Status:
+		<select name="status">
+			<option value"any">any</option>
+			@for(status <- PalletStatus.values){
+				<option value="@status">@status</option>
+			}
+		</select>
+
 	<!--some form to change filtering-->
 	</form>
 
