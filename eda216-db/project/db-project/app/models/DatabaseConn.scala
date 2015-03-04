@@ -8,13 +8,17 @@ import anorm._
 import anorm.SqlParser._
 
 object DatabaseConn{
-  def getPallets(): List[(Pallet)] = DB.withConnection { implicit c =>
+  def getPallets(from: Date, to: Date, cookie: String, status: PalletStatus.Value): List[(Pallet)] = 
+    DB.withConnection { implicit c =>
     val query = SQL(
       """
       SELECT *
-      FROM pallets;
+      FROM pallets
+      WHERE (prodTime BETWEEN {from} AND {to}) AND 
+      ({cookie} LIKE '' OR cookieName = {cookie}) AND 
+      ({status} LIKE 'Any' OR status = {status});
       """
-    )
+    ).on("from" -> from, "to" -> to, "cookie" -> cookie, "status" -> status.toString)
     return query().map(row => new Pallet(
           row[Int]("id"), 
           row[Date]("prodTime"), 
@@ -36,11 +40,9 @@ object DatabaseConn{
       row[Int]("orderId"),
       row[Date]("incomeDate"),
       row[Date]("delivDate"),
-      row[String]("custName"),
-      row[String]("custAddress"),
+      row[String]("cName"),
+      row[String]("cAddress"),
       new Array[OrderDetails] (10)
     )).toList;
   }
-
-
 }
