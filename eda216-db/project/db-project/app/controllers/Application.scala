@@ -47,7 +47,6 @@ object Application extends Controller {
   	val ps = Array(p1, p2, p3, p4)
   	
   	val fd:String = format.format(fDate)
-  	println(toDate)
   	val td:String = format.format(tDate)
 
   	Ok(views.html.palletList(ps, fd, td, status, cookie))
