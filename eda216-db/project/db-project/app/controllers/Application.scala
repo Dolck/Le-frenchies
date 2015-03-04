@@ -18,14 +18,26 @@ object Application extends Controller {
   def listPallets(fromDate: String, toDate: String, status: String, cookie: String) = Action {
   	//Dateformat: YYYYY-MM-DD + 'T' + HH:mm
   	var format: DateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm")
-  	var fDate: Date = new Date(Long.MinValue)
-  	var tDate: Date = new Date(Long.MaxValue) //Just really big and small default values
-  	if(fromDate != "")
-		fDate = format.parse(fromDate)
-  	if(toDate != "")
-  		tDate = format.parse(toDate)
+  	var fDate: Date = new Date()
+  	fDate = format.parse("1900-01-01T00:00")
+  	var tDate: Date = new Date() //Just really big and small default values
+  	tDate = format.parse("2100-01-01T00:00")
+  	if(fromDate != ""){
+  		try { 
+			fDate = format.parse(fromDate)
+  		} catch {
+			case e: Exception => println("formatting exception fromDate: " + fDate)
+  		}
+  	}
+  	if(toDate != ""){
+  		try { 
+			tDate = format.parse(toDate)
+  		} catch {
+			case e: Exception => println("formatting exception toDate: " + tDate)
+  		}
+  	}
 
-  	//Call database and retreive list of pallets
+  	//Call database and retreive list of pallets here
 
   	//temp data:
   	val p1: Pallet = new Pallet(1, new Date(), "Cookie", PalletStatus.Free)
@@ -33,8 +45,12 @@ object Application extends Controller {
   	val p3: Pallet = new Pallet(3, new Date(), "Cookie", PalletStatus.Free)
   	val p4: Pallet = new Pallet(4, new Date(), "Cookie", PalletStatus.Free)
   	val ps = Array(p1, p2, p3, p4)
+  	
+  	val fd:String = format.format(fDate)
+  	println(toDate)
+  	val td:String = format.format(tDate)
 
-  	Ok(views.html.palletList(ps, fromDate, toDate, status, cookie))
+  	Ok(views.html.palletList(ps, fd, td, status, cookie))
 
   }
 
