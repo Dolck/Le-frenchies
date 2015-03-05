@@ -21,6 +21,7 @@ public class DatabaseTest {
         System.out.println(DatabaseConn.getPallets(new GregorianCalendar(1990, 1, 1).getTime(), new GregorianCalendar(2025, 1, 1).getTime(), "", PalletStatus.free()));
         System.out.println(DatabaseConn.getPallet(3));
         System.out.println(DatabaseConn.getOrders());
+        System.out.println(DatabaseConn.getOrder(1));
       }
     });
   }
