@@ -70,7 +70,7 @@ object DatabaseConn{
             FROM orders
             WHERE id = {id}
         """
-    ).on('id' -> id)
+    ).on('id -> id)
     return query().map(row => new Order(
       row[Int]("orderId"),
       row[Date]("incomeDate"),
