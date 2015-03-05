@@ -45,7 +45,7 @@ object DatabaseConn{
         ).toList.head
   }
   
-  def changePalletStatus(id: int, newStatus: PalletsStatus.Value): Boolean = 
+  def changePalletStatus(id: Int, newStatus: PalletStatus.Value): Int = 
     DB.withConnection { implicit c =>
       SQL(
           """
