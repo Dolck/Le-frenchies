@@ -57,9 +57,22 @@ object DatabaseConn{
     )).toList;
   }
 
-  def getOrder(id: Int): Order = DB.withConnection {
-
+  def getOrder(id: Int): Order = DB.withConnection { implicit c =>
+    SQL(
+        """
+            SELECT *
+            FROM orders
+            WHERE id = {id}
+        """
+    ).on('id' -> id)
+    return query().map(row => new Order(
+      row[Int]("orderId"),
+      row[Date]("incomeDate"),
+      row[Date]("delivDate"),
+      row[String]("cName"),
+      row[String]("cAddress"),
+      new Array[OrderDetails] (10)
+    )).toList;
   }
-
 
 }
