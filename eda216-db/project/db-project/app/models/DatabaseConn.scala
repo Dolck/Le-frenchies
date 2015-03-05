@@ -60,11 +60,11 @@ object DatabaseConn{
       row[String]("cName"),
       row[String]("cAddress"),
       new Array[OrderDetails] (10)
-    )).toList;
+    )).toList
   }
 
  def getOrder(id: Int): Order = DB.withConnection { implicit c =>
-    SQL(
+    val query = SQL(
         """
             SELECT *
             FROM orders
@@ -78,7 +78,7 @@ object DatabaseConn{
       row[String]("cName"),
       row[String]("cAddress"),
       new Array[OrderDetails] (10)
-    )).toList;
+    )).toList.head
  }
 
 }
