@@ -29,14 +29,20 @@ object DatabaseConn{
   }
 
   def getPallet(id: Int): Pallet = DB.withConnection { implicit c => 
-    SQL(
+    val query = SQL(
         """
         SELECT *
         FROM pallets
         WHERE id = {id}
         """
        ).on('id -> id)
-
+      return query().map(row => new Pallet(
+          row[Int]("id"), 
+          row[Date]("prodTime"),
+          row[String]("cookieName"), 
+          PalletStatus.withName(row[String]("status")), 
+          row[Int]("orderId"))
+        ).toList.head
   }
 
   def getOrders(): List[(Order)] = DB.withConnection {
@@ -58,6 +64,7 @@ object DatabaseConn{
   }
 
   def getOrder(id: Int): Order = DB.withConnection {
+    return null
 
   }
 
