@@ -44,6 +44,17 @@ object DatabaseConn{
           row[Int]("orderId"))
         ).toList.head
   }
+  
+  def changePalletStatus(id: int, newStatus: PalletsStatus.Value): Boolean = 
+    DB.withConnection { implicit c =>
+      SQL(
+          """
+          UPDATE pallets
+          SET status = {newStatus}
+          WHERE id = {id}
+          """
+         ).on('id -> id, 'newStatus -> newStatus.toString).executeUpdate()
+    }
 
   def getOrders(): List[(Order)] = DB.withConnection {
     implicit c =>
@@ -67,6 +78,8 @@ object DatabaseConn{
     return null
 
   }
+
+
 
 
 }
