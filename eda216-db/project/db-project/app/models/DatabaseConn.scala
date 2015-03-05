@@ -28,6 +28,17 @@ object DatabaseConn{
         ).toList 
   }
 
+  def getPallet(id: Int): Pallet = DB.withConnection { implicit c => 
+    SQL(
+        """
+        SELECT *
+        FROM pallets
+        WHERE id = {id}
+        """
+       ).on('id -> id)
+
+  }
+
   def getOrders(): List[(Order)] = DB.withConnection {
     implicit c =>
     val query = SQL(
@@ -45,4 +56,10 @@ object DatabaseConn{
       new Array[OrderDetails] (10)
     )).toList;
   }
+
+  def getOrder(id: Int): Order = DB.withConnection {
+
+  }
+
+
 }
