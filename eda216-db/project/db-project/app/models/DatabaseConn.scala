@@ -79,7 +79,7 @@ object DatabaseConn{
         """
             SELECT *
             FROM orders
-            WHERE id = {id}
+            WHERE orderId = {id}
         """
     ).on('id -> id)
     return query().map(row => new Order(
