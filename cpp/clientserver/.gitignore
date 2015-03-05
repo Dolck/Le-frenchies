@@ -1,2 +1,5 @@
 *.a
 *.d
+serverImpl1
+test/myserver
+test/myclient
