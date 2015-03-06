@@ -1,4 +1,4 @@
-@(pallets: Array[Pallet], fDate: String, tDate: String, fstatus: String, cookie: String)
+@(pallets: List[Pallet], fDate: String, tDate: String, fstatus: String, cookie: String)
 
 @tableRow(infoMap: Map[String, String]) = {
 	<tr>
@@ -22,7 +22,7 @@
 		<input type="text" name="cookie" value="@cookie">
 		Status:
 		<select name="status">
-			<option value"Any" @if(fstatus == "Any" || fstatus == ""){ selected }>Any</option>
+			<option value"any" @if(fstatus == "any" || fstatus == ""){ selected }>any</option>
 			@for(status <- PalletStatus.values){
 				<option value="@status" @if(fstatus == status){ selected }>@status</option>
 			}

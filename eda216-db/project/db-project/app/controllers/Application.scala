@@ -37,31 +37,27 @@ object Application extends Controller {
   		}
   	}
 
-  	//Call database and retreive list of pallets here
-
-  	//temp data:
-  	val p1: Pallet = new Pallet(1, new Date(), "Cookie", PalletStatus.free, 101)
-  	val p2: Pallet = new Pallet(2, new Date(), "Cookie", PalletStatus.free, 102)
-  	val p3: Pallet = new Pallet(3, new Date(), "Cookie", PalletStatus.free, 103)
-  	val p4: Pallet = new Pallet(4, new Date(), "Cookie", PalletStatus.free, 104)
-  	val ps = Array(p1, p2, p3, p4)
+    var list = DatabaseConn.getPallets(fDate, tDate, cookie, status)
+    println(list)
   	
   	val fd:String = format.format(fDate)
   	val td:String = format.format(tDate)
 
-  	Ok(views.html.palletList(ps, fd, td, status, cookie))
+  	Ok(views.html.palletList(list, fd, td, status, cookie))
 
   }
 
   def pallet(id: Int) = Action {
   	//Retreive pallet from database here
-  	val p: Pallet = new Pallet(id, new Date(), "Cookie1", PalletStatus.free, 101)
+  	//val p: Pallet = new Pallet(id, new Date(), "Cookie1", PalletStatus.free, 101)
+    val p: Pallet = DatabaseConn.getPallet(id)
     Ok(views.html.pallet(p))
   }
 
   def updatePallet = Action { implicit request =>
     val (status, id) = palletForm.bindFromRequest.get
     //Call database here and update pallet status
+    DatabaseConn.changePalletStatus(id.toInt, PalletStatus.withName(status))
     //Then show pallet view again?
     Ok("Pallet updated")
   }

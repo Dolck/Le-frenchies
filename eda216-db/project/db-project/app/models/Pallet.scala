@@ -14,10 +14,6 @@ class Pallet(val id: Int, val prodTime: Date, val cookieName: String, var status
 	var pStatus: PalletStatus.Value = status
 	val oId: Int = orderId
 
-	def changeStatus(ps: PalletStatus.Value) = {
-		pStatus = ps
-	}
-
 	def getInfoAsMap(): Map[String,String] = {
 		val info = Map("Id" -> pId.toString,
 					"Production time" -> pProdTime.toString,
