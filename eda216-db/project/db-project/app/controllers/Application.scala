@@ -48,15 +48,12 @@ object Application extends Controller {
   }
 
   def pallet(id: Int) = Action {
-  	//Retreive pallet from database here
-  	//val p: Pallet = new Pallet(id, new Date(), "Cookie1", PalletStatus.free, 101)
     val p: Pallet = DatabaseConn.getPallet(id)
     Ok(views.html.pallet(p))
   }
 
   def updatePallet = Action { implicit request =>
     val (status, id) = palletForm.bindFromRequest.get
-    //Call database here and update pallet status
     DatabaseConn.changePalletStatus(id.toInt, PalletStatus.withName(status))
     //Then show pallet view again?
     Ok("Pallet updated")
@@ -79,6 +76,10 @@ object Application extends Controller {
   }
 
   def chooseCookie(oId: Int) = Action {
+    val p1: Pallet = new Pallet(1, new Date(), "Cookie", PalletStatus.free, 101)
+    val od1: OrderDetails = new OrderDetails("Cookie", 2, Array(p1))
+    val details: Array[OrderDetails] = Array(od1)
+
     Ok("Choose cookie")
   }
 }
