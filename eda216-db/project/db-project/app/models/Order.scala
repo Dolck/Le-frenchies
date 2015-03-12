@@ -2,10 +2,10 @@ package models
 
 import java.util.Date
 
-class OrderDetails(val cookie: String, val nbrPallets: Int, var pllts: Array[Pallet]){
+class OrderDetails(val cookie: String, val nbrPallets: Int, var pllts: Int){
 	val cookieName: String = cookie
 	val nbrReqPallets: Int = nbrPallets
-	var pallets: Array[Pallet] = pllts
+	var pallets: Int = pllts
 }
 
 class Order(val id: Int, val incomeDate: Date, val delivDate: Date, val custName: String, val custAddress: String, val oDetails: Array[OrderDetails])  {
