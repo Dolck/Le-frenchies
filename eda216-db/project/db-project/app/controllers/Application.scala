@@ -75,11 +75,17 @@ object Application extends Controller {
     Ok(views.html.orderList(Array(o1)))
   }
 
-  def chooseCookie(oId: Int) = Action {
+  def chooseCookie(oId: Int, statusmsg: String) = Action {
     val p1: Pallet = new Pallet(1, new Date(), "Cookie", PalletStatus.free, 101)
     val od1: OrderDetails = new OrderDetails("Cookie", 2, Array(p1))
-    val details: Array[OrderDetails] = Array(od1)
-
-    Ok("Choose cookie")
+    val details: List[OrderDetails] = List(od1)
+    
+    Ok(views.html.order(details, oId, statusmsg)
   }
+
+  def createPallet(cookieName: String, orderId: Int){
+    val success: Boolean = DatabaseConn.createPallet(cookieName, PalletStatus.ordered, orderId);
+    
+  }
+
 }

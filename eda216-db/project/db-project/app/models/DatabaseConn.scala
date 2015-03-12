@@ -56,14 +56,14 @@ object DatabaseConn{
          ).on('id -> id, 'newStatus -> newStatus.toString).executeUpdate()
     }
 
-  def createPallet(cookieName: String, status: PalletStatus.Value, orderId: Int): Int = 
-    DB.withConnection { implicit c =>
+  def createPallet(cookieName: String, status: PalletStatus.Value, orderId: Int): Boolean = 
+    return 1 == DB.withConnection { implicit c =>
       SQL(
           """
           INSERT INTO pallets (prodTime, cookieName, status, orderId)
           VALUES ('now()', {cookieName}, {status}, {orderId})
           """
-         ).on('cookieName -> cookieName, 'status -> status.toString, 'orderId -> orderId).executeUpdate()
+         ).on('cookieName -> cookieName, 'status -> status.toString, 'orderId -> orderId).executeUpdate() 
     }
 
   def getOrders(): List[(Order)] = DB.withConnection {
