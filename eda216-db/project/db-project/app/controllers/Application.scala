@@ -68,7 +68,7 @@ object Application extends Controller {
 
   def listOrders = Action {
     val p1: Pallet = new Pallet(1, new Date(), "Cookie", PalletStatus.free, 101)
-    val od1: OrderDetails = new OrderDetails("Cookie", 2, Array(p1))
+    val od1: OrderDetails = new OrderDetails("Cookie", 2, 1)
     val aod: Array[OrderDetails] = Array(od1)
     val o1: Order = new Order(101, new Date(), new Date(), "Customer", "Address", aod)
 
@@ -77,15 +77,15 @@ object Application extends Controller {
 
   def chooseCookie(oId: Int, statusmsg: String) = Action {
     val p1: Pallet = new Pallet(1, new Date(), "Cookie", PalletStatus.free, 101)
-    val od1: OrderDetails = new OrderDetails("Cookie", 2, Array(p1))
+    val od1: OrderDetails = new OrderDetails("Cookie", 2, 1)
     val details: List[OrderDetails] = List(od1)
     
-    Ok(views.html.order(details, oId, statusmsg)
+    Ok(views.html.order(details, oId, statusmsg))
   }
 
-  def createPallet(cookieName: String, orderId: Int){
+  def createPallet(cookieName: String, orderId: Int) = Action{
     val success: Boolean = DatabaseConn.createPallet(cookieName, PalletStatus.ordered, orderId);
-    
+    Ok("Nille och Tim hälsar.")
   }
 
 }
