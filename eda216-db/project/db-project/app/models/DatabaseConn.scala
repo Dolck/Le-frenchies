@@ -56,8 +56,9 @@ object DatabaseConn{
          ).on('id -> id, 'newStatus -> newStatus.toString).executeUpdate()
     }
 
+    //TODO: transaction check if resources available else rollback
   def createPallet(cookieName: String, status: PalletStatus.Value, orderId: Int): Int = 
-    DB.withConnection { implicit c =>
+    DB.withTransaction { implicit c =>
       SQL(
           """
           INSERT INTO pallets (prodTime, cookieName, status, orderId)
@@ -101,4 +102,54 @@ object DatabaseConn{
       new Array[OrderDetails] (10)
     )).toList.head
  }
+
+  def getOrderDetails(orderId: Int): List[(OrderDetails)] = DB.withConnection {
+    implicit c => 
+    var count = (cookieName: String) => SQL(
+      """
+      SELECT count(*)
+      FROM pallets
+      WHERE orderId = {orderId} AND cookieName = {cookieName}
+      """
+    ).on('orderId -> orderId, 'cookieName -> cookieName).apply
+    
+    val query = SQL(
+      """
+      SELECT cookieName, nbrPallets
+      FROM orderDetails
+      WHERE orderId = {orderId}
+      """
+    ).on('orderid -> orderId)
+    
+    return query().map(row => new OrderDetails(
+      row[String]("cookieName"), 
+      row[Int]("nbrPallets"), 
+      (count(row[String]("cookieName")).map(rw => 
+        rw[Int]("count(*)")).toList.head))).toList
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
