@@ -16,7 +16,7 @@ object DatabaseConn{
       FROM pallets
       WHERE (prodTime BETWEEN {from} AND {to}) AND 
       ({cookie} LIKE '' OR cookieName = {cookie}) AND 
-      ({status} LIKE 'any' OR status = {status});
+      ({status} LIKE 'any' OR status = {status})
       """
     ).on("from" -> from, "to" -> to, "cookie" -> cookie, "status" -> status)
     return query().map(row => new Pallet(
@@ -62,13 +62,42 @@ object DatabaseConn{
     //delete resources
 
     def createPallet(cookieName: String, status: PalletStatus.Value, orderId: Int): Boolean = 
-        return 1 == DB.withConnection { implicit c =>
-           SQL(
+    DB.withConnection { implicit c =>
+        c.setAutoCommit(false)
+        try{
+          val reqResources = SQL(
+            """
+            SELECT cookieName, recipeDetails.rawType, recipeDetails.quantity as reqQ, rawMaterials.quantity as availQ 
+            FROM recipeDetails, rawMaterials 
+            WHERE cookieName = {cookieName} and recipeDetails.rawType = rawMaterials.rawType;
+            """
+          ).on('cookieName -> cookieName).apply
+          val updateRes = (rawType: String, newQ: Int) => SQL(
+            """
+            UPDATE rawMaterials
+            SET quantity = {newQ}
+            WHERE rawType = {rawType}
+            """
+          ).on('newQ -> newQ, 'rawType -> rawType).apply
+          
+          for (row <- reqResources){
+            val rawType: String = row[String]("rawType")
+            val newQ: Int = row[Int]("availQ") - row[Int]("reqQ")
+            updateRes(rawType, newQ)
+          }
+          
+          val result = SQL(
           """
           INSERT INTO pallets (prodTime, cookieName, status, orderId)
           VALUES ('now()', {cookieName}, {status}, {orderId})
           """
-         ).on('cookieName -> cookieName, 'status -> status.toString, 'orderId -> orderId).executeUpdate() 
+          ).on('cookieName -> cookieName, 'status -> status.toString, 'orderId -> orderId).executeUpdate() 
+          c.commit()
+          return 1 == result
+        } catch {
+          case e: Exception => c.rollback()
+          return false
+        }
     }
 
   def getOrders(): List[(Order)] = DB.withConnection {
