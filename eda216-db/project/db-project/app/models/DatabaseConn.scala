@@ -57,6 +57,10 @@ object DatabaseConn{
     }
 
     //TODO: transaction check if resources available else rollback
+    //get required resources for pallet
+    //check if resources available
+    //delete resources
+
     def createPallet(cookieName: String, status: PalletStatus.Value, orderId: Int): Boolean = 
         return 1 == DB.withConnection { implicit c =>
            SQL(
@@ -105,7 +109,7 @@ object DatabaseConn{
 
   def getOrderDetails(orderId: Int): List[(OrderDetails)] = DB.withConnection {
     implicit c => 
-    var count = (cookieName: String) => SQL(
+    val count = (cookieName: String) => SQL(
       """
       SELECT count(*)
       FROM pallets
