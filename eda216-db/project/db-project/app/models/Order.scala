@@ -8,13 +8,13 @@ class OrderDetails(val cookie: String, val nbrPallets: Int, var pllts: Int){
 	var pallets: Int = pllts
 }
 
-class Order(val id: Int, val incomeDate: Date, val delivDate: Date, val custName: String, val custAddress: String, val oDetails: Array[OrderDetails])  {
+class Order(val id: Int, val incomeDate: Date, val delivDate: Date, val custName: String, val custAddress: String, val oDetails: List[OrderDetails])  {
 	val oId: Int = id
 	val iDate: Date = incomeDate
 	val dDate: Date = delivDate
 	val cName: String = custName
 	val cAddress: String = custAddress
-	val details: Array[OrderDetails] = oDetails
+	val details: List[OrderDetails] = oDetails
 
 	def getAllCookies():String = {
 		var s:String = ""
