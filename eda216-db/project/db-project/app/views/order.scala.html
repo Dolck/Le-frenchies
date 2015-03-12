@@ -1,0 +1,28 @@
+@(orderDetails: List[OrderDetails], orderId: Int, statusmsg: String)
+@import models._
+
+
+@tableRow(oD: OrderDetails) = {
+    <tr>
+        <td>@oD.cookieName</td>
+        <td>@oD.nbrReqPallets</td>
+        <td>@oD.pallets</td>
+        <td><a href="@routes.Application.createPallet(oD.cookieName, orderId)">Create pallet</a></td>
+     </tr>
+}
+
+@main("OrderDetails") {
+	<p><strong>@statusmsg</strong></p>
+    <h1>Order info:</h1>
+	<table>
+        <tr>
+            <th>CookieName</th>                
+            <th>Orderedpallets</th>                
+            <th>Produced pallets</th>                
+            <th>Create Pallet</th>
+        </tr>
+        @for(oDetail <- orderDetails){
+            @tableRow(oDetail);
+        }                
+    </table>
+}
