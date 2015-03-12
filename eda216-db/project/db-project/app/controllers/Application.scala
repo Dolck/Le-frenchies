@@ -67,25 +67,26 @@ object Application extends Controller {
   )
 
   def listOrders = Action {
-    val p1: Pallet = new Pallet(1, new Date(), "Cookie", PalletStatus.free, 101)
-    val od1: OrderDetails = new OrderDetails("Cookie", 2, 1)
-    val aod: Array[OrderDetails] = Array(od1)
-    val o1: Order = new Order(101, new Date(), new Date(), "Customer", "Address", aod)
+    val orders: List[Order] = DatabaseConn.getOrders
 
-    Ok(views.html.orderList(Array(o1)))
+    Ok(views.html.orderList(orders))
   }
 
   def chooseCookie(oId: Int, statusmsg: String) = Action {
-    val p1: Pallet = new Pallet(1, new Date(), "Cookie", PalletStatus.free, 101)
-    val od1: OrderDetails = new OrderDetails("Cookie", 2, 1)
-    val details: List[OrderDetails] = List(od1)
-    
+    /*val p1: Pallet = new Pallet(1, new Date(), "Tango", PalletStatus.free, 1)
+    val od1: OrderDetails = new OrderDetails("Tango", 2, 1)
+    val details: List[OrderDetails] = List(od1)*/
+    val details: List[OrderDetails] = DatabaseConn.getOrderDetails(oId)
+
     Ok(views.html.order(details, oId, statusmsg))
   }
 
   def createPallet(cookieName: String, orderId: Int) = Action{
-    val success: Boolean = DatabaseConn.createPallet(cookieName, PalletStatus.ordered, orderId);
-    Ok("Nille och Tim hälsar.")
+    val success: Boolean = DatabaseConn.createPallet(cookieName, PalletStatus.ordered, orderId)
+    var msg: String = "Successfully created pallet"
+    if(!success)
+      msg = "Unable to create pallet, try again"
+    Redirect(routes.Application.chooseCookie(orderId, msg))
   }
 
 }

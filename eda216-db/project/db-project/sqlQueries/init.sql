@@ -20,7 +20,7 @@ drop table if exists Customers;
 
 create table RawMaterials (
     rawType     varchar(30) not null,
-    quantity    integer not null default 0,
+    quantity    integer default 0 check (quantity >= 0),
     unitOfM     enum('g', 'ml') not null,
     lastDeliv   datetime,
     lastDelivQ  integer,
@@ -72,7 +72,7 @@ create table Orders (
 create table OrderDetails (
     orderId     integer not null,
     cookieName  varchar(20) not null,
-    nbrPallets  integer not null check (nbrPallets > 0),
+    nbrPallets  integer not null check (nbrPallets >= 0),
     primary key (orderId, cookieName),
     foreign key (orderId) references Orders(orderId),
     foreign key (cookieName) references CookieNames(cookieName)

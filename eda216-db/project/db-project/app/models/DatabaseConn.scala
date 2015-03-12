@@ -89,7 +89,7 @@ object DatabaseConn{
           val result = SQL(
           """
           INSERT INTO pallets (prodTime, cookieName, status, orderId)
-          VALUES ('now()', {cookieName}, {status}, {orderId})
+          VALUES (now(), {cookieName}, {status}, {orderId})
           """
           ).on('cookieName -> cookieName, 'status -> status.toString, 'orderId -> orderId).executeUpdate() 
           c.commit()
@@ -114,7 +114,7 @@ object DatabaseConn{
       row[Date]("delivDate"),
       row[String]("cName"),
       row[String]("cAddress"),
-      new Array[OrderDetails] (10)
+      getOrderDetails(row[Int]("orderId"))
     )).toList
   }
 
@@ -132,7 +132,7 @@ object DatabaseConn{
       row[Date]("delivDate"),
       row[String]("cName"),
       row[String]("cAddress"),
-      new Array[OrderDetails] (10)
+      getOrderDetails(row[Int]("orderId"))
     )).toList.head
  }
 
@@ -152,7 +152,7 @@ object DatabaseConn{
       FROM orderDetails
       WHERE orderId = {orderId}
       """
-    ).on('orderid -> orderId)
+    ).on('orderId -> orderId)
     
     return query().map(row => new OrderDetails(
       row[String]("cookieName"), 
