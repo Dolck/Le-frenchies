@@ -62,7 +62,7 @@ object DatabaseConn{
            SQL(
           """
           INSERT INTO pallets (prodTime, cookieName, status, orderId)
-          VALUES ('now()', {cookieName}, {status}, {orderId})
+          VALUES (now(), {cookieName}, {status}, {orderId})
           """
          ).on('cookieName -> cookieName, 'status -> status.toString, 'orderId -> orderId).executeUpdate() 
     }
