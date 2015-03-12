@@ -14,7 +14,6 @@
 @main("OrderDetails") {
     <p><strong>@statusmsg</strong></p>
     <h1>Order info:</h1>
-    
     <table border="1">
         <tr>
             <th>CookieName</th>                
@@ -23,7 +22,7 @@
             <th>Create Pallet</th>
         </tr>
         @for(oDetail <- orderDetails){
-            @tableRow(oDetail);
+            @tableRow(oDetail)
         }                
     </table>
 }

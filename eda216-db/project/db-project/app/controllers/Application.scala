@@ -73,9 +73,6 @@ object Application extends Controller {
   }
 
   def chooseCookie(oId: Int, statusmsg: String) = Action {
-    /*val p1: Pallet = new Pallet(1, new Date(), "Tango", PalletStatus.free, 1)
-    val od1: OrderDetails = new OrderDetails("Tango", 2, 1)
-    val details: List[OrderDetails] = List(od1)*/
     val details: List[OrderDetails] = DatabaseConn.getOrderDetails(oId)
 
     Ok(views.html.order(details, oId, statusmsg))

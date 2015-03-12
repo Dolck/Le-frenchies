@@ -69,7 +69,7 @@ object DatabaseConn{
             """
             SELECT cookieName, recipeDetails.rawType, recipeDetails.quantity as reqQ, rawMaterials.quantity as availQ 
             FROM recipeDetails, rawMaterials 
-            WHERE cookieName = {cookieName} and recipeDetails.rawType = rawMaterials.rawType;
+            WHERE cookieName = {cookieName} and recipeDetails.rawType = rawMaterials.rawType
             """
           ).on('cookieName -> cookieName).apply
           val updateRes = (rawType: String, newQ: Int) => SQL(
@@ -105,9 +105,9 @@ object DatabaseConn{
     val query = SQL(
       """
         SELECT *
-        FROM orders;
+        FROM orders
       """
-    );
+    )
     return query().map(row => new Order(
       row[Int]("orderId"),
       row[Date]("incomeDate"),
