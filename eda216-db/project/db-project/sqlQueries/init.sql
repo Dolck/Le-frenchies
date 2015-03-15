@@ -20,7 +20,7 @@ drop table if exists Customers;
 
 create table RawMaterials (
     rawType     varchar(30) not null,
-    quantity    integer default 0 check (quantity >= 0),
+    quantity    integer default 100000000 check (quantity >= 0),
     unitOfM     enum('g', 'ml') not null,
     lastDeliv   datetime,
     lastDelivQ  integer,
