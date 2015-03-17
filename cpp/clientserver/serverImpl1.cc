@@ -99,6 +99,35 @@ void listNG(const shared_ptr<Connection>& conn, const vector<newsgroup>& groups)
   conn->write(Protocol::ANS_END);
 }
 
+void createNG(const shared_ptr<Connection>& conn, vector<newsgroup>& groups, int& groupId){
+  char c = readChar(conn);
+  if(c == Protocol::PAR_STRING){
+    int n = readNumber(conn);
+    string newTitle = readString(conn, n);
+    char end = readChar(conn);
+    if(ngExists(groups, newTitle)){
+      string output;
+      output += Protocol::ANS_CREATE_NG;
+      output += Protocol::ANS_NAK;
+      output += Protocol::ERR_NG_ALREADY_EXISTS;
+      output += Protocol::ANS_END;
+      writeString(conn, output);
+    } else {
+      newsgroup ng;
+      ng.name = newTitle;
+      ng.id = ++groupId;
+      groups.push_back(ng);
+      string output;
+      output += Protocol::ANS_CREATE_NG;
+      output += Protocol::ANS_ACK;
+      output += Protocol::ANS_END;
+      writeString(conn, output);
+    }
+  }else{
+    throw ConnectionClosedException();
+  }
+}
+
 int main(int argc, char* argv[]){
 	if (argc != 2) {
 		cerr << "Usage: myserver port-number" << endl;
@@ -130,34 +159,10 @@ int main(int argc, char* argv[]){
 				switch(cmd){
 					case Protocol::COM_LIST_NG:{
 						listNG(conn, groups);
+            break;
 					}
 					case Protocol::COM_CREATE_NG: {
-						char c = readChar(conn);
-						if(c == Protocol::PAR_STRING){
-							int n = readNumber(conn);
-							string newTitle = readString(conn, n);
-							char end = readChar(conn);
-							if(ngExists(groups, newTitle)){
-								string output;
-								output += Protocol::ANS_CREATE_NG;
-								output += Protocol::ANS_NAK;
-                output += Protocol::ERR_NG_ALREADY_EXISTS;
-								output += Protocol::ANS_END;
-								writeString(conn, output);
-              } else {
-                newsgroup ng;
-								ng.name = newTitle;
-								ng.id = ++groupId;
-								groups.push_back(ng);
-								string output;
-								output += Protocol::ANS_CREATE_NG;
-								output += Protocol::ANS_ACK;
-								output += Protocol::ANS_END;
-								writeString(conn, output);
-							}
-						}else{
-							throw ConnectionClosedException();
-						}
+						createNG(conn, groups, groupId);
 						break;
 					}
 					case Protocol::COM_DELETE_NG:
