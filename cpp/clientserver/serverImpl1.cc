@@ -86,6 +86,26 @@ bool ngExists(const vector<newsgroup>& v, const string& newTitle){
 	return false;
 }
 
+bool ngExists(const vector<newsgroup>& v, const int& id){
+  for(newsgroup ng : v){
+    if(ng.id == id){
+      return true;
+    }
+  }
+  return false;
+}
+
+void deleteNG(vector<newsgroup>& v, const int& id){
+  int index = 0;
+  for(newsgroup ng : v){
+    if(ng.id == id){
+      break;
+    }
+    ++index;
+  }
+  v.erase(v.begin()+index);
+}
+
 /*
  * Send a string to a client.
  */
@@ -178,6 +198,28 @@ int main(int argc, char* argv[]){
 						createNG(conn, groups, groupId);
 						break;
 					case Protocol::COM_DELETE_NG:
+            char c = readChar(conn);
+            if(c == Protocol::PAR_NUM){
+              int n = readNumber(conn);
+              char end = readChar(conn);
+              if(ngExists(groups, n)){
+                deleteNG(groups, n);
+                string output;
+                output += Protocol::ANS_DELETE_NG;
+                output += Protocol::ANS_ACK;
+                output += Protocol::ANS_END;
+                writeString(conn, output);
+              } else {
+                string output;
+                output += Protocol::ANS_DELETE_NG;
+                output += Protocol::ANS_NAK;
+                output += Protocol::ERR_NG_DOES_NOT_EXIST;
+                output += Protocol::ANS_END;
+                writeString(conn, output);
+              }
+            } else {
+              throw ConnectionClosedException();
+            }
 						break;
 					case Protocol::COM_LIST_ART:
 						break;
