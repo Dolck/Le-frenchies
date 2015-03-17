@@ -24,13 +24,13 @@ all: libclientserver.a serverImpl1 clientImpl
 # Create the library; ranlib is for Darwin (OS X) and maybe other systems.
 # Doesn't seem to do any damage on other systems.
 
-libclientserver.a: connection.o server.o
-	ar rv libclientserver.a  connection.o server.o
+libclientserver.a: connection.o server.o messagehandler.o
+	ar rv libclientserver.a  connection.o server.o messagehandler.o
 	ranlib libclientserver.a
 
-serverImpl1: serverImpl1.o messagehandler.o
+serverImpl1: serverImpl1.o
 
-clientImpl: clientImpl.o messagehandler.o
+clientImpl: clientImpl.o 
 
 # Phony targets
 .PHONY: all clean
