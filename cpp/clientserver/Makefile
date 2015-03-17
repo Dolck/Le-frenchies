@@ -28,7 +28,7 @@ libclientserver.a: connection.o server.o
 	ar rv libclientserver.a  connection.o server.o
 	ranlib libclientserver.a
 
-serverImpl1: serverImpl1.o
+serverImpl1: serverImpl1.o messagehandler.o
 
 clientImpl: clientImpl.o
 
