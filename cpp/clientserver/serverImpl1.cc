@@ -98,6 +98,18 @@ bool deleteNG(vector<newsgroup>& v, const unsigned int& id){
   throw NewsgroupDoesNotExistException();
 }
 
+bool deleteArticle(vector<article>& v, const unsigned int& id){
+  int index = 0;
+  for(article a : v){
+    if(a.id == id){
+      v.erase(v.begin()+index);
+      return true;
+    }
+    ++index;
+  }
+  throw ArticleDoesNotExistException();
+}
+
 void writeByteVector(const shared_ptr<Connection>& conn, const vector<unsigned char>& bytes){
   for(unsigned char byte : bytes){
     conn->write(byte);
@@ -149,32 +161,27 @@ void createNG(const shared_ptr<Connection>& conn, vector<newsgroup>& groups, int
 }
 
 void createArticle(const shared_ptr<Connection>& conn, vector<newsgroup>& groups, int & articleId){
-  char c = readChar(conn);
-  if(c == Protocol::PAR_NUM){
+  if(readChar(conn) == Protocol::PAR_NUM){
     vector<unsigned char> bytes;
     try{
       int n = readNumber(conn);
       newsgroup& ng = getNG(groups, n);
-      char c1 = readChar(conn);
-      if(c1 != Protocol::PAR_STRING){
+      if(readChar(conn) != Protocol::PAR_STRING){
         throw ConnectionClosedException();
       }
       int n1 = readNumber(conn);
       string title = readString(conn, n1);
-      char c2 = readChar(conn);
-      if(c2 != Protocol::PAR_STRING){
+      if(readChar(conn) != Protocol::PAR_STRING){
         throw ConnectionClosedException();
       }
       int n2 = readNumber(conn);
       string author = readString(conn, n2);
-      char c3 = readChar(conn);
-      if(c3 != Protocol::PAR_STRING){
+      if(readChar(conn) != Protocol::PAR_STRING){
         throw ConnectionClosedException();
       }
       int n3 = readNumber(conn);
       string text = readString(conn, n3);
-      char end = readChar(conn);
-      if(end != Protocol::COM_END){
+      if(readChar(conn) != Protocol::COM_END){
         throw ConnectionClosedException();
       }
       article art;
@@ -246,6 +253,33 @@ void listArts(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
   }
 }
 
+void deleteArt(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
+  char c = readChar(conn);
+  if(c == Protocol::PAR_NUM){
+    int ngid = readNumber(conn);
+    if(readChar(conn) != Protocol::PAR_NUM){
+      throw ConnectionClosedException();
+    }
+    int aid = readNumber(conn);
+    if(readChar(conn) != Protocol::COM_END){
+      throw ConnectionClosedException();
+    }
+    vector<unsigned char> bytes;
+    try{
+      newsgroup ng = getNG(groups, ngid);
+      deleteArticle(ng.articles, aid);
+      bytes = {Protocol::ANS_DELETE_ART, Protocol::ANS_ACK, Protocol::ANS_END};
+    } catch (NewsgroupDoesNotExistException e){
+      bytes = {Protocol::ANS_DELETE_ART, Protocol::ANS_NAK, Protocol::ERR_NG_DOES_NOT_EXIST, Protocol::ANS_END};
+    } catch (ArticleDoesNotExistException e){
+      bytes = {Protocol::ANS_DELETE_ART, Protocol::ANS_NAK, Protocol::ERR_ART_DOES_NOT_EXIST, Protocol::ANS_END};
+    }
+    writeByteVector(conn, bytes);
+  } else {
+    throw ConnectionClosedException();
+  }
+}
+
 int main(int argc, char* argv[]){
 	if (argc != 2) {
 		cerr << "Usage: myserver port-number" << endl;
@@ -291,6 +325,7 @@ int main(int argc, char* argv[]){
             createArticle(conn, groups, articleId);
 						break;
 					case Protocol::COM_DELETE_ART:
+            deleteArt(conn, groups);
 						break;
 					case Protocol::COM_GET_ART:
 						break;
