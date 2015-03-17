@@ -105,15 +105,16 @@ const newsgroup& getNG(const vector<newsgroup>& v, const int& id){
   throw NewsgroupDoesNotExistException();
 }
 
-void deleteNG(vector<newsgroup>& v, const int& id){
+bool deleteNG(vector<newsgroup>& v, const int& id){
   int index = 0;
   for(newsgroup ng : v){
     if(ng.id == id){
-      break;
+      v.erase(v.begin()+index);
+      return true;
     }
     ++index;
   }
-  v.erase(v.begin()+index);
+  throw NewsgroupDoesNotExistException();
 }
 
 /*
@@ -212,14 +213,14 @@ int main(int argc, char* argv[]){
             if(c == Protocol::PAR_NUM){
               int n = readNumber(conn);
               char end = readChar(conn);
-              if(ngExists(groups, n)){
+              try{
                 deleteNG(groups, n);
                 string output;
                 output += Protocol::ANS_DELETE_NG;
                 output += Protocol::ANS_ACK;
                 output += Protocol::ANS_END;
                 writeString(conn, output);
-              } else {
+              } catch(NewsGroupDoesNotExistException e) {
                 string output;
                 output += Protocol::ANS_DELETE_NG;
                 output += Protocol::ANS_NAK;
@@ -236,9 +237,22 @@ int main(int argc, char* argv[]){
             if(c == Protocol::PAR_NUM){
               int n = readNumber(conn);
               char end = readChar(conn);
-              if(ngExists(groups, n)){
-
-              } else {
+              try{
+                newsgroup ng = getNG(groups, n);
+                vector<article> articles = ng.articles;
+                size_t nbra = articles.size();
+                //Protocol::ANS_ACK;
+                //Protocol::PAR_NUM;
+                //writeNumber(nbra);
+                for(article a : articles){
+                  //Protocol::PAR_NUM;
+                  //writeNumber(a.id);
+                  //Protocol::PAR_STRING;
+                  //writeNumber(a.title.size());
+                  //writeString(a.title);
+                }
+                //Protocol::ANS_END;
+              } catch(NewsgroupDoesNotExistException e) {
                 String output;
                 output += Protocol::ANS_LIST_ART;
                 output += Protocol::ANS_NAK;
