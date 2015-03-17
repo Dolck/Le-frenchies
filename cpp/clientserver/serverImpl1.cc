@@ -2,6 +2,7 @@
 #include "server.h"
 #include "connection.h"
 #include "connectionclosedexception.h"
+#include "exceptions.h"
 #include "protocol.h"
 
 #include <memory>
@@ -80,6 +81,15 @@ bool ngExists(const vector<newsgroup>& v, const int& id){
     }
   }
   return false;
+}
+
+const newsgroup& getNG(const vector<newsgroup>& v, const int& id){
+  for(const newsgroup& ng : v){
+    if(ng.id == id){
+      return ng;
+    }
+  }
+  throw NewsgroupDoesNotExistException();
 }
 
 void deleteNG(vector<newsgroup>& v, const int& id){
@@ -203,6 +213,23 @@ int main(int argc, char* argv[]){
             }
 						break;
 					case Protocol::COM_LIST_ART:
+            char c = readChar(conn);
+            if(c == Protocol::PAR_NUM){
+              int n = readNumber(conn);
+              char end = readChar(conn);
+              if(ngExists(groups, n)){
+
+              } else {
+                String output;
+                output += Protocol::ANS_LIST_ART;
+                output += Protocol::ANS_NAK;
+                output += Protocol::ERR_NG_DOES_NOT_EXIST;
+                output += Protocol::ANS_END;
+                writeString(conn, output);
+              }
+            } else {
+              throw ConnectionClosedException();
+            }
 						break;
 					case Protocol::COM_CREATE_ART:
 						break;
