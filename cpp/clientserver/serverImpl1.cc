@@ -154,6 +154,7 @@ void createNG(const shared_ptr<Connection>& conn, vector<newsgroup>& groups, int
 void createArticle(const shared_ptr<Connection>& conn, vector<newsgroup>& groups, int & articleId){
   char c = readChar(conn);
   if(c == Protocol::PAR_NUM){
+    vector<unsigned char> bytes;
     try{
       int n = readNumber(conn);
       newsgroup ng = getNG(groups, n);
@@ -173,10 +174,11 @@ void createArticle(const shared_ptr<Connection>& conn, vector<newsgroup>& groups
       art.article_text = text;
       art.id = ++articleId;
       ng.articles.push_back(art);
-
+      bytes = {Protocol::ANS_CREATE_ART, Protocol::ANS_ACK, Protocol::ANS_END};
     } catch (NewsgroupDoesNotExistException e){
-
+      bytes = {Protocol::ANS_CREATE_ART, Protocol::ANS_NAK, Protocol::ERR_NG_DOES_NOT_EXIST, Protocol::ANS_END};
     }
+    writeByteVector(conn, bytes);
   } else {
     throw ConnectionClosedException();
   }
