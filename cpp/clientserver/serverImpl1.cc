@@ -234,14 +234,12 @@ int main(int argc, char* argv[]){
 					case Protocol::COM_CREATE_NG:
 						createNG(conn, groups, groupId);
 						break;
-					case Protocol::COM_DELETE_NG:{
+					case Protocol::COM_DELETE_NG:
             delNG(conn, groups);
 						break;
-          }
-					case Protocol::COM_LIST_ART:{
+					case Protocol::COM_LIST_ART:
             listArts(conn, groups);
 						break;
-					}
           case Protocol::COM_CREATE_ART:
 						break;
 					case Protocol::COM_DELETE_ART:
