@@ -73,6 +73,15 @@ bool ngExists(const vector<newsgroup>& v, const string& newTitle){
 	return false;
 }
 
+bool ngExists(const vector<newsgroup>& v, const int& id){
+  for(newsgroup ng : v){
+    if(ng.id == id){
+      return true;
+    }
+  }
+  return false;
+}
+
 /*
  * Send a string to a client.
  */
@@ -157,6 +166,18 @@ int main(int argc, char* argv[]){
 						break;
 					}
 					case Protocol::COM_DELETE_NG:
+            char c = readChar(conn);
+            if(c == Protocol::PAR_NUM){
+              int n = readNumber(conn);
+              char end = readChar(conn);
+              if(ngExists(conn, n){
+                
+              } else {
+
+              }
+            } else {
+              throw ConnectionClosedException();
+            }
 						break;
 					case Protocol::COM_LIST_ART:
 						break;
