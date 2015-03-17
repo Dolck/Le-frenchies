@@ -10,47 +10,19 @@
 
 using namespace std;
 
-int readInt(const shared_ptr<Connection>& conn) {
-    unsigned char byte1 = conn->read();
-    unsigned char byte2 = conn->read();
-    unsigned char byte3 = conn->read();
-    unsigned char byte4 = conn->read();
-    return (byte1 << 24) | (byte2 << 16) | (byte3 << 8) | byte4;
-}
-
-char readChar(const shared_ptr<Connection>& conn) {
-    return conn->read();
-}
-
-string readString(const shared_ptr<Connection>& conn) {
-    if(conn->read() != Protocol::PAR_STRING){
-        throw ConnectionClosedException();
-    }
-    int nbrChars = readInt(conn);
-    string s;
-    for (int i = 0; i < nbrChars; ++i){
-        s += readChar(conn);
-    }
-    return s;
-}
-
 void listNewsGroups(const shared_ptr<Connection>& conn){
-    conn->write(Protocol::COM_LIST_NG);
-    conn->write(Protocol::COM_END);
+    MessageHandler::writeByteVector(conn, {Protocol::COM_LIST_NG, Protocol::COM_END});
 
     MessageHandler::expectInputChar(conn, Protocol::ANS_LIST_NG);
     int nbrNgs = MessageHandler::readNumber(conn);
     cout << endl;
     cout << "Newsgroups: " << endl;
     for (int i = 0; i < nbrNgs; ++i){
-        if(conn->read() != Protocol::PAR_NUM){
-            throw ConnectionClosedException();
-        }
-        int id = readInt(conn);
-        string title = readString(conn);
+        int id = MessageHandler::readNumber(conn);
+        string title = MessageHandler::readString(conn);
         cout << id << " " << title << endl;
     }
-
+    MessageHandler::expectInputChar(conn, Protocol::ANS_END);
     cout << endl;
 }
 
