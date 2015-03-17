@@ -77,16 +77,7 @@ bool ngExists(const vector<newsgroup>& v, const string& newTitle){
 	return false;
 }
 
-bool ngExists(const vector<newsgroup>& v, const int& id){
-  for(newsgroup ng : v){
-    if(ng.id == id){
-      return true;
-    }
-  }
-  return false;
-}
-
-const newsgroup& getNG(const vector<newsgroup>& v, const int& id){
+const newsgroup& getNG(const vector<newsgroup>& v, const unsigned int& id){
   for(const newsgroup& ng : v){
     if(ng.id == id){
       return ng;
@@ -95,7 +86,7 @@ const newsgroup& getNG(const vector<newsgroup>& v, const int& id){
   throw NewsgroupDoesNotExistException();
 }
 
-bool deleteNG(vector<newsgroup>& v, const int& id){
+bool deleteNG(vector<newsgroup>& v, const unsigned int& id){
   int index = 0;
   for(newsgroup ng : v){
     if(ng.id == id){
