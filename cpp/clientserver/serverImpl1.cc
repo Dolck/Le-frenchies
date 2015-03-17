@@ -80,7 +80,6 @@ void writeString(const shared_ptr<Connection>& conn, const string& s) {
 	for (char c : s) {
 		conn->write(c);
 	}
-	//conn->write('$');
 }
 
 void listNG(const shared_ptr<Connection>& conn, const vector<newsgroup>& groups){
@@ -106,22 +105,18 @@ void createNG(const shared_ptr<Connection>& conn, vector<newsgroup>& groups, int
     string newTitle = readString(conn, n);
     char end = readChar(conn);
     if(ngExists(groups, newTitle)){
-      string output;
-      output += Protocol::ANS_CREATE_NG;
-      output += Protocol::ANS_NAK;
-      output += Protocol::ERR_NG_ALREADY_EXISTS;
-      output += Protocol::ANS_END;
-      writeString(conn, output);
+      conn->write(Protocol::ANS_CREATE_NG);
+      conn->write(Protocol::ANS_NAK);
+      conn->write(Protocol::ERR_NG_ALREADY_EXISTS);
+      conn->write(Protocol::ANS_END);
     } else {
       newsgroup ng;
       ng.name = newTitle;
       ng.id = ++groupId;
       groups.push_back(ng);
-      string output;
-      output += Protocol::ANS_CREATE_NG;
-      output += Protocol::ANS_ACK;
-      output += Protocol::ANS_END;
-      writeString(conn, output);
+      conn->write(Protocol::ANS_CREATE_NG);
+      conn->write(Protocol::ANS_ACK);
+      conn->write(Protocol::ANS_END);
     }
   }else{
     throw ConnectionClosedException();
@@ -157,14 +152,12 @@ int main(int argc, char* argv[]){
 			try {
 				char cmd = readChar(conn);
 				switch(cmd){
-					case Protocol::COM_LIST_NG:{
+					case Protocol::COM_LIST_NG:
 						listNG(conn, groups);
             break;
-					}
-					case Protocol::COM_CREATE_NG: {
+					case Protocol::COM_CREATE_NG:
 						createNG(conn, groups, groupId);
 						break;
-					}
 					case Protocol::COM_DELETE_NG:
 						break;
 					case Protocol::COM_LIST_ART:
