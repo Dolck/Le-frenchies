@@ -31,6 +31,12 @@ char readChar(const shared_ptr<Connection>& conn) {
 	return conn->read();
 }
 
+void expectInputChar(const shared_ptr<Connection>& conn, const char& expected){
+  if(readChar(conn) != expected){
+    throw ConnectionClosedException();
+  }
+}
+
 /*
  * Reads a string
  */
@@ -128,10 +134,7 @@ void writeByteVector(const shared_ptr<Connection>& conn, const vector<unsigned c
 }
 
 void listNG(const shared_ptr<Connection>& conn, const vector<newsgroup>& groups){
-  char end = readChar(conn);
-  if(end != Protocol::COM_END){
-    throw ConnectionClosedException();
-  }
+  expectInputChar(conn, Protocol::COM_END);
   int num = groups.size();
   vector<unsigned char> bytes {Protocol::ANS_LIST_NG, Protocol::PAR_NUM};
   addNumberToBytesVector(bytes, num);
@@ -145,160 +148,114 @@ void listNG(const shared_ptr<Connection>& conn, const vector<newsgroup>& groups)
 }
 
 void createNG(const shared_ptr<Connection>& conn, vector<newsgroup>& groups, int& groupId){
-  char c = readChar(conn);
-  if(c == Protocol::PAR_STRING){
-    int n = readNumber(conn);
-    string newTitle = readString(conn, n);
-    char end = readChar(conn);
-    if(end != Protocol::COM_END){
-      throw ConnectionClosedException();
-    }
-    vector<unsigned char> bytes;
-    if(ngExists(groups, newTitle)){
-      bytes = {Protocol::ANS_CREATE_NG, Protocol::ANS_NAK, Protocol::ERR_NG_ALREADY_EXISTS, Protocol::ANS_END};
-    } else {
-      newsgroup ng;
-      ng.name = newTitle;
-      ng.id = ++groupId;
-      groups.push_back(ng);
-      bytes = {Protocol::ANS_CREATE_NG, Protocol::ANS_ACK, Protocol::ANS_END};
-    }
-    writeByteVector(conn, bytes);
-  }else{
-    throw ConnectionClosedException();
+  expectInputChar(conn, Protocol::PAR_STRING);
+  int n = readNumber(conn);
+  string newTitle = readString(conn, n);
+  expectInputChar(conn, Protocol::COM_END);
+  vector<unsigned char> bytes;
+  if(ngExists(groups, newTitle)){
+    bytes = {Protocol::ANS_CREATE_NG, Protocol::ANS_NAK, Protocol::ERR_NG_ALREADY_EXISTS, Protocol::ANS_END};
+  } else {
+    newsgroup ng;
+    ng.name = newTitle;
+    ng.id = ++groupId;
+    groups.push_back(ng);
+    bytes = {Protocol::ANS_CREATE_NG, Protocol::ANS_ACK, Protocol::ANS_END};
   }
+  writeByteVector(conn, bytes);
 }
 
 void createArticle(const shared_ptr<Connection>& conn, vector<newsgroup>& groups, int & articleId){
-  if(readChar(conn) == Protocol::PAR_NUM){
-    vector<unsigned char> bytes;
-    try{
-      int n = readNumber(conn);
-      newsgroup& ng = getNG(groups, n);
-      if(readChar(conn) != Protocol::PAR_STRING){
-        throw ConnectionClosedException();
-      }
-      int n1 = readNumber(conn);
-      string title = readString(conn, n1);
-      if(readChar(conn) != Protocol::PAR_STRING){
-        throw ConnectionClosedException();
-      }
-      int n2 = readNumber(conn);
-      string author = readString(conn, n2);
-      if(readChar(conn) != Protocol::PAR_STRING){
-        throw ConnectionClosedException();
-      }
-      int n3 = readNumber(conn);
-      string text = readString(conn, n3);
-      if(readChar(conn) != Protocol::COM_END){
-        throw ConnectionClosedException();
-      }
-      article art;
-      art.title = title;
-      art.author = author;
-      art.article_text = text;
-      art.id = ++articleId;
-      ng.articles.push_back(art);
-      bytes = {Protocol::ANS_CREATE_ART, Protocol::ANS_ACK, Protocol::ANS_END};
-    } catch (NewsgroupDoesNotExistException e){
-      bytes = {Protocol::ANS_CREATE_ART, Protocol::ANS_NAK, Protocol::ERR_NG_DOES_NOT_EXIST, Protocol::ANS_END};
-    }
-    writeByteVector(conn, bytes);
-  } else {
-    throw ConnectionClosedException();
+  expectInputChar(conn, Protocol::PAR_NUM);
+  vector<unsigned char> bytes;
+  try{
+    int n = readNumber(conn);
+    newsgroup& ng = getNG(groups, n);
+    expectInputChar(conn, Protocol::PAR_STRING);
+    int n1 = readNumber(conn);
+    string title = readString(conn, n1);
+    expectInputChar(conn, Protocol::PAR_STRING);
+    int n2 = readNumber(conn);
+    string author = readString(conn, n2);
+    expectInputChar(conn, Protocol::PAR_STRING);
+    int n3 = readNumber(conn);
+    string text = readString(conn, n3);
+    expectInputChar(conn, Protocol::PAR_STRING);
+    article art;
+    art.title = title;
+    art.author = author;
+    art.article_text = text;
+    art.id = ++articleId;
+    ng.articles.push_back(art);
+    bytes = {Protocol::ANS_CREATE_ART, Protocol::ANS_ACK, Protocol::ANS_END};
+  } catch (NewsgroupDoesNotExistException e){
+    bytes = {Protocol::ANS_CREATE_ART, Protocol::ANS_NAK, Protocol::ERR_NG_DOES_NOT_EXIST, Protocol::ANS_END};
   }
+  writeByteVector(conn, bytes);
 }
 
 void delNG(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
-  char c = readChar(conn);
-  if(c == Protocol::PAR_NUM){
-    int n = readNumber(conn);
-    char end = readChar(conn);
-    if(end != Protocol::COM_END){
-      throw ConnectionClosedException();
-    }
-    vector<unsigned char> bytes;
-    try{
-      deleteNG(groups, n);
-      bytes = {Protocol::ANS_DELETE_NG, Protocol::ANS_ACK, Protocol::ANS_END};
-    } catch(NewsgroupDoesNotExistException e) {
-      bytes = {Protocol::ANS_DELETE_NG, Protocol::ANS_NAK, Protocol::ERR_NG_DOES_NOT_EXIST, Protocol::ANS_END};
-    }
-    writeByteVector(conn, bytes);
-  } else {
-    throw ConnectionClosedException();
+  expectInputChar(conn, Protocol::PAR_NUM);
+  int n = readNumber(conn);
+  expectInputChar(conn, Protocol::COM_END);
+  vector<unsigned char> bytes;
+  try{
+    deleteNG(groups, n);
+    bytes = {Protocol::ANS_DELETE_NG, Protocol::ANS_ACK, Protocol::ANS_END};
+  } catch(NewsgroupDoesNotExistException e) {
+    bytes = {Protocol::ANS_DELETE_NG, Protocol::ANS_NAK, Protocol::ERR_NG_DOES_NOT_EXIST, Protocol::ANS_END};
   }
+  writeByteVector(conn, bytes);
 }
 
 void listArts(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
-  char c = readChar(conn);
-  if(c == Protocol::PAR_NUM){
-    int n = readNumber(conn);
-    char end = readChar(conn);
-    if(end != Protocol::COM_END){
-      throw ConnectionClosedException();
+  expectInputChar(conn, Protocol::PAR_NUM);
+  int n = readNumber(conn);
+  expectInputChar(conn, Protocol::COM_END);
+  vector<unsigned char> bytes;
+  try{
+    newsgroup ng = getNG(groups, n);
+    vector<article> articles = ng.articles;
+    size_t nbra = articles.size();
+    bytes = {Protocol::ANS_LIST_ART, Protocol::ANS_ACK, Protocol::PAR_NUM};
+    addNumberToBytesVector(bytes, nbra);
+    for(article a : articles){
+      bytes.push_back(Protocol::PAR_NUM);
+      addNumberToBytesVector(bytes, a.id);
+      addStringBytesToVector(bytes, a.title);
     }
-    vector<unsigned char> bytes;
-    try{
-      newsgroup ng = getNG(groups, n);
-      vector<article> articles = ng.articles;
-      size_t nbra = articles.size();
-      bytes = {Protocol::ANS_LIST_ART, Protocol::ANS_ACK, Protocol::PAR_NUM};
-      addNumberToBytesVector(bytes, nbra);
-      for(article a : articles){
-        bytes.push_back(Protocol::PAR_NUM);
-        addNumberToBytesVector(bytes, a.id);
-        addStringBytesToVector(bytes, a.title);
-      }
-      bytes.push_back(Protocol::ANS_END);
-    } catch(NewsgroupDoesNotExistException e) {
-      bytes = {Protocol::ANS_LIST_ART, Protocol::ANS_NAK, Protocol::ERR_NG_DOES_NOT_EXIST, Protocol::ANS_END};
-    }
-    writeByteVector(conn, bytes);
-  } else {
-    throw ConnectionClosedException();
+    bytes.push_back(Protocol::ANS_END);
+  } catch(NewsgroupDoesNotExistException e) {
+    bytes = {Protocol::ANS_LIST_ART, Protocol::ANS_NAK, Protocol::ERR_NG_DOES_NOT_EXIST, Protocol::ANS_END};
   }
+  writeByteVector(conn, bytes);
 }
 
 void deleteArt(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
-  char c = readChar(conn);
-  if(c == Protocol::PAR_NUM){
-    int ngid = readNumber(conn);
-    if(readChar(conn) != Protocol::PAR_NUM){
-      throw ConnectionClosedException();
-    }
-    int aid = readNumber(conn);
-    if(readChar(conn) != Protocol::COM_END){
-      throw ConnectionClosedException();
-    }
-    vector<unsigned char> bytes;
-    try{
-      newsgroup& ng = getNG(groups, ngid);
-      deleteArticle(ng.articles, aid);
-      bytes = {Protocol::ANS_DELETE_ART, Protocol::ANS_ACK, Protocol::ANS_END};
-    } catch (NewsgroupDoesNotExistException e){
-      bytes = {Protocol::ANS_DELETE_ART, Protocol::ANS_NAK, Protocol::ERR_NG_DOES_NOT_EXIST, Protocol::ANS_END};
-    } catch (ArticleDoesNotExistException e){
-      bytes = {Protocol::ANS_DELETE_ART, Protocol::ANS_NAK, Protocol::ERR_ART_DOES_NOT_EXIST, Protocol::ANS_END};
-    }
-    writeByteVector(conn, bytes);
-  } else {
-    throw ConnectionClosedException();
+  expectInputChar(conn, Protocol::PAR_NUM);
+  int ngid = readNumber(conn);
+  expectInputChar(conn, Protocol::PAR_NUM);
+  int aid = readNumber(conn);
+  expectInputChar(conn, Protocol::COM_END);
+  vector<unsigned char> bytes;
+  try{
+    newsgroup& ng = getNG(groups, ngid);
+    deleteArticle(ng.articles, aid);
+    bytes = {Protocol::ANS_DELETE_ART, Protocol::ANS_ACK, Protocol::ANS_END};
+  } catch (NewsgroupDoesNotExistException e){
+    bytes = {Protocol::ANS_DELETE_ART, Protocol::ANS_NAK, Protocol::ERR_NG_DOES_NOT_EXIST, Protocol::ANS_END};
+  } catch (ArticleDoesNotExistException e){
+    bytes = {Protocol::ANS_DELETE_ART, Protocol::ANS_NAK, Protocol::ERR_ART_DOES_NOT_EXIST, Protocol::ANS_END};
   }
+  writeByteVector(conn, bytes);
 }
 
 void getArt(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
-  if(readChar(conn) != Protocol::PAR_NUM){
-    throw ConnectionClosedException();
-  }
+  expectInputChar(conn, Protocol::PAR_NUM);
   int ngid = readNumber(conn);
-  if(readChar(conn) != Protocol::PAR_NUM){
-    throw ConnectionClosedException();
-  }
+  expectInputChar(conn, Protocol::PAR_NUM);
   int artid = readNumber(conn);
-  if(readChar(conn) != Protocol::COM_END){
-    throw ConnectionClosedException();
-  }
+  expectInputChar(conn, Protocol::COM_END);
   vector<unsigned char> bytes;
   try{
     newsgroup& ng = getNG(groups, ngid);
@@ -368,11 +325,6 @@ int main(int argc, char* argv[]){
 					default: throw ConnectionClosedException();
 						break;
 				}
-
-				/*
-				* Communicate with a client, conn->read()
-				* and conn->write(c)
-				*/
 			} catch (ConnectionClosedException&) {
 				server.deregisterConnection(conn);
 				cout << "Client closed connection" << endl;
