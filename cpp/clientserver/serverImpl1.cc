@@ -52,6 +52,19 @@ void writeNumber(const shared_ptr<Connection>& conn, int value) {
 	conn->write(value & 0xFF);
 }
 
+void addNumberToBytesVector(vector<unsigned char>& bytes, const int& num){
+  bytes.push_back((num >> 24) & 0xFF);
+  bytes.push_back((num >> 16) & 0xFF);
+  bytes.push_back((num >> 8) & 0xFF);
+  bytes.push_back(num & 0xFF);
+}
+
+void addStringBytesToVector(vector<unsigned char>& bytes, const string& s){
+  for (char c : s) {
+    bytes.push_back(c);
+  }
+}
+
 struct article {
 	string title;
 	string author;
@@ -112,20 +125,26 @@ void writeString(const shared_ptr<Connection>& conn, const string& s) {
 	}
 }
 
+void writeByteVector(const shared_ptr<Connection>& conn, const vector<unsigned char>& bytes){
+  for(unsigned char byte : bytes){
+    conn->write(byte);
+  }
+}
+
 void listNG(const shared_ptr<Connection>& conn, const vector<newsgroup>& groups){
   char end = readChar(conn);
   int num = groups.size();
-  conn->write(Protocol::ANS_LIST_NG);
-  conn->write(Protocol::PAR_NUM);
-  writeNumber(conn, num);
+  vector<unsigned char> bytes {Protocol::ANS_LIST_NG, Protocol::PAR_NUM};
+  addNumberToBytesVector(bytes, num);
   for(newsgroup ng : groups){
-    conn->write(Protocol::PAR_NUM);
-    writeNumber(conn, ng.id);
-    conn->write(Protocol::PAR_STRING);
-    writeNumber(conn, ng.name.size());
-    writeString(conn, ng.name);
+    bytes.push_back(Protocol::PAR_NUM);
+    addNumberToBytesVector(bytes, ng.id);
+    bytes.push_back(Protocol::PAR_STRING);
+    addNumberToBytesVector(bytes, ng.name.size());
+    addStringBytesToVector(bytes, ng.name);
   }
-  conn->write(Protocol::ANS_END);
+  bytes.push_back(Protocol::ANS_END);
+  writeByteVector(conn, bytes);
 }
 
 void createNG(const shared_ptr<Connection>& conn, vector<newsgroup>& groups, int& groupId){
