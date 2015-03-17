@@ -58,9 +58,24 @@ void createNewsGroup(const shared_ptr<Connection>& conn){
     cout << "Enter title: ";
     string title;
     cin >> title;
-    //MessageHandler::expectInputChar(Protocol::COM_CREATE_NG);
-    //MessageHandler::writeString(conn, title);
-    //COM_END
+    vector<unsigned char> bytes = {Protocol::COM_CREATE_NG};
+    MessageHandler::addStringBytesToVector(bytes, title);
+    bytes.push_back(Protocol::COM_END);
+    MessageHandler::writeByteVector(conn, bytes);
+    
+    cout << "createNG before ans" << endl;
+    MessageHandler::expectInputChar(conn, Protocol::ANS_CREATE_NG);
+    cout << "createNG got ans" << endl;
+    try{
+        MessageHandler::expectInputChar(conn, Protocol::ANS_ACK);
+        MessageHandler::expectInputChar(conn, Protocol::ANS_END);
+        cout << "Successfully created newsgroup!" << endl;
+    }catch(ConnectionClosedException e){
+        MessageHandler::expectInputChar(conn, Protocol::ERR_NG_ALREADY_EXISTS);
+        MessageHandler::expectInputChar(conn, Protocol::ANS_END);
+        cout << "Couldn't create newsgroup. Newsgroup already exists!" << endl;
+    }
+    cout << endl;
 }
 
 void deleteNewsGroup(const shared_ptr<Connection>& conn){
@@ -135,7 +150,7 @@ int main(int argc, char* argv[]) {
                     break;
             }
         }catch(ConnectionClosedException e){
-            //cout << e.what() << endl;
+            cout << "exception cc" << endl;
         }
 
         welcomePrompt();
