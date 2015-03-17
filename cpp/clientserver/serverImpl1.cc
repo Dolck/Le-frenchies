@@ -157,6 +157,37 @@ void createNG(const shared_ptr<Connection>& conn, vector<newsgroup>& groups, int
   }
 }
 
+void createArticle(const shared_ptr<Connection>& conn, vector<newsgroup>& groups, int & articleId){
+  char c = readChar(conn);
+  if(c == Protocol::PAR_NUM){
+    try{
+      int n = readNumber(conn);
+      newsgroup ng = getNG(groups, n);
+      char c1 = readChar(conn);
+      int n1 = readNumber(conn);
+      string title = readString(conn, n1);
+      char c2 = readChar(conn);
+      int n2 = readNumber(conn);
+      string author = readString(conn, n2);
+      char c3 = readChar(conn);
+      int n3 = readNumber(conn);
+      string text = readString(conn, n3);
+      char end = readChar(conn);
+      article art;
+      art.title = title;
+      art.author = author;
+      art.article_text = text;
+      art.id = ++articleId;
+      ng.articles.push_back(art);
+
+    } catch (NewsgroupDoesNotExistException e){
+
+    }
+  } else {
+    throw ConnectionClosedException();
+  }
+}
+
 void delNG(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
   char c = readChar(conn);
   if(c == Protocol::PAR_NUM){
@@ -210,7 +241,6 @@ void listArts(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
   }
 }
 
-
 int main(int argc, char* argv[]){
 	if (argc != 2) {
 		cerr << "Usage: myserver port-number" << endl;
@@ -253,6 +283,7 @@ int main(int argc, char* argv[]){
             listArts(conn, groups);
 						break;
           case Protocol::COM_CREATE_ART:
+            createArticle(conn, groups, articleId);
 						break;
 					case Protocol::COM_DELETE_ART:
 						break;
