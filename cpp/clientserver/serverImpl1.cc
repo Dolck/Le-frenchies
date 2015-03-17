@@ -18,7 +18,7 @@ using namespace std;
 void createNewsgroup(vector<newsgroup>& v, string& title, int& id){
   newsgroup ng;
   ng.name = title;
-  ng.id = ++ id;
+  ng.id = ++id;
   v.push_back(ng);
 }
 
@@ -117,6 +117,7 @@ void createArt(const shared_ptr<Connection>& conn, vector<newsgroup>& groups, in
     string title = MessageHandler::readString(conn);
     string author = MessageHandler::readString(conn);
     string text = MessageHandler::readString(conn);
+    MessageHandler::expectInputChar(conn, Protocol::COM_END);
     createArticle(ng.articles, title, author, text, articleId);
     bytes = {Protocol::ANS_CREATE_ART, Protocol::ANS_ACK, Protocol::ANS_END};
   } catch (NewsgroupDoesNotExistException e){
@@ -143,7 +144,7 @@ void listArts(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
   MessageHandler::expectInputChar(conn, Protocol::COM_END);
   vector<unsigned char> bytes;
   try{
-    newsgroup ng = getNG(groups, n);
+    newsgroup& ng = getNG(groups, n);
     vector<article> articles = ng.articles;
     size_t nbra = articles.size();
     bytes = {Protocol::ANS_LIST_ART, Protocol::ANS_ACK, Protocol::PAR_NUM};
@@ -220,7 +221,7 @@ int main(int argc, char* argv[]){
 	}
 
 	vector<newsgroup> groups; // Check this?
-	int groupId = 1, articleId = 1;
+	int groupId = 0, articleId = 0;
 	
 	while (true) {
 		auto conn = server.waitForActivity();
