@@ -264,6 +264,17 @@ void deleteArt(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
     if(readChar(conn) != Protocol::COM_END){
       throw ConnectionClosedException();
     }
+    vector<unsigned char> bytes;
+    try{
+      newsgroup ng = getNG(groups, ngid);
+      deleteArticle(ng.articles, aid);
+      bytes = {Protocol::ANS_DELETE_ART, Protocol::ANS_ACK, Protocol::ANS_END};
+    } catch (NewsgroupDoesNotExistException e){
+      bytes = {Protocol::ANS_DELETE_ART, Protocol::ANS_NAK, Protocol::ERR_NG_DOES_NOT_EXIST, Protocol::ANS_END};
+    } catch (ArticleDoesNotExistException e){
+      bytes = {Protocol::ANS_DELETE_ART, Protocol::ANS_NAK, Protocol::ERR_ART_DOES_NOT_EXIST, Protocol::ANS_END};
+    }
+    writeByteVector(conn, bytes);
   } else {
     throw ConnectionClosedException();
   }
@@ -314,6 +325,7 @@ int main(int argc, char* argv[]){
             createArticle(conn, groups, articleId);
 						break;
 					case Protocol::COM_DELETE_ART:
+            deleteArt(conn, groups);
 						break;
 					case Protocol::COM_GET_ART:
 						break;
