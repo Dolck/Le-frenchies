@@ -77,8 +77,8 @@ bool ngExists(const vector<newsgroup>& v, const string& newTitle){
 	return false;
 }
 
-const newsgroup& getNG(const vector<newsgroup>& v, const unsigned int& id){
-  for(const newsgroup& ng : v){
+newsgroup& getNG(vector<newsgroup>& v, const unsigned int& id){
+  for(newsgroup& ng : v){
     if(ng.id == id){
       return ng;
     }
@@ -154,7 +154,7 @@ void createArticle(const shared_ptr<Connection>& conn, vector<newsgroup>& groups
     vector<unsigned char> bytes;
     try{
       int n = readNumber(conn);
-      newsgroup ng = getNG(groups, n);
+      newsgroup& ng = getNG(groups, n);
       char c1 = readChar(conn);
       if(c1 != Protocol::PAR_STRING){
         throw ConnectionClosedException();
@@ -227,7 +227,7 @@ void listArts(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
       newsgroup ng = getNG(groups, n);
       vector<article> articles = ng.articles;
       size_t nbra = articles.size();
-      bytes = {Protocol::ANS_ACK, Protocol::PAR_NUM};
+      bytes = {Protocol::ANS_LIST_ART, Protocol::ANS_ACK, Protocol::PAR_NUM};
       addNumberToBytesVector(bytes, nbra);
       for(article a : articles){
         bytes.push_back(Protocol::PAR_NUM);
