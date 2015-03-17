@@ -165,15 +165,27 @@ void createArticle(const shared_ptr<Connection>& conn, vector<newsgroup>& groups
       int n = readNumber(conn);
       newsgroup ng = getNG(groups, n);
       char c1 = readChar(conn);
+      if(c1 != Protocol::PAR_STRING){
+        throw ConnectionClosedException();
+      }
       int n1 = readNumber(conn);
       string title = readString(conn, n1);
       char c2 = readChar(conn);
+      if(c2 != Protocol::PAR_STRING){
+        throw ConnectionClosedException();
+      }
       int n2 = readNumber(conn);
       string author = readString(conn, n2);
       char c3 = readChar(conn);
+      if(c3 != Protocol::PAR_STRING){
+        throw ConnectionClosedException();
+      }
       int n3 = readNumber(conn);
       string text = readString(conn, n3);
       char end = readChar(conn);
+      if(end != Protocol::COM_END){
+        throw ConnectionClosedException();
+      }
       article art;
       art.title = title;
       art.author = author;
