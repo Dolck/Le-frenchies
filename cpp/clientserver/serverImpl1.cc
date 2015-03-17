@@ -3,6 +3,7 @@
 #include "connection.h"
 #include "connectionclosedexception.h"
 #include "exceptions.h"
+#include "newsobjects.h"
 #include "protocol.h"
 
 #include <memory>
@@ -63,18 +64,6 @@ void addStringBytesToVector(vector<unsigned char>& bytes, const string& s){
   }
 }
 
-struct article {
-	string title;
-	string author;
-	string article_text;
-	unsigned int id;
-};
-
-struct newsgroup {
-	string name;
-	unsigned int id;
-	vector<article> articles;
-};
 
 bool ngExists(const vector<newsgroup>& v, const string& newTitle){
 	for(newsgroup ng : v){
