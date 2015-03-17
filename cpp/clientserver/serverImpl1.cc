@@ -42,16 +42,6 @@ string readString(const shared_ptr<Connection>& conn, const int nbrChars) {
 	return s;
 }
 
-/*
- * Send an integer to the client as four bytes.
- */
-void writeNumber(const shared_ptr<Connection>& conn, int value) {
-	conn->write((value >> 24) & 0xFF);
-	conn->write((value >> 16) & 0xFF);
-	conn->write((value >> 8)	 & 0xFF);
-	conn->write(value & 0xFF);
-}
-
 void addNumberToBytesVector(vector<unsigned char>& bytes, const int& num){
   bytes.push_back((num >> 24) & 0xFF);
   bytes.push_back((num >> 16) & 0xFF);
@@ -117,15 +107,6 @@ bool deleteNG(vector<newsgroup>& v, const int& id){
   throw NewsgroupDoesNotExistException();
 }
 
-/*
- * Send a string to a client.
- */
-void writeString(const shared_ptr<Connection>& conn, const string& s) {
-	for (char c : s) {
-		conn->write(c);
-	}
-}
-
 void writeByteVector(const shared_ptr<Connection>& conn, const vector<unsigned char>& bytes){
   for(unsigned char byte : bytes){
     conn->write(byte);
@@ -170,6 +151,24 @@ void createNG(const shared_ptr<Connection>& conn, vector<newsgroup>& groups, int
   }
 }
 
+void delNG(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
+  char c = readChar(conn);
+  if(c == Protocol::PAR_NUM){
+    int n = readNumber(conn);
+    char end = readChar(conn);
+    vector<unsigned char> bytes;
+    try{
+      deleteNG(groups, n);
+      bytes = {Protocol::ANS_DELETE_NG, Protocol::ANS_ACK, Protocol::ANS_END};
+    } catch(NewsgroupDoesNotExistException e) {
+      bytes = {Protocol::ANS_DELETE_NG, Protocol::ANS_NAK, Protocol::ERR_NG_DOES_NOT_EXIST, Protocol::ANS_END};
+    }
+    writeByteVector(conn, bytes);
+  } else {
+    throw ConnectionClosedException();
+  }
+}
+
 int main(int argc, char* argv[]){
 	if (argc != 2) {
 		cerr << "Usage: myserver port-number" << endl;
@@ -206,28 +205,7 @@ int main(int argc, char* argv[]){
 						createNG(conn, groups, groupId);
 						break;
 					case Protocol::COM_DELETE_NG:{
-            char c = readChar(conn);
-            if(c == Protocol::PAR_NUM){
-              int n = readNumber(conn);
-              char end = readChar(conn);
-              try{
-                deleteNG(groups, n);
-                string output;
-                output += Protocol::ANS_DELETE_NG;
-                output += Protocol::ANS_ACK;
-                output += Protocol::ANS_END;
-                writeString(conn, output);
-              } catch(NewsgroupDoesNotExistException e) {
-                string output;
-                output += Protocol::ANS_DELETE_NG;
-                output += Protocol::ANS_NAK;
-                output += Protocol::ERR_NG_DOES_NOT_EXIST;
-                output += Protocol::ANS_END;
-                writeString(conn, output);
-              }
-            } else {
-              throw ConnectionClosedException();
-            }
+            delNG(conn, groups);
 						break;
           }
 					case Protocol::COM_LIST_ART:{
@@ -256,7 +234,7 @@ int main(int argc, char* argv[]){
                 output += Protocol::ANS_NAK;
                 output += Protocol::ERR_NG_DOES_NOT_EXIST;
                 output += Protocol::ANS_END;
-                writeString(conn, output);
+                //writeString(conn, output);
               }
             } else {
               throw ConnectionClosedException();
