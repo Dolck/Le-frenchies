@@ -15,11 +15,16 @@
 using namespace std;
 
 int MessageHandler::readNumber(const shared_ptr<Connection>& conn) {
-	unsigned char byte1 = conn->read();
-	unsigned char byte2 = conn->read();
-	unsigned char byte3 = conn->read();
-	unsigned char byte4 = conn->read();
-	return (byte1 << 24) | (byte2 << 16) | (byte3 << 8) | byte4;
+  expectInputChar(conn, Protocol::PAR_NUM);
+	return readInteger(conn);
+}
+
+int MessageHandler::readInteger(const shared_ptr<Connection>& conn) {
+  unsigned char byte1 = conn->read();
+  unsigned char byte2 = conn->read();
+  unsigned char byte3 = conn->read();
+  unsigned char byte4 = conn->read();
+  return (byte1 << 24) | (byte2 << 16) | (byte3 << 8) | byte4;
 }
 
 char MessageHandler::readChar(const shared_ptr<Connection>& conn) {
@@ -32,7 +37,9 @@ void MessageHandler::expectInputChar(const shared_ptr<Connection>& conn, const c
   }
 }
 
-string MessageHandler::readString(const shared_ptr<Connection>& conn, const int nbrChars) {
+string MessageHandler::readString(const shared_ptr<Connection>& conn) {
+  expectInputChar(conn, Protocol::PAR_STRING);
+  int nbrChars = readInteger(conn);
 	string s;
 	for (int i = 0; i < nbrChars; ++i){
 		s += readChar(conn);

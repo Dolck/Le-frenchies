@@ -97,10 +97,7 @@ void listNG(const shared_ptr<Connection>& conn, const vector<newsgroup>& groups)
 }
 
 void createNG(const shared_ptr<Connection>& conn, vector<newsgroup>& groups, int& groupId){
-  MessageHandler::expectInputChar(conn, Protocol::PAR_STRING);
-
-  int n = MessageHandler::readNumber(conn);
-  string newTitle = MessageHandler::readString(conn, n);
+  string newTitle = MessageHandler::readString(conn);
   MessageHandler::expectInputChar(conn, Protocol::COM_END);
   vector<unsigned char> bytes;
   if(ngExists(groups, newTitle)){
@@ -113,21 +110,13 @@ void createNG(const shared_ptr<Connection>& conn, vector<newsgroup>& groups, int
 }
 
 void createArt(const shared_ptr<Connection>& conn, vector<newsgroup>& groups, int & articleId){
-  MessageHandler::expectInputChar(conn, Protocol::PAR_NUM);
   vector<unsigned char> bytes;
   try{
     int n = MessageHandler::readNumber(conn);
     newsgroup& ng = getNG(groups, n);
-    MessageHandler::expectInputChar(conn, Protocol::PAR_STRING);
-    int n1 = MessageHandler::readNumber(conn);
-    string title = MessageHandler::readString(conn, n1);
-    MessageHandler::expectInputChar(conn, Protocol::PAR_STRING);
-    int n2 = MessageHandler::readNumber(conn);
-    string author = MessageHandler::readString(conn, n2);
-    MessageHandler::expectInputChar(conn, Protocol::PAR_STRING);
-    int n3 = MessageHandler::readNumber(conn);
-    string text = MessageHandler::readString(conn, n3);
-    MessageHandler::expectInputChar(conn, Protocol::PAR_STRING);
+    string title = MessageHandler::readString(conn);
+    string author = MessageHandler::readString(conn);
+    string text = MessageHandler::readString(conn);
     createArticle(ng.articles, title, author, text, articleId);
     bytes = {Protocol::ANS_CREATE_ART, Protocol::ANS_ACK, Protocol::ANS_END};
   } catch (NewsgroupDoesNotExistException e){
@@ -137,7 +126,6 @@ void createArt(const shared_ptr<Connection>& conn, vector<newsgroup>& groups, in
 }
 
 void delNG(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
-  MessageHandler::expectInputChar(conn, Protocol::PAR_NUM);
   int n = MessageHandler::readNumber(conn);
   MessageHandler::expectInputChar(conn, Protocol::COM_END);
   vector<unsigned char> bytes;
@@ -151,7 +139,6 @@ void delNG(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
 }
 
 void listArts(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
-  MessageHandler::expectInputChar(conn, Protocol::PAR_NUM);
   int n = MessageHandler::readNumber(conn);
   MessageHandler::expectInputChar(conn, Protocol::COM_END);
   vector<unsigned char> bytes;
@@ -174,9 +161,7 @@ void listArts(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
 }
 
 void deleteArt(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
-  MessageHandler::expectInputChar(conn, Protocol::PAR_NUM);
   int ngid = MessageHandler::readNumber(conn);
-  MessageHandler::expectInputChar(conn, Protocol::PAR_NUM);
   int aid = MessageHandler::readNumber(conn);
   MessageHandler::expectInputChar(conn, Protocol::COM_END);
   vector<unsigned char> bytes;
@@ -193,9 +178,7 @@ void deleteArt(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
 }
 
 void getArt(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
-  MessageHandler::expectInputChar(conn, Protocol::PAR_NUM);
   int ngid = MessageHandler::readNumber(conn);
-  MessageHandler::expectInputChar(conn, Protocol::PAR_NUM);
   int artid = MessageHandler::readNumber(conn);
   MessageHandler::expectInputChar(conn, Protocol::COM_END);
   vector<unsigned char> bytes;

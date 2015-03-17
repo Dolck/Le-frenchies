@@ -30,7 +30,7 @@ libclientserver.a: connection.o server.o
 
 serverImpl1: serverImpl1.o messagehandler.o
 
-clientImpl: clientImpl.o
+clientImpl: clientImpl.o messagehandler.o
 
 # Phony targets
 .PHONY: all clean

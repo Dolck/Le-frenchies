@@ -1,6 +1,7 @@
 #include "connection.h"
 #include "connectionclosedexception.h"
 #include "protocol.h"
+#include "messagehandler.h"
 
 #include <iostream>
 #include <string>
@@ -37,12 +38,8 @@ void listNewsGroups(const shared_ptr<Connection>& conn){
     conn->write(Protocol::COM_LIST_NG);
     conn->write(Protocol::COM_END);
 
-    //if(conn->read() != Protocol::ANS_LIST_NG || conn->read() != Protocol::PAR_NUM)
-    //    throw ConnectionClosedException();
-    //MessageHandler::expectInputChar(conn, Protocol::ANS_LIST_NG);
-    //int nbrNgs = MessageHandler::readNumber(conn);
-
-    int nbrNgs = readInt(conn);
+    MessageHandler::expectInputChar(conn, Protocol::ANS_LIST_NG);
+    int nbrNgs = MessageHandler::readNumber(conn);
     cout << endl;
     cout << "Newsgroups: " << endl;
     for (int i = 0; i < nbrNgs; ++i){
@@ -61,7 +58,7 @@ void createNewsGroup(const shared_ptr<Connection>& conn){
     cout << "Enter title: ";
     string title;
     cin >> title;
-    //command COM_CREATE_NG
+    //MessageHandler::expectInputChar(Protocol::COM_CREATE_NG);
     //MessageHandler::writeString(conn, title);
     //COM_END
 }
@@ -138,7 +135,7 @@ int main(int argc, char* argv[]) {
                     break;
             }
         }catch(ConnectionClosedException e){
-            cout << e.what() << endl;
+            //cout << e.what() << endl;
         }
 
         welcomePrompt();
