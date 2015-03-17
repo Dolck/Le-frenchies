@@ -169,6 +169,36 @@ void delNG(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
   }
 }
 
+void listArts(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
+  char c = readChar(conn);
+  if(c == Protocol::PAR_NUM){
+    int n = readNumber(conn);
+    char end = readChar(conn);
+    vector<unsigned char> bytes;
+    try{
+      newsgroup ng = getNG(groups, n);
+      vector<article> articles = ng.articles;
+      size_t nbra = articles.size();
+      bytes = {Protocol::ANS_ACK, Protocol::PAR_NUM};
+      addNumberToBytesVector(bytes, nbra);
+      for(article a : articles){
+        bytes.push_back(Protocol::PAR_NUM);
+        addNumberToBytesVector(bytes, a.id);
+        bytes.push_back(Protocol::PAR_STRING);
+        addNumberToBytesVector(bytes, a.title.size());
+        addStringBytesToVector(bytes, a.title);
+      }
+      bytes.push_back(Protocol::ANS_END);
+    } catch(NewsgroupDoesNotExistException e) {
+      bytes = {Protocol::ANS_LIST_ART, Protocol::ANS_NAK, Protocol::ERR_NG_DOES_NOT_EXIST, Protocol::ANS_END};
+    }
+    writeByteVector(conn, bytes);
+  } else {
+    throw ConnectionClosedException();
+  }
+}
+
+
 int main(int argc, char* argv[]){
 	if (argc != 2) {
 		cerr << "Usage: myserver port-number" << endl;
@@ -209,36 +239,7 @@ int main(int argc, char* argv[]){
 						break;
           }
 					case Protocol::COM_LIST_ART:{
-            char c = readChar(conn);
-            if(c == Protocol::PAR_NUM){
-              int n = readNumber(conn);
-              char end = readChar(conn);
-              try{
-                newsgroup ng = getNG(groups, n);
-                vector<article> articles = ng.articles;
-                size_t nbra = articles.size();
-                //Protocol::ANS_ACK;
-                //Protocol::PAR_NUM;
-                //writeNumber(nbra);
-                for(article a : articles){
-                  //Protocol::PAR_NUM;
-                  //writeNumber(a.id);
-                  //Protocol::PAR_STRING;
-                  //writeNumber(a.title.size());
-                  //writeString(a.title);
-                }
-                //Protocol::ANS_END;
-              } catch(NewsgroupDoesNotExistException e) {
-                string output;
-                output += Protocol::ANS_LIST_ART;
-                output += Protocol::ANS_NAK;
-                output += Protocol::ERR_NG_DOES_NOT_EXIST;
-                output += Protocol::ANS_END;
-                //writeString(conn, output);
-              }
-            } else {
-              throw ConnectionClosedException();
-            }
+            listArts(conn, groups);
 						break;
 					}
           case Protocol::COM_CREATE_ART:
