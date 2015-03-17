@@ -154,20 +154,17 @@ void createNG(const shared_ptr<Connection>& conn, vector<newsgroup>& groups, int
     int n = readNumber(conn);
     string newTitle = readString(conn, n);
     char end = readChar(conn);
+    vector<unsigned char> bytes;
     if(ngExists(groups, newTitle)){
-      conn->write(Protocol::ANS_CREATE_NG);
-      conn->write(Protocol::ANS_NAK);
-      conn->write(Protocol::ERR_NG_ALREADY_EXISTS);
-      conn->write(Protocol::ANS_END);
+      bytes = {Protocol::ANS_CREATE_NG, Protocol::ANS_NAK, Protocol::ERR_NG_ALREADY_EXISTS, Protocol::ANS_END};
     } else {
       newsgroup ng;
       ng.name = newTitle;
       ng.id = ++groupId;
       groups.push_back(ng);
-      conn->write(Protocol::ANS_CREATE_NG);
-      conn->write(Protocol::ANS_ACK);
-      conn->write(Protocol::ANS_END);
+      bytes = {Protocol::ANS_CREATE_NG, Protocol::ANS_ACK, Protocol::ANS_END};
     }
+    writeByteVector(conn, bytes);
   }else{
     throw ConnectionClosedException();
   }
@@ -208,7 +205,7 @@ int main(int argc, char* argv[]){
 					case Protocol::COM_CREATE_NG:
 						createNG(conn, groups, groupId);
 						break;
-					case Protocol::COM_DELETE_NG:
+					case Protocol::COM_DELETE_NG:{
             char c = readChar(conn);
             if(c == Protocol::PAR_NUM){
               int n = readNumber(conn);
@@ -220,7 +217,7 @@ int main(int argc, char* argv[]){
                 output += Protocol::ANS_ACK;
                 output += Protocol::ANS_END;
                 writeString(conn, output);
-              } catch(NewsGroupDoesNotExistException e) {
+              } catch(NewsgroupDoesNotExistException e) {
                 string output;
                 output += Protocol::ANS_DELETE_NG;
                 output += Protocol::ANS_NAK;
@@ -232,7 +229,8 @@ int main(int argc, char* argv[]){
               throw ConnectionClosedException();
             }
 						break;
-					case Protocol::COM_LIST_ART:
+          }
+					case Protocol::COM_LIST_ART:{
             char c = readChar(conn);
             if(c == Protocol::PAR_NUM){
               int n = readNumber(conn);
@@ -253,7 +251,7 @@ int main(int argc, char* argv[]){
                 }
                 //Protocol::ANS_END;
               } catch(NewsgroupDoesNotExistException e) {
-                String output;
+                string output;
                 output += Protocol::ANS_LIST_ART;
                 output += Protocol::ANS_NAK;
                 output += Protocol::ERR_NG_DOES_NOT_EXIST;
@@ -264,7 +262,8 @@ int main(int argc, char* argv[]){
               throw ConnectionClosedException();
             }
 						break;
-					case Protocol::COM_CREATE_ART:
+					}
+          case Protocol::COM_CREATE_ART:
 						break;
 					case Protocol::COM_DELETE_ART:
 						break;
