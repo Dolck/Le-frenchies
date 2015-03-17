@@ -115,6 +115,9 @@ void writeByteVector(const shared_ptr<Connection>& conn, const vector<unsigned c
 
 void listNG(const shared_ptr<Connection>& conn, const vector<newsgroup>& groups){
   char end = readChar(conn);
+  if(end != Protocol::COM_END){
+    throw ConnectionClosedException();
+  }
   int num = groups.size();
   vector<unsigned char> bytes {Protocol::ANS_LIST_NG, Protocol::PAR_NUM};
   addNumberToBytesVector(bytes, num);
@@ -135,6 +138,9 @@ void createNG(const shared_ptr<Connection>& conn, vector<newsgroup>& groups, int
     int n = readNumber(conn);
     string newTitle = readString(conn, n);
     char end = readChar(conn);
+    if(end != Protocol::COM_END){
+      throw ConnectionClosedException();
+    }
     vector<unsigned char> bytes;
     if(ngExists(groups, newTitle)){
       bytes = {Protocol::ANS_CREATE_NG, Protocol::ANS_NAK, Protocol::ERR_NG_ALREADY_EXISTS, Protocol::ANS_END};
@@ -156,6 +162,9 @@ void delNG(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
   if(c == Protocol::PAR_NUM){
     int n = readNumber(conn);
     char end = readChar(conn);
+    if(end != Protocol::COM_END){
+      throw ConnectionClosedException();
+    }
     vector<unsigned char> bytes;
     try{
       deleteNG(groups, n);
@@ -174,6 +183,9 @@ void listArts(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
   if(c == Protocol::PAR_NUM){
     int n = readNumber(conn);
     char end = readChar(conn);
+    if(end != Protocol::COM_END){
+      throw ConnectionClosedException();
+    }
     vector<unsigned char> bytes;
     try{
       newsgroup ng = getNG(groups, n);
