@@ -104,7 +104,7 @@ int main(int argc, char* argv[]) {
                     break;
             }
         }catch(ConnectionClosedException e){
-            //something is wrong
+            cout << e.what() << endl;
         }
 
         welcomePrompt();
