@@ -92,6 +92,22 @@ void writeString(const shared_ptr<Connection>& conn, const string& s) {
 	//conn->write('$');
 }
 
+void listNG(const shared_ptr<Connection>& conn, const vector<newsgroup>& groups){
+  char end = readChar(conn);
+  int num = groups.size();
+  conn->write(Protocol::ANS_LIST_NG);
+  conn->write(Protocol::PAR_NUM);
+  writeNumber(conn, num);
+  for(newsgroup ng : groups){
+    conn->write(Protocol::PAR_NUM);
+    writeNumber(conn, ng.id);
+    conn->write(Protocol::PAR_STRING);
+    writeNumber(conn, ng.name.size());
+    writeString(conn, ng.name);
+  }
+  conn->write(Protocol::ANS_END);
+}
+
 int main(int argc, char* argv[]){
 	if (argc != 2) {
 		cerr << "Usage: myserver port-number" << endl;
@@ -122,20 +138,7 @@ int main(int argc, char* argv[]){
 				char cmd = readChar(conn);
 				switch(cmd){
 					case Protocol::COM_LIST_NG:{
-						char end = readChar(conn);
-						int num = groups.size();
-						conn->write(Protocol::ANS_LIST_NG);
-						conn->write(Protocol::PAR_NUM);
-						writeNumber(conn, num);
-						for(newsgroup ng : groups){
-							conn->write(Protocol::PAR_NUM);
-							writeNumber(conn, ng.id);
-							conn->write(Protocol::PAR_STRING);
-							writeNumber(conn, ng.name.size());
-							writeString(conn, ng.name);
-						}
-						conn->write(Protocol::ANS_END);
-						break;
+						listNG(conn, groups);
 					}
 					case Protocol::COM_CREATE_NG: {
 						char c = readChar(conn);
@@ -151,6 +154,7 @@ int main(int argc, char* argv[]){
 								output += Protocol::ANS_END;
 								writeString(conn, output);
               } else {
+                newsgroup ng;
 								ng.name = newTitle;
 								ng.id = ++groupId;
 								groups.push_back(ng);
