@@ -1,0 +1,64 @@
+#include "server.h"
+#include "connection.h"
+#include "connectionclosedexception.h"
+#include "exceptions.h"
+#include "newsobjects.h"
+#include "protocol.h"
+#include "messagehandler.h"
+
+#include <memory>
+#include <iostream>
+#include <string>
+#include <stdexcept>
+#include <cstdlib>
+
+using namespace std;
+
+int readNumber(const shared_ptr<Connection>& conn) {
+	unsigned char byte1 = conn->read();
+	unsigned char byte2 = conn->read();
+	unsigned char byte3 = conn->read();
+	unsigned char byte4 = conn->read();
+	return (byte1 << 24) | (byte2 << 16) | (byte3 << 8) | byte4;
+}
+
+char readChar(const shared_ptr<Connection>& conn) {
+	return conn->read();
+}
+
+void expectInputChar(const shared_ptr<Connection>& conn, const char& expected){
+  if(readChar(conn) != expected){
+    throw ConnectionClosedException();
+  }
+}
+
+string readString(const shared_ptr<Connection>& conn, const int nbrChars) {
+	string s;
+	for (int i = 0; i < nbrChars; ++i){
+		s += readChar(conn);
+	}
+	return s;
+}
+
+void addNumberToBytesVector(vector<unsigned char>& bytes, const int& num){
+  bytes.push_back((num >> 24) & 0xFF);
+  bytes.push_back((num >> 16) & 0xFF);
+  bytes.push_back((num >> 8) & 0xFF);
+  bytes.push_back(num & 0xFF);
+}
+
+void addStringBytesToVector(vector<unsigned char>& bytes, const string& s){
+  bytes.push_back(Protocol::PAR_STRING);
+  addNumberToBytesVector(bytes, s.size());
+  for (char c : s) {
+    bytes.push_back(c);
+  }
+}
+
+void writeByteVector(const shared_ptr<Connection>& conn, const vector<unsigned char>& bytes){
+  for(unsigned char byte : bytes){
+    conn->write(byte);
+  }
+}
+
+
