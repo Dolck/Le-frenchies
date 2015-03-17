@@ -9,34 +9,28 @@
 
 using namespace std;
 
-/*
- * Send an integer to the server as four bytes.
- */
-void writeNumber(const Connection& conn, int value) {
-    conn.write((value >> 24) & 0xFF);
-    conn.write((value >> 16) & 0xFF);
-    conn.write((value >> 8)  & 0xFF);
-    conn.write(value & 0xFF);
+int readInt(const shared_ptr<Connection>& conn) {
+    unsigned char byte1 = conn->read();
+    unsigned char byte2 = conn->read();
+    unsigned char byte3 = conn->read();
+    unsigned char byte4 = conn->read();
+    return (byte1 << 24) | (byte2 << 16) | (byte3 << 8) | byte4;
 }
 
-/*
- * Read a string from the server.
- */
-string readString(const Connection& conn) {
+char readChar(const shared_ptr<Connection>& conn) {
+    return conn->read();
+}
+
+string readString(const shared_ptr<Connection>& conn) {
+    if(conn->read() != Protocol::PAR_STRING){
+        throw ConnectionClosedException();
+    }
+    int nbrChars = readInt(conn);
     string s;
-    char ch;
-    while ((ch = conn.read()) != '$') {
-        s += ch;
+    for (int i = 0; i < nbrChars; ++i){
+        s += readChar(conn);
     }
     return s;
-}
-
-int readInt(const Connection& conn) {
-    unsigned char byte1 = conn.read();
-    unsigned char byte2 = conn.read();
-    unsigned char byte3 = conn.read();
-    unsigned char byte4 = conn.read();
-    return (byte1 << 24) | (byte2 << 16) | (byte3 << 8) | byte4;
 }
 
 void welcomePrompt(){
@@ -50,15 +44,26 @@ void welcomePrompt(){
     cout << "Type a number: ";
 }
 
-void listNewsGroups(const Connection& conn){
-    conn.write(Protocol::COM_LIST_NG);
-    conn.write(Protocol::COM_END);
+void listNewsGroups(const shared_ptr<Connection>& conn){
+    conn->write(Protocol::COM_LIST_NG);
+    conn->write(Protocol::COM_END);
     //{Protocol::ANS_LIST_NG, Protocol::PAR_NUM};
-    if(conn.read() != Protocol::ANS_LIST_NG || conn.read() != Protocol::PAR_NUM)
-        throw ExceptionClosedException();
+    if(conn->read() != Protocol::ANS_LIST_NG || conn->read() != Protocol::PAR_NUM)
+        throw ConnectionClosedException();
 
-    int nbrNgs = readInt();
+    int nbrNgs = readInt(conn);
+    cout << endl;
+    cout << "Newsgroups: " << endl;
+    for (int i = 0; i < nbrNgs; ++i){
+        if(conn->read() != Protocol::PAR_NUM){
+            throw ConnectionClosedException();
+        }
+        int id = readInt(conn);
+        string title = readString(conn);
+        cout << id << " " << title << endl;
+    }
 
+    cout << endl;
 }
 
 int main(int argc, char* argv[]) {
@@ -75,8 +80,9 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
     
-    Connection conn(argv[1], port);
-    if (!conn.isConnected()) {
+    //Connection cnn(argv[1], port);
+    shared_ptr<Connection> conn = make_shared<Connection>(argv[1], port);
+    if (!conn->isConnected()) {
         cerr << "Connection attempt failed" << endl;
         exit(1);
     }
@@ -97,7 +103,7 @@ int main(int argc, char* argv[]) {
                     cout << "You must choose a command from the list.." << endl;
                     break;
             }
-        }catch(Exception e){
+        }catch(ConnectionClosedException e){
             //something is wrong
         }
 
