@@ -14,7 +14,7 @@
 
 using namespace std;
 
-int readNumber(const shared_ptr<Connection>& conn) {
+int MessageHandler::readNumber(const shared_ptr<Connection>& conn) {
 	unsigned char byte1 = conn->read();
 	unsigned char byte2 = conn->read();
 	unsigned char byte3 = conn->read();
@@ -22,17 +22,17 @@ int readNumber(const shared_ptr<Connection>& conn) {
 	return (byte1 << 24) | (byte2 << 16) | (byte3 << 8) | byte4;
 }
 
-char readChar(const shared_ptr<Connection>& conn) {
+char MessageHandler::readChar(const shared_ptr<Connection>& conn) {
 	return conn->read();
 }
 
-void expectInputChar(const shared_ptr<Connection>& conn, const char& expected){
+void MessageHandler::expectInputChar(const shared_ptr<Connection>& conn, const char& expected){
   if(readChar(conn) != expected){
     throw ConnectionClosedException();
   }
 }
 
-string readString(const shared_ptr<Connection>& conn, const int nbrChars) {
+string MessageHandler::readString(const shared_ptr<Connection>& conn, const int nbrChars) {
 	string s;
 	for (int i = 0; i < nbrChars; ++i){
 		s += readChar(conn);
@@ -40,14 +40,14 @@ string readString(const shared_ptr<Connection>& conn, const int nbrChars) {
 	return s;
 }
 
-void addNumberToBytesVector(vector<unsigned char>& bytes, const int& num){
+void MessageHandler::addNumberToBytesVector(vector<unsigned char>& bytes, const int& num){
   bytes.push_back((num >> 24) & 0xFF);
   bytes.push_back((num >> 16) & 0xFF);
   bytes.push_back((num >> 8) & 0xFF);
   bytes.push_back(num & 0xFF);
 }
 
-void addStringBytesToVector(vector<unsigned char>& bytes, const string& s){
+void MessageHandler::addStringBytesToVector(vector<unsigned char>& bytes, const string& s){
   bytes.push_back(Protocol::PAR_STRING);
   addNumberToBytesVector(bytes, s.size());
   for (char c : s) {
@@ -55,7 +55,7 @@ void addStringBytesToVector(vector<unsigned char>& bytes, const string& s){
   }
 }
 
-void writeByteVector(const shared_ptr<Connection>& conn, const vector<unsigned char>& bytes){
+void MessageHandler::writeByteVector(const shared_ptr<Connection>& conn, const vector<unsigned char>& bytes){
   for(unsigned char byte : bytes){
     conn->write(byte);
   }
