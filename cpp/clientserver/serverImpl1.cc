@@ -135,9 +135,13 @@ int main(int argc, char* argv[]){
 							string newTitle = readString(conn, n);
 							char end = readChar(conn);
 							if(ngExists(groups, newTitle)){
-								//Write something
-							}else{
-								newsgroup ng;
+								string output;
+								output += Protocol::ANS_CREATE_NG;
+								output += Protocol::ANS_NAK;
+                output += Protocol::ERR_NG_ALREADY_EXISTS;
+								output += Protocol::ANS_END;
+								writeString(conn, output);
+              } else {
 								ng.name = newTitle;
 								ng.id = ++groupId;
 								groups.push_back(ng);
