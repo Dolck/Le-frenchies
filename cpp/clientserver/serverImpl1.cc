@@ -64,6 +64,12 @@ void addStringBytesToVector(vector<unsigned char>& bytes, const string& s){
   }
 }
 
+void createNewsgroup(vector<newsgroup>& v, string& title, int& id){
+  newsgroup ng;
+  ng.name = title;
+  ng.id = ++ id;
+  v.push_back(ng);
+}
 
 bool ngExists(const vector<newsgroup>& v, const string& newTitle){
 	for(newsgroup ng : v){
@@ -93,6 +99,15 @@ bool deleteNG(vector<newsgroup>& v, const unsigned int& id){
     ++index;
   }
   throw NewsgroupDoesNotExistException();
+}
+
+void createArticle(vector<article>& v, string& title, string& author, string& text, int& id){
+  article art;
+  art.title = title;
+  art.author = author;
+  art.article_text = text;
+  art.id = ++id;
+  v.push_back(art);
 }
 
 bool deleteArticle(vector<article>& v, const unsigned int& id){
@@ -145,16 +160,13 @@ void createNG(const shared_ptr<Connection>& conn, vector<newsgroup>& groups, int
   if(ngExists(groups, newTitle)){
     bytes = {Protocol::ANS_CREATE_NG, Protocol::ANS_NAK, Protocol::ERR_NG_ALREADY_EXISTS, Protocol::ANS_END};
   } else {
-    newsgroup ng;
-    ng.name = newTitle;
-    ng.id = ++groupId;
-    groups.push_back(ng);
+    createNewsgroup(groups, newTitle, groupId);
     bytes = {Protocol::ANS_CREATE_NG, Protocol::ANS_ACK, Protocol::ANS_END};
   }
   writeByteVector(conn, bytes);
 }
 
-void createArticle(const shared_ptr<Connection>& conn, vector<newsgroup>& groups, int & articleId){
+void createArt(const shared_ptr<Connection>& conn, vector<newsgroup>& groups, int & articleId){
   expectInputChar(conn, Protocol::PAR_NUM);
   vector<unsigned char> bytes;
   try{
@@ -170,12 +182,7 @@ void createArticle(const shared_ptr<Connection>& conn, vector<newsgroup>& groups
     int n3 = readNumber(conn);
     string text = readString(conn, n3);
     expectInputChar(conn, Protocol::PAR_STRING);
-    article art;
-    art.title = title;
-    art.author = author;
-    art.article_text = text;
-    art.id = ++articleId;
-    ng.articles.push_back(art);
+    createArticle(ng.articles, title, author, text, articleId);
     bytes = {Protocol::ANS_CREATE_ART, Protocol::ANS_ACK, Protocol::ANS_END};
   } catch (NewsgroupDoesNotExistException e){
     bytes = {Protocol::ANS_CREATE_ART, Protocol::ANS_NAK, Protocol::ERR_NG_DOES_NOT_EXIST, Protocol::ANS_END};
@@ -303,7 +310,7 @@ int main(int argc, char* argv[]){
             listArts(conn, groups);
 						break;
           case Protocol::COM_CREATE_ART:
-            createArticle(conn, groups, articleId);
+            createArt(conn, groups, articleId);
 						break;
 					case Protocol::COM_DELETE_ART:
             deleteArt(conn, groups);
