@@ -26,6 +26,14 @@ void listNewsGroups(const shared_ptr<Connection>& conn){
     cout << endl;
 }
 
+int chooseNewsGroup(const shared_ptr<Connection>& conn){
+    listNewsGroups(conn);
+    cout << "Choose newsgroup-id: ";
+    int id;
+    cin >> id;
+    return id;
+}
+
 void createNewsGroup(const shared_ptr<Connection>& conn){
     cout << "Enter title: ";
     string title;
@@ -51,9 +59,7 @@ void createNewsGroup(const shared_ptr<Connection>& conn){
 }
 
 void deleteNewsGroup(const shared_ptr<Connection>& conn){
-    cout << "Enter id from list above: ";
-    int id;
-    cin >> id;
+    int id = chooseNewsGroup(conn);
     vector<unsigned char> bytes = {Protocol::COM_DELETE_NG};
     MessageHandler::addNumberToBytesVector(bytes, id);
     bytes.push_back(Protocol::COM_END);
@@ -73,9 +79,7 @@ void deleteNewsGroup(const shared_ptr<Connection>& conn){
 }
 
 void listArticles(const shared_ptr<Connection>& conn){
-    cout << "Enter newsgroup id to list its articles: ";
-    int id;
-    cin >> id;
+    chooseNewsGroup(conn);
     vector<unsigned char> bytes = {Protocol::COM_LIST_ART};
     MessageHandler::addNumberToBytesVector(bytes, id);
     bytes.push_back(Protocol::COM_END);
@@ -97,6 +101,48 @@ void listArticles(const shared_ptr<Connection>& conn){
         MessageHandler::expectInputChar(conn, Protocol::ANS_END);
     }
     cout << endl;
+}
+
+void createArticle(const shared_ptr<Connection>& conn){
+    chooseNewsGroup(conn);
+    cout << "Enter title: ";
+    string title;
+    cin >> title;
+    cout << "Enter author: ";
+    string author;
+    cin >> author;
+    string text;
+    cout << "Enter text (end with a $ sign): " << endl;
+    char c;
+    while (cin.get(c)){
+        if(c == '$')
+            break;
+        text += c;
+    }
+
+    vector<unsigned char> bytes = {Protocol::COM_CREATE_ART};
+    MessageHandler::addNumberToBytesVector(bytes, id);
+    MessageHandler::addStringBytesToVector(bytes, title);
+    MessageHandler::addStringBytesToVector(bytes, author);
+    MessageHandler::addStringBytesToVector(bytes, text);
+    bytes.push_back(Protocol::COM_END);
+    MessageHandler::writeByteVector(conn, bytes);
+
+    MessageHandler::expectInputChar(conn, Protocol::ANS_CREATE_ART);
+    try{
+        MessageHandler::expectInputChar(conn, Protocol::ANS_ACK);
+        MessageHandler::expectInputChar(conn, Protocol::ANS_END);
+        cout << "Successfully created article!" << endl;
+    }catch(ConnectionClosedException e){
+        MessageHandler::expectInputChar(conn, Protocol::ERR_NG_DOES_NOT_EXIST);
+        MessageHandler::expectInputChar(conn, Protocol::ANS_END);
+        cout << "Couldn't create article. Newsgroup does not exists exists!" << endl;
+    }
+    cout << endl;
+}
+
+void deleteArticle(const shared_ptr<Connection>& conn){
+    chooseNewsGroup(conn);
 }
 
 void welcomePrompt(){
@@ -143,14 +189,13 @@ int main(int argc, char* argv[]) {
                     createNewsGroup(conn);
                     break;
                 case 3:
-                    listNewsGroups(conn);
                     deleteNewsGroup(conn);
                     break;
                 case 4:
-                    listNewsGroups(conn);
                     listArticles(conn);
                     break;
                 case 5:
+                    createArticle(conn);
                     break;
                 case 6:
                     break;
