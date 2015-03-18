@@ -54,16 +54,20 @@ void deleteNewsGroup(const shared_ptr<Connection>& conn){
     cout << "Enter id from list above: ";
     int id;
     cin >> id;
-    //COM_DELETE_NG
-    //MessageHandle::writeInteger(id);
-    //COM_END
+    vector<unsigned char> bytes = {Protocol::COM_DELETE_NG};
+    MessageHandler::addNumberToBytesVector(bytes, id);
+    bytes.push_back(Protocol::COM_END);
+    MessageHandler::writeByteVector(conn, bytes);
 }
 
 void listArticles(const shared_ptr<Connection>& conn){
     cout << "Enter newsgroup id to list its articles: ";
     int id;
     cin >> id;
-    //
+    vector<unsigned char> bytes = {Protocol::COM_LIST_ART};
+    MessageHandler::addNumberToBytesVector(bytes, id);
+    bytes.push_back(Protocol::COM_END);
+    MessageHandler::writeByteVector(conn, bytes);
 }
 
 void welcomePrompt(){
