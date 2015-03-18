@@ -58,6 +58,18 @@ void deleteNewsGroup(const shared_ptr<Connection>& conn){
     MessageHandler::addNumberToBytesVector(bytes, id);
     bytes.push_back(Protocol::COM_END);
     MessageHandler::writeByteVector(conn, bytes);
+
+    MessageHandler::expectInputChar(conn, Protocol::ANS_DELETE_NG);
+    try{
+        MessageHandler::expectInputChar(conn, Protocol::ANS_ACK);
+        MessageHandler::expectInputChar(conn, Protocol::ANS_END);
+        cout << "Successfully deleted newsgroup!" << endl;
+    }catch(ConnectionClosedException e){
+        MessageHandler::expectInputChar(conn, Protocol::ERR_NG_DOES_NOT_EXIST);
+        MessageHandler::expectInputChar(conn, Protocol::ANS_END);
+        cout << "Couldn't delete newsgroup. Newsgroup does not exists exists!" << endl;
+    }
+    cout << endl;
 }
 
 void listArticles(const shared_ptr<Connection>& conn){
@@ -68,6 +80,23 @@ void listArticles(const shared_ptr<Connection>& conn){
     MessageHandler::addNumberToBytesVector(bytes, id);
     bytes.push_back(Protocol::COM_END);
     MessageHandler::writeByteVector(conn, bytes);
+
+    MessageHandler::expectInputChar(conn, Protocol::ANS_LIST_ART);
+    try{
+        MessageHandler::expectInputChar(conn, Protocol::ANS_ACK);
+        int nbra = MessageHandler::readNumber(conn);
+        for (int i = 0; i < nbra; ++i){
+            int aid = MessageHandler::readNumber(conn);
+            string title = MessageHandler::readString(conn);
+            cout << aid << " " << title << endl;
+        }
+        MessageHandler::expectInputChar(conn, Protocol::ANS_END);
+
+    }catch(ConnectionClosedException e){
+        MessageHandler::expectInputChar(conn, Protocol::ERR_NG_DOES_NOT_EXIST);
+        MessageHandler::expectInputChar(conn, Protocol::ANS_END);
+    }
+    cout << endl;
 }
 
 void welcomePrompt(){
@@ -78,6 +107,7 @@ void welcomePrompt(){
     cout << "4: List articles" << endl;
     cout << "5: Create article" << endl;
     cout << "6: Delete article" << endl;
+    cout << "7: View article" << endl;
     cout << "Type a number: ";
 }
 
@@ -119,8 +149,13 @@ int main(int argc, char* argv[]) {
                 case 4:
                     listNewsGroups(conn);
                     listArticles(conn);
+                    break;
                 case 5:
+                    break;
                 case 6:
+                    break;
+                case 7:
+                    break;
                 default:
                     cout << "You must choose a command from the list.." << endl;
                     break;
