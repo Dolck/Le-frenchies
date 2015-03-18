@@ -79,7 +79,7 @@ void deleteNewsGroup(const shared_ptr<Connection>& conn){
 }
 
 void listArticles(const shared_ptr<Connection>& conn){
-    chooseNewsGroup(conn);
+    int id = chooseNewsGroup(conn);
     vector<unsigned char> bytes = {Protocol::COM_LIST_ART};
     MessageHandler::addNumberToBytesVector(bytes, id);
     bytes.push_back(Protocol::COM_END);
@@ -104,7 +104,7 @@ void listArticles(const shared_ptr<Connection>& conn){
 }
 
 void createArticle(const shared_ptr<Connection>& conn){
-    chooseNewsGroup(conn);
+    int id = chooseNewsGroup(conn);
     cout << "Enter title: ";
     string title;
     cin >> title;
