@@ -48,6 +48,11 @@ string MessageHandler::readString(const shared_ptr<Connection>& conn) {
 }
 
 void MessageHandler::addNumberToBytesVector(vector<unsigned char>& bytes, const int& num){
+  bytes.push_back(Protocol::PAR_NUM);
+  addIntegerToBytesVector(bytes, num);
+}
+
+void MessageHandler::addIntegerToBytesVector(vector<unsigned char>& bytes, const int& num){
   bytes.push_back((num >> 24) & 0xFF);
   bytes.push_back((num >> 16) & 0xFF);
   bytes.push_back((num >> 8) & 0xFF);
@@ -56,7 +61,7 @@ void MessageHandler::addNumberToBytesVector(vector<unsigned char>& bytes, const 
 
 void MessageHandler::addStringBytesToVector(vector<unsigned char>& bytes, const string& s){
   bytes.push_back(Protocol::PAR_STRING);
-  addNumberToBytesVector(bytes, s.size());
+  addIntegerToBytesVector(bytes, s.size());
   for (char c : s) {
     bytes.push_back(c);
   }
