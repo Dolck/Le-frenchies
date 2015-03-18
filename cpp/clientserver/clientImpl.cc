@@ -34,6 +34,20 @@ int chooseNewsGroup(const shared_ptr<Connection>& conn){
     return id;
 }
 
+void simpleAckNacHandler(const shared_ptr<Connection>& conn, const unsigned char ans, const unsigned char fail, const string& success, const string& error){
+    MessageHandler::expectInputChar(conn, ans);
+    try{
+        MessageHandler::expectInputChar(conn, Protocol::ANS_ACK);
+        MessageHandler::expectInputChar(conn, Protocol::ANS_END);
+        cout << success << endl;
+    }catch(ConnectionClosedException e){
+        MessageHandler::expectInputChar(conn, fail);
+        MessageHandler::expectInputChar(conn, Protocol::ANS_END);
+        cout << error << endl;
+    }
+    cout << endl;
+}
+
 void createNewsGroup(const shared_ptr<Connection>& conn){
     cout << "Enter title: ";
     string title;
@@ -42,20 +56,8 @@ void createNewsGroup(const shared_ptr<Connection>& conn){
     MessageHandler::addStringBytesToVector(bytes, title);
     bytes.push_back(Protocol::COM_END);
     MessageHandler::writeByteVector(conn, bytes);
-    
-    cout << "createNG before ans" << endl;
-    MessageHandler::expectInputChar(conn, Protocol::ANS_CREATE_NG);
-    cout << "createNG got ans" << endl;
-    try{
-        MessageHandler::expectInputChar(conn, Protocol::ANS_ACK);
-        MessageHandler::expectInputChar(conn, Protocol::ANS_END);
-        cout << "Successfully created newsgroup!" << endl;
-    }catch(ConnectionClosedException e){
-        MessageHandler::expectInputChar(conn, Protocol::ERR_NG_ALREADY_EXISTS);
-        MessageHandler::expectInputChar(conn, Protocol::ANS_END);
-        cout << "Couldn't create newsgroup. Newsgroup already exists!" << endl;
-    }
-    cout << endl;
+
+    simpleAckNacHandler(conn, Protocol::ANS_CREATE_NG, Protocol::ERR_NG_ALREADY_EXISTS, "Successfully created newsgroup!", "Couldn't create newsgroup. Newsgroup already exists!");
 }
 
 void deleteNewsGroup(const shared_ptr<Connection>& conn){
@@ -65,17 +67,7 @@ void deleteNewsGroup(const shared_ptr<Connection>& conn){
     bytes.push_back(Protocol::COM_END);
     MessageHandler::writeByteVector(conn, bytes);
 
-    MessageHandler::expectInputChar(conn, Protocol::ANS_DELETE_NG);
-    try{
-        MessageHandler::expectInputChar(conn, Protocol::ANS_ACK);
-        MessageHandler::expectInputChar(conn, Protocol::ANS_END);
-        cout << "Successfully deleted newsgroup!" << endl;
-    }catch(ConnectionClosedException e){
-        MessageHandler::expectInputChar(conn, Protocol::ERR_NG_DOES_NOT_EXIST);
-        MessageHandler::expectInputChar(conn, Protocol::ANS_END);
-        cout << "Couldn't delete newsgroup. Newsgroup does not exists exists!" << endl;
-    }
-    cout << endl;
+    simpleAckNacHandler(conn, Protocol::ANS_DELETE_NG, Protocol::ERR_NG_DOES_NOT_EXIST, "Successfully deleted newsgroup!", "Couldn't delete newsgroup. Newsgroup does not exists exists!");
 }
 
 void listArticles(const shared_ptr<Connection>& conn){
@@ -128,17 +120,7 @@ void createArticle(const shared_ptr<Connection>& conn){
     bytes.push_back(Protocol::COM_END);
     MessageHandler::writeByteVector(conn, bytes);
 
-    MessageHandler::expectInputChar(conn, Protocol::ANS_CREATE_ART);
-    try{
-        MessageHandler::expectInputChar(conn, Protocol::ANS_ACK);
-        MessageHandler::expectInputChar(conn, Protocol::ANS_END);
-        cout << "Successfully created article!" << endl;
-    }catch(ConnectionClosedException e){
-        MessageHandler::expectInputChar(conn, Protocol::ERR_NG_DOES_NOT_EXIST);
-        MessageHandler::expectInputChar(conn, Protocol::ANS_END);
-        cout << "Couldn't create article. Newsgroup does not exists exists!" << endl;
-    }
-    cout << endl;
+    simpleAckNacHandler(conn, Protocol::ANS_CREATE_ART, Protocol::ERR_NG_DOES_NOT_EXIST, "Successfully created article!", "Couldn't create article. Newsgroup does not exists exists!");
 }
 
 void deleteArticle(const shared_ptr<Connection>& conn){
