@@ -32,6 +32,8 @@ char MessageHandler::readChar(const shared_ptr<Connection>& conn) {
 }
 
 void MessageHandler::expectInputChar(const shared_ptr<Connection>& conn, const char& expected){
+  cout << (int)expected << endl;
+
   if(readChar(conn) != expected){
     throw ConnectionClosedException();
   }

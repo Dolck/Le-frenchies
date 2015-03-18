@@ -189,9 +189,9 @@ void getArt(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
     MessageHandler::addStringBytesToVector(bytes, art.author);
     MessageHandler::addStringBytesToVector(bytes, art.article_text);
     bytes.push_back(Protocol::ANS_END);
-  } catch(NewsgroupDoesNotExistException&){
+  } catch(NewsgroupDoesNotExistException e){
     bytes = {Protocol::ANS_GET_ART, Protocol::ANS_NAK, Protocol::ERR_NG_DOES_NOT_EXIST, Protocol::ANS_END};
-  } catch(ArticleDoesNotExistException&){
+  } catch(ArticleDoesNotExistException e){
     bytes = {Protocol::ANS_GET_ART, Protocol::ANS_NAK, Protocol::ERR_ART_DOES_NOT_EXIST, Protocol::ANS_END};
   }
   MessageHandler::writeByteVector(conn, bytes);
