@@ -17,6 +17,7 @@
 
 \usepackage{graphicx}
 \usepackage{listings}
+\usepackage{indentfirst}
 %\usepackage[T1]{fontenc}                % För svenska bokstäver
 %\usepackage[swedish]{babel}             % För svensk avstavning och svenska
                                         % rubriker (t ex "innehållsförteckning)
@@ -47,6 +48,15 @@ Christopher Nilsson dat11cni@student.lu.se}
   \caption{An UML diagram illustrating the database design.}
   \label{model}
 \end{figure}
+\noindent
+RawMaterials(\underline{rawType}, quantity, unitOfM, lastDelivDate, lastDelivQ) \\
+CookieNames(\underline{cookieName}) \\
+RecipeDetails(\underline{\emph{rawType, cookieName}}, quantity) \\
+Pallets(\underline{id}, prodTime, Status, \emph{cookieName, orderId}) \\
+Customers(\underline{cName, cAddress}) \\
+Orders(\underline{orderId}, nbrPallets, incomeDate, delivDate, \emph{cName, cAddress}) \\
+OrderDetails(\underline{\emph{orderId, cookieName}}, nbrPallets)
+\indent
 
 \section{Statements}
 
