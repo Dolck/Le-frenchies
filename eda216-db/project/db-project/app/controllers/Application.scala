@@ -60,8 +60,7 @@ object Application extends Controller {
   def updatePallet = Action { implicit request =>
     val (status, id) = palletForm.bindFromRequest.get
     DatabaseConn.changePalletStatus(id.toInt, PalletStatus.withName(status))
-    //Then show pallet view again?
-    Ok("Pallet updated")
+    Ok(views.html.messageView("Pallet updated"))
   }
 
   val palletForm = Form(
@@ -91,17 +90,20 @@ object Application extends Controller {
 
   def createPallet(cookieName: String, orderId: String) = Action{
     var id: Int = -1
+    var status = PalletStatus.free
     try{
       id = orderId.toInt
+      status = PalletStatus.ordered
     }catch{
-      case e: Exception => id = -1
+      case e: Exception =>  id = -1
+                            status = PalletStatus.free
     }
-    val success: Boolean = DatabaseConn.createPallet(cookieName, PalletStatus.ordered, id)
+    val success: Boolean = DatabaseConn.createPallet(cookieName, status, id)
     var msg: String = "Successfully created pallet"
     if(!success)
       msg = "Unable to create pallet, try again"
     //Redirect(routes.Application.chooseOrderdetails(id, msg))
-    Ok(msg)
+    Ok(views.html.messageView(msg))
   }
 
 }

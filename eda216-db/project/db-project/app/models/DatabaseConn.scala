@@ -37,7 +37,7 @@ object DatabaseConn{
     val query = SQL(
         """
         SELECT *
-        FROM pallets natural join orders
+        FROM pallets natural left join orders
         WHERE id = {id}
         """
        ).on('id -> id)
@@ -51,10 +51,23 @@ object DatabaseConn{
           }catch{
             case e:Exception => None
           },
-          row[Date]("delivDate"),
-          row[String]("cName"),
-          row[String]("cAddress"))
-        ).toList.head
+          try{
+            row[Date]("delivDate")
+          }catch{
+            case e:Exception => null
+          },
+          try{
+            row[String]("cName")
+          }catch{
+            case e:Exception => ""
+          },
+          try{
+            row[String]("cAddress")
+          } catch {
+            case e:Exception => ""
+          }
+        )
+       ).toList.head
   }
   
   def changePalletStatus(id: Int, newStatus: PalletStatus.Value): Int = 
@@ -67,11 +80,6 @@ object DatabaseConn{
           """
          ).on('id -> id, 'newStatus -> newStatus.toString).executeUpdate()
     }
-
-    //TODO: transaction check if resources available else rollback
-    //get required resources for pallet
-    //check if resources available
-    //delete resources
 
     def createPallet(cookieName: String, status: PalletStatus.Value, orderId: Int): Boolean = 
     DB.withConnection { implicit c =>
@@ -194,28 +202,4 @@ object DatabaseConn{
     )
     return query().map(row => row[String]("cookieName")).toList
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
