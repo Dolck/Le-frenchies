@@ -7,9 +7,10 @@ GET     /                           controllers.Application.index
 GET     /pallets                    controllers.Application.listPallets(id: String ?= "-1", fromDate: String ?= "", toDate: String ?= "", status: String ?= "any", cookie: String ?= "")
 GET     /pallet                     controllers.Application.pallet(id: Int)
 POST    /pallet                     controllers.Application.updatePallet
-GET     /createPallet               controllers.Application.createPallet(cookieName: String ?= "", orderId: Int ?=0)
+GET     /createPallet               controllers.Application.createPallet(cookieName: String ?= "", orderId: String ?= "-1")
 GET     /listOrders                 controllers.Application.listOrders
-GET     /chooseCookie                controllers.Application.chooseCookie(oId: Int, statusmsg: String ?= "")
+GET     /chooseOrderdetails			controllers.Application.chooseOrderdetails(oId: Int, statusmsg: String ?= "")
+GET 	/chooseCookie				controllers.Application.chooseCookie
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

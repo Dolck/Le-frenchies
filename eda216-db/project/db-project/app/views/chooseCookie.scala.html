@@ -1,0 +1,17 @@
+@(cookies: List[String])
+
+@main("Choose cookie") {
+
+	<h1>Choose cookie</h1>
+
+	<table border="1">
+		<tr>
+			<th>Cookie</th>
+		</tr>
+
+		@for(cookie <- cookies){
+			<tr>
+				<td><a href="@routes.Application.createPallet(cookie)">Cookie</a></td>
+		}
+	</table>
+}

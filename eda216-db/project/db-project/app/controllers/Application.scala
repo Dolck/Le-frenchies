@@ -24,16 +24,16 @@ object Application extends Controller {
   	tDate = format.parse("2100-01-01T00:00")
   	if(fromDate != ""){
   		try { 
-			fDate = format.parse(fromDate)
+			 fDate = format.parse(fromDate)
   		} catch {
-			case e: Exception => println("formatting exception fromDate: " + fDate)
+			 case e: Exception => Console.err.println("formatting exception fromDate: " + fDate)
   		}
   	}
   	if(toDate != ""){
   		try { 
-			tDate = format.parse(toDate)
+			 tDate = format.parse(toDate)
   		} catch {
-			case e: Exception => println("formatting exception toDate: " + tDate)
+			 case e: Exception => Console.err.println("formatting exception toDate: " + tDate)
   		}
   	}
     var aId: Int = -1
@@ -77,14 +77,26 @@ object Application extends Controller {
     Ok(views.html.orderList(orders))
   }
 
-  def chooseCookie(oId: Int, statusmsg: String) = Action {
+  def chooseOrderdetail(oId: Int, statusmsg: String) = Action {
     val details: List[OrderDetails] = DatabaseConn.getOrderDetails(oId)
 
     Ok(views.html.order(details, oId, statusmsg))
   }
 
-  def createPallet(cookieName: String, orderId: Int) = Action{
-    val success: Boolean = DatabaseConn.createPallet(cookieName, PalletStatus.ordered, orderId)
+  def chooseCookie() = Action{
+    val cookies: List[String] = DatabaseConn.getCookies()
+
+    Ok(views.html.chooseCookie(cookies))
+  }
+
+  def createPallet(cookieName: String, orderId: String) = Action{
+    var id: Int = -1
+    try{
+      id = orderId.toInt
+    }catch{
+      case e: Exception => id = -1
+    }
+    val success: Boolean = DatabaseConn.createPallet(cookieName, PalletStatus.ordered, id)
     var msg: String = "Successfully created pallet"
     if(!success)
       msg = "Unable to create pallet, try again"
