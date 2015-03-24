@@ -3,9 +3,23 @@
 
 
 
-@deliveryInfo(palletMap: Map[String, String]) = {
-    if(pallet){
-
+@deliveryInfo(pallet: Pallet) = {
+    @if(pallet.pStatus == PalletStatus.delivered){
+        <h3>Delivery-info:</h3>
+            <table>
+                <tr>
+                    <td>Customer: </td>
+                    <td>@pallet.pCName</td>
+                </tr>
+                <tr>
+                    <td>Location: </td>
+                    <td>@pallet.pCAddress.</td>
+                </tr>
+                <tr>
+                    <td>Deliverydate: </td>
+                    <td>@pallet.pDelivDate</td>
+                </tr>
+            </table>
     }
 }
 
@@ -21,7 +35,7 @@
 		<!--More info maybe? customer, order etc -->
 	</table>
 
-    @deliveryInfo(pallet.getInfoAsMap)
+    @deliveryInfo(pallet)
 
 	<div>
 		<h3>Change status</h3>
@@ -36,5 +50,5 @@
 		</form>
 	</div>
 
-    <a href="http://localhost:9000/palletList">Tillbaka</a>
+    <a href="http://localhost:9000/pallets">Tillbaka</a>
 }
