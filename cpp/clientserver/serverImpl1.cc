@@ -85,10 +85,9 @@ article& getArticle(vector<article>& v, unsigned int id){
 void listNG(const shared_ptr<Connection>& conn, const vector<newsgroup>& groups){
   MessageHandler::expectInputChar(conn, Protocol::COM_END);
   int num = groups.size();
-  vector<unsigned char> bytes {Protocol::ANS_LIST_NG, Protocol::PAR_NUM};
+  vector<unsigned char> bytes {Protocol::ANS_LIST_NG};
   MessageHandler::addNumberToBytesVector(bytes, num);
   for(newsgroup ng : groups){
-    bytes.push_back(Protocol::PAR_NUM);
     MessageHandler::addNumberToBytesVector(bytes, ng.id);
     MessageHandler::addStringBytesToVector(bytes, ng.name);
   }
@@ -147,10 +146,9 @@ void listArts(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
     newsgroup& ng = getNG(groups, n);
     vector<article> articles = ng.articles;
     size_t nbra = articles.size();
-    bytes = {Protocol::ANS_LIST_ART, Protocol::ANS_ACK, Protocol::PAR_NUM};
+    bytes = {Protocol::ANS_LIST_ART, Protocol::ANS_ACK};
     MessageHandler::addNumberToBytesVector(bytes, nbra);
     for(article a : articles){
-      bytes.push_back(Protocol::PAR_NUM);
       MessageHandler::addNumberToBytesVector(bytes, a.id);
       MessageHandler::addStringBytesToVector(bytes, a.title);
     }
@@ -191,9 +189,9 @@ void getArt(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
     MessageHandler::addStringBytesToVector(bytes, art.author);
     MessageHandler::addStringBytesToVector(bytes, art.article_text);
     bytes.push_back(Protocol::ANS_END);
-  } catch(NewsgroupDoesNotExistException&){
+  } catch(NewsgroupDoesNotExistException e){
     bytes = {Protocol::ANS_GET_ART, Protocol::ANS_NAK, Protocol::ERR_NG_DOES_NOT_EXIST, Protocol::ANS_END};
-  } catch(ArticleDoesNotExistException&){
+  } catch(ArticleDoesNotExistException e){
     bytes = {Protocol::ANS_GET_ART, Protocol::ANS_NAK, Protocol::ERR_ART_DOES_NOT_EXIST, Protocol::ANS_END};
   }
   MessageHandler::writeByteVector(conn, bytes);

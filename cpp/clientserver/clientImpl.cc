@@ -10,48 +10,40 @@
 
 using namespace std;
 
-int readInt(const shared_ptr<Connection>& conn) {
-    unsigned char byte1 = conn->read();
-    unsigned char byte2 = conn->read();
-    unsigned char byte3 = conn->read();
-    unsigned char byte4 = conn->read();
-    return (byte1 << 24) | (byte2 << 16) | (byte3 << 8) | byte4;
-}
-
-char readChar(const shared_ptr<Connection>& conn) {
-    return conn->read();
-}
-
-string readString(const shared_ptr<Connection>& conn) {
-    if(conn->read() != Protocol::PAR_STRING){
-        throw ConnectionClosedException();
-    }
-    int nbrChars = readInt(conn);
-    string s;
-    for (int i = 0; i < nbrChars; ++i){
-        s += readChar(conn);
-    }
-    return s;
-}
-
 void listNewsGroups(const shared_ptr<Connection>& conn){
-    conn->write(Protocol::COM_LIST_NG);
-    conn->write(Protocol::COM_END);
+    MessageHandler::writeByteVector(conn, {Protocol::COM_LIST_NG, Protocol::COM_END});
 
     MessageHandler::expectInputChar(conn, Protocol::ANS_LIST_NG);
     int nbrNgs = MessageHandler::readNumber(conn);
     cout << endl;
     cout << "Newsgroups: " << endl;
     for (int i = 0; i < nbrNgs; ++i){
-        if(conn->read() != Protocol::PAR_NUM){
-            throw ConnectionClosedException();
-        }
-        int id = readInt(conn);
-        string title = readString(conn);
+        int id = MessageHandler::readNumber(conn);
+        string title = MessageHandler::readString(conn);
         cout << id << " " << title << endl;
     }
+    MessageHandler::expectInputChar(conn, Protocol::ANS_END);
+}
 
-    cout << endl;
+int chooseNewsGroup(const shared_ptr<Connection>& conn){
+    listNewsGroups(conn);
+    cout << "Choose newsgroup-id: ";
+    int id;
+    cin >> id;
+    return id;
+}
+
+void simpleAckNacHandler(const shared_ptr<Connection>& conn, const unsigned char ans, const unsigned char fail, const string& success, const string& error){
+    MessageHandler::expectInputChar(conn, ans);
+    try{
+        MessageHandler::expectInputChar(conn, Protocol::ANS_ACK);
+        MessageHandler::expectInputChar(conn, Protocol::ANS_END);
+        cout << success << endl;
+    }catch(ConnectionClosedException e){
+        MessageHandler::expectInputChar(conn, fail);
+        MessageHandler::expectInputChar(conn, Protocol::ANS_END);
+        cout << error << endl;
+    }
 }
 
 void createNewsGroup(const shared_ptr<Connection>& conn){
@@ -62,36 +54,119 @@ void createNewsGroup(const shared_ptr<Connection>& conn){
     MessageHandler::addStringBytesToVector(bytes, title);
     bytes.push_back(Protocol::COM_END);
     MessageHandler::writeByteVector(conn, bytes);
-    
-    cout << "createNG before ans" << endl;
-    MessageHandler::expectInputChar(conn, Protocol::ANS_CREATE_NG);
-    cout << "createNG got ans" << endl;
-    try{
-        MessageHandler::expectInputChar(conn, Protocol::ANS_ACK);
-        MessageHandler::expectInputChar(conn, Protocol::ANS_END);
-        cout << "Successfully created newsgroup!" << endl;
-    }catch(ConnectionClosedException e){
-        MessageHandler::expectInputChar(conn, Protocol::ERR_NG_ALREADY_EXISTS);
-        MessageHandler::expectInputChar(conn, Protocol::ANS_END);
-        cout << "Couldn't create newsgroup. Newsgroup already exists!" << endl;
-    }
-    cout << endl;
+
+    simpleAckNacHandler(conn, Protocol::ANS_CREATE_NG, Protocol::ERR_NG_ALREADY_EXISTS, "Successfully created newsgroup!", "Couldn't create newsgroup. Newsgroup already exists!");
 }
 
 void deleteNewsGroup(const shared_ptr<Connection>& conn){
-    cout << "Enter id from list above: ";
-    int id;
-    cin >> id;
-    //COM_DELETE_NG
-    //MessageHandle::writeInteger(id);
-    //COM_END
+    int id = chooseNewsGroup(conn);
+    vector<unsigned char> bytes = {Protocol::COM_DELETE_NG};
+    MessageHandler::addNumberToBytesVector(bytes, id);
+    bytes.push_back(Protocol::COM_END);
+    MessageHandler::writeByteVector(conn, bytes);
+
+    simpleAckNacHandler(conn, Protocol::ANS_DELETE_NG, Protocol::ERR_NG_DOES_NOT_EXIST, "Successfully deleted newsgroup!", "Couldn't delete newsgroup. Newsgroup does not exists exists!");
 }
 
-void listArticles(const shared_ptr<Connection>& conn){
-    cout << "Enter newsgroup id to list its articles: ";
-    int id;
-    cin >> id;
-    //
+void listArticles(const shared_ptr<Connection>& conn, int id){
+    vector<unsigned char> bytes = {Protocol::COM_LIST_ART};
+    MessageHandler::addNumberToBytesVector(bytes, id);
+    bytes.push_back(Protocol::COM_END);
+    MessageHandler::writeByteVector(conn, bytes);
+
+    MessageHandler::expectInputChar(conn, Protocol::ANS_LIST_ART);
+    try{
+        MessageHandler::expectInputChar(conn, Protocol::ANS_ACK);
+        int nbra = MessageHandler::readNumber(conn);
+        cout << endl << "Articles: " << endl;
+        for (int i = 0; i < nbra; ++i){
+            int aid = MessageHandler::readNumber(conn);
+            string title = MessageHandler::readString(conn);
+            cout << aid << " " << title << endl;
+        }
+        MessageHandler::expectInputChar(conn, Protocol::ANS_END);
+
+    }catch(ConnectionClosedException e){
+        MessageHandler::expectInputChar(conn, Protocol::ERR_NG_DOES_NOT_EXIST);
+        MessageHandler::expectInputChar(conn, Protocol::ANS_END);
+    }
+}
+
+void createArticle(const shared_ptr<Connection>& conn){
+    int id = chooseNewsGroup(conn);
+    cout << "Enter title: ";
+    string title;
+    cin >> title;
+    cout << "Enter author: ";
+    string author;
+    cin >> author;
+    string text;
+    cout << "Enter text (end with a $ sign): " << endl;
+    char c;
+    while (cin.get(c)){
+        if(c == '$')
+            break;
+        text += c;
+    }
+
+    vector<unsigned char> bytes = {Protocol::COM_CREATE_ART};
+    MessageHandler::addNumberToBytesVector(bytes, id);
+    MessageHandler::addStringBytesToVector(bytes, title);
+    MessageHandler::addStringBytesToVector(bytes, author);
+    MessageHandler::addStringBytesToVector(bytes, text);
+    bytes.push_back(Protocol::COM_END);
+    MessageHandler::writeByteVector(conn, bytes);
+
+    simpleAckNacHandler(conn, Protocol::ANS_CREATE_ART, Protocol::ERR_NG_DOES_NOT_EXIST, "Successfully created article!", "Couldn't create article. Newsgroup does not exist!");
+}
+
+void deleteArticle(const shared_ptr<Connection>& conn){
+    int ngid = chooseNewsGroup(conn);
+    listArticles(conn, ngid);
+    cout << "Choose article-id to delete: ";
+    int aid;
+    cin >> aid;
+    vector<unsigned char> bytes = {Protocol::COM_DELETE_ART};
+    MessageHandler::addNumberToBytesVector(bytes, ngid);
+    MessageHandler::addNumberToBytesVector(bytes, aid);
+    bytes.push_back(Protocol::COM_END);
+    MessageHandler::writeByteVector(conn, bytes);
+
+    try{
+        simpleAckNacHandler(conn, Protocol::ANS_DELETE_ART, Protocol::ERR_NG_DOES_NOT_EXIST, "Successfully deleted article!", "Couldn't delete article. Newsgroup does not exist");
+    }catch(ConnectionClosedException e){
+        MessageHandler::expectInputChar(conn, Protocol::ANS_END);
+        cout << "Couldn't delete article. Article does not exist" << endl;
+    }
+}
+
+void viewArticle(const shared_ptr<Connection>& conn){
+    int ngid = chooseNewsGroup(conn);
+    listArticles(conn, ngid);
+    cout << "Choose article-id to view: ";
+    int aid;
+    cin >> aid;
+    vector<unsigned char> bytes = {Protocol::COM_GET_ART};
+    MessageHandler::addNumberToBytesVector(bytes, ngid);
+    MessageHandler::addNumberToBytesVector(bytes, aid);
+    bytes.push_back(Protocol::COM_END);
+    MessageHandler::writeByteVector(conn, bytes);
+
+    MessageHandler::expectInputChar(conn, Protocol::ANS_GET_ART);
+    try{
+        MessageHandler::expectInputChar(conn, Protocol::ANS_ACK);
+        cout << endl << "Title: " << MessageHandler::readString(conn) << endl;
+        cout << "Author: " << MessageHandler::readString(conn) << endl;
+        cout << "Text: " << MessageHandler::readString(conn) << endl;
+    }catch(ConnectionClosedException e){
+        try{
+            MessageHandler::expectInputChar(conn, Protocol::ERR_NG_DOES_NOT_EXIST);
+            cout << "Couldn't view article. Newsgroup does not exist" << endl;
+        }catch(ConnectionClosedException e){
+            cout << "Couldn't view article. Article does not exist" << endl;
+        }
+    }
+    MessageHandler::expectInputChar(conn, Protocol::ANS_END);
 }
 
 void welcomePrompt(){
@@ -102,6 +177,7 @@ void welcomePrompt(){
     cout << "4: List articles" << endl;
     cout << "5: Create article" << endl;
     cout << "6: Delete article" << endl;
+    cout << "7: View article" << endl;
     cout << "Type a number: ";
 }
 
@@ -137,21 +213,31 @@ int main(int argc, char* argv[]) {
                     createNewsGroup(conn);
                     break;
                 case 3:
-                    listNewsGroups(conn);
                     deleteNewsGroup(conn);
                     break;
-                case 4:
-                    listNewsGroups(conn);
-                    listArticles(conn);
+                case 4:{
+                    int id = chooseNewsGroup(conn);
+                    listArticles(conn, id);
+                    break;
+                }
                 case 5:
+                    createArticle(conn);
+                    break;
                 case 6:
+                    deleteArticle(conn);
+                    break;
+                case 7:
+                    viewArticle(conn);
+                    break;
                 default:
                     cout << "You must choose a command from the list.." << endl;
                     break;
             }
         }catch(ConnectionClosedException e){
+            cout << "cmd: " << nbr << endl;
             cout << "exception cc" << endl;
         }
+        cout << endl;
 
         welcomePrompt();
     }

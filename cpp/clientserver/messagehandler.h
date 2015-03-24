@@ -19,6 +19,7 @@ class MessageHandler{
     static void writeByteVector(const shared_ptr<Connection>& conn, const vector<unsigned char>& bytes);
   private:
   	static int readInteger(const shared_ptr<Connection>& conn);
+    static void addIntegerToBytesVector(vector<unsigned char>& bytes, const int& num);
 };
 #endif
 
