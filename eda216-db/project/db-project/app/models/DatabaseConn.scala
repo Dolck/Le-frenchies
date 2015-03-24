@@ -33,7 +33,7 @@ object DatabaseConn{
     val query = SQL(
         """
         SELECT *
-        FROM pallets
+        FROM pallets natural join orders
         WHERE id = {id}
         """
        ).on('id -> id)
@@ -42,7 +42,10 @@ object DatabaseConn{
           row[Date]("prodTime"),
           row[String]("cookieName"), 
           PalletStatus.withName(row[String]("status")), 
-          row[Int]("orderId"))
+          row[Int]("orderId"),
+          row[Date]("delivDate"),
+          row[String]("cName"),
+          row[String]("cAddress"))
         ).toList.head
   }
   
