@@ -38,6 +38,14 @@ Christopher Nilsson dat11cni@student.lu.se}
 
 \section{Requirements}
 
+Krusty Cookies database system is built with the simplest possible interface to make sure all employees are able to use it. 
+The system is also very stable and the bugs are very few. 
+
+At this point the system is only a test system with all aspects of production implemented although the database is prepared for future development!
+So far the system can be used to search/filter pallets, create pallets and block pallets.
+When a pallet is created the database of rawmaterials is updated according to the cookietype of the pallet created.
+When searching/filtering pallets several parameters can be used such as id-number, production time and status. 
+
 \section{Outline}
 Our product is built in play framework. It is a web application framework with support for programming in scala. Play also enables us to easy use a model-view-controller modell, which we have. The view section is mostly built up by html-templates. These templates are filled up with data from scala-variables. The model \& controller section are both written in scala. 
 
@@ -161,5 +169,32 @@ create table OrderDetails (
 
 
 \section{Manual}
+
+\subsection{Starting the program}
+The system is delivered as a compressed zip file.
+To decompress it use the built-in decompress features in your operating system of choice.
+\paragraph{Example:}
+On a unix system run the following command:
+\begin{lstlisting}[frame=single]  % Start your code-block
+
+> unzip krusty.zip
+\end{lstlisting}
+
+To run the system Java and Typesafe Reactive Platform is used. If you don't have them installed, install them now.
+Inside your unzipped folder there is a folder named bin. Go there.
+To run the program type the following:
+\paragraph{Unix:}
+
+\begin{lstlisting}[frame=single]  % Start your code-block
+
+> ./db-project
+\end{lstlisting}
+
+\paragraph{Windows:}
+
+\begin{lstlisting}[frame=single]  % Start your code-block
+
+> db-project.bat
+\end{lstlisting}
 
 \end{document}                 % The input file ends with this command.
