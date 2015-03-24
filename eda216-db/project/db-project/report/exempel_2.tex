@@ -45,12 +45,17 @@ The product uses jdbc as databasemanager. The controller section of the program 
 
 \section{Model}
 
+\subsection{E/R Diagram}
+
 \begin{figure}[h]
   \centering
   \includegraphics[width=\textwidth]{cookies.png}
   \caption{An UML diagram illustrating the database design.}
   \label{model}
 \end{figure}
+
+\subsection{Relations}
+
 \noindent
 RawMaterials(\underline{rawType}, quantity, unitOfM, lastDelivDate, lastDelivQ) \\
 CookieNames(\underline{cookieName}) \\
@@ -60,6 +65,8 @@ Customers(\underline{cName, cAddress}) \\
 Orders(\underline{orderId}, nbrPallets, incomeDate, delivDate, \emph{cName, cAddress}) \\
 OrderDetails(\underline{\emph{orderId, cookieName}}, nbrPallets)
 \indent
+
+Since there are no relations other than those provided by the primary keys, the relations are in BCNF.
 
 \section{Statements}
 
