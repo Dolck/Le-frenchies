@@ -18,6 +18,7 @@
 \usepackage{graphicx}
 \usepackage{listings}
 \usepackage{indentfirst}
+\usepackage{float}
 %\usepackage[T1]{fontenc}                % För svenska bokstäver
 %\usepackage[swedish]{babel}             % För svensk avstavning och svenska
                                         % rubriker (t ex "innehållsförteckning)
@@ -57,7 +58,9 @@ The product uses jdbc as databasemanager. The controller section of the program 
 
 \subsection{E/R Diagram}
 
-\begin{figure}[h]
+An overview of the database design can be seen in figure~\ref{model}.
+
+\begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{cookies.png}
   \caption{An UML diagram illustrating the database design.}
@@ -65,6 +68,8 @@ The product uses jdbc as databasemanager. The controller section of the program 
 \end{figure}
 
 \subsection{Relations}
+
+The relations extracted from the database design are as follows:
 
 \noindent
 RawMaterials(\underline{rawType}, quantity, unitOfM, lastDelivDate, lastDelivQ) \\
@@ -76,9 +81,12 @@ Orders(\underline{orderId}, nbrPallets, incomeDate, delivDate, \emph{cName, cAdd
 OrderDetails(\underline{\emph{orderId, cookieName}}, nbrPallets)
 \indent
 
-Since there are no relations other than those provided by the primary keys, the relations are in BCNF.
+There are no other functional dependencies except for the key dependencies, so the relations are in
+BCNF.
 
 \section{Statements}
+
+The statements used when creating the database:
 
 \begin{lstlisting}[frame=single]
 --
@@ -199,5 +207,23 @@ To run the program type the following:
 
 > db-project.bat
 \end{lstlisting}
+
+This will output a port in the terminal that you can later used to use the system in a browser of your choice.
+
+
+\subsection{Using the system}
+If running on a local system, open localhost:port in your browser. Otherwise replace localhost by an ip-address.
+\subsubsection{List/filter pallets}
+To view all pallets in the database, press the button named "List pallets".
+To filter/search for pallets you can use the form on the top of the page.
+
+\subsubsection{Create a pallet to an existing order}
+To create a pallet to an existing order press "Create pallet to existing order".
+Choose the order you want to create a pallet in.
+Then choose the cookie type you want the pallet to have. Done! The pallet is created!
+
+\subsubsection{Create a pallet without an existing order}
+To create a pallet without and existing order associated to it press "Create pallet without order".
+Then choose the cookie type of choice. Done! The pallet is created!
 
 \end{document}                 % The input file ends with this command.
