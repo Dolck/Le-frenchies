@@ -96,14 +96,15 @@ object Application extends Controller {
       id = orderId.toInt
       status = PalletStatus.ordered
     }catch{
-      case e: Exception => id = -1
+      case e: Exception =>  id = -1
+                            status = PalletStatus.free
     }
     val success: Boolean = DatabaseConn.createPallet(cookieName, status, id)
     var msg: String = "Successfully created pallet"
     if(!success)
       msg = "Unable to create pallet, try again"
     //Redirect(routes.Application.chooseOrderdetails(id, msg))
-    Ok(msg)
+    Ok(views.html.messageView(msg))
   }
 
 }
