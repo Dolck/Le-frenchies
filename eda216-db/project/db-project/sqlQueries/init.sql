@@ -157,7 +157,7 @@ insert into RecipeDetails(cookieName, rawType, quantity) values
 insert into Orders (nbrpallets, incomedate, delivdate, cname, caddress) values 
     (100, now(), now(), 'Småbröd AB', 'Malmö');
 
-insert int OrderDetails values
+insert into OrderDetails values
     (1, 'Tango', 25),
     (1, 'Nut ring', 25),
     (1, 'Berliner', 25),
