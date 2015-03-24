@@ -25,7 +25,11 @@ object DatabaseConn{
           row[Date]("prodTime"), 
           row[String]("cookieName"), 
           PalletStatus.withName(row[String]("status")), 
-          row[Int]("orderId"))
+          try{
+            Some(row[Int]("orderId"))
+          }catch{
+            case e: Exception => None
+            })
         ).toList 
   }
 
@@ -42,7 +46,11 @@ object DatabaseConn{
           row[Date]("prodTime"),
           row[String]("cookieName"), 
           PalletStatus.withName(row[String]("status")), 
-          row[Int]("orderId"),
+          try{
+            Some(row[Int]("orderId"))
+          }catch{
+            case e:Exception => None
+          },
           row[Date]("delivDate"),
           row[String]("cName"),
           row[String]("cAddress"))
@@ -100,7 +108,7 @@ object DatabaseConn{
           }else{
             result = SQL(
               """
-              INSERT INTO pallets (prodTime, cookieName, status, orderId)
+              INSERT INTO pallets (prodTime, cookieName, status)
               VALUES (now(), {cookieName}, {status})
               """
             ).on('cookieName -> cookieName, 'status -> status.toString).executeUpdate() 

@@ -100,7 +100,8 @@ object Application extends Controller {
     var msg: String = "Successfully created pallet"
     if(!success)
       msg = "Unable to create pallet, try again"
-    Redirect(routes.Application.chooseOrderdetails(id, msg))
+    //Redirect(routes.Application.chooseOrderdetails(id, msg))
+    Ok(msg)
   }
 
 }
