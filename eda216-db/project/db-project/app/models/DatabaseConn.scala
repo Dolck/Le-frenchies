@@ -92,7 +92,7 @@ object DatabaseConn{
             INSERT INTO pallets (prodTime, cookieName, status, orderId)
             VALUES (now(), {cookieName}, {status}, {orderId})
             """
-          ).on('cookieName -> cookieName, 'status -> status.toString, 'orderId -> orderId).executeUpdate() 
+          ).on('cookieName -> cookieName, 'status -> status.toString, 'orderId -> if (orderId > 0) orderId else "null").executeUpdate() 
           c.commit()
           println("result" + result)
           return 1 == result
@@ -164,6 +164,16 @@ object DatabaseConn{
         rw[Int]("count(*)")).toList.head))).toList
   }
 
+  def getCookies(): List[(String)] = DB.witConnection {
+    implicit c => 
+    val query = SQL(
+      """
+      SELECT cookieName
+      FROM CookieNames
+      """
+    )
+    return query().map(row => row[String]("cookieName")).toList
+  }
 
 
 
