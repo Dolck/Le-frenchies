@@ -15,7 +15,7 @@ object Application extends Controller {
     Ok(views.html.index("Your new application is ready."))
   }
 
-  def listPallets(fromDate: String, toDate: String, status: String, cookie: String) = Action {
+  def listPallets(id: Int, fromDate: String, toDate: String, status: String, cookie: String) = Action {
   	//Dateformat: YYYYY-MM-DD + 'T' + HH:mm
   	var format: DateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm")
   	var fDate: Date = new Date()
@@ -37,13 +37,12 @@ object Application extends Controller {
   		}
   	}
 
-    var list = DatabaseConn.getPallets(fDate, tDate, cookie, status)
-    println(list)
+    var list = DatabaseConn.getPallets(id, fDate, tDate, cookie, status)
   	
   	val fd:String = format.format(fDate)
   	val td:String = format.format(tDate)
 
-  	Ok(views.html.palletList(list, fd, td, status, cookie))
+  	Ok(views.html.palletList(list, id, fd, td, status, cookie))
 
   }
 

@@ -154,6 +154,15 @@ insert into RecipeDetails(cookieName, rawType, quantity) values
     ('Berliner', 'Vanilla sugar', 5),
     ('Berliner', 'Chocolate', 50);
 
+insert into Orders (nbrpallets, incomedate, delivdate, cname, caddress) values 
+    (100, now(), now(), 'Småbröd AB', 'Malmö');
+
+insert int OrderDetails values
+    (1, 'Tango', 25),
+    (1, 'Nut ring', 25),
+    (1, 'Berliner', 25),
+    (1, 'Amneris', 25);
+
 -- Commit the transaction.
 
 commit;

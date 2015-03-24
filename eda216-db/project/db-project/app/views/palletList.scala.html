@@ -1,4 +1,4 @@
-@(pallets: List[Pallet], fDate: String, tDate: String, fstatus: String, cookie: String)
+@(pallets: List[Pallet], fId:Int, fDate: String, tDate: String, fstatus: String, cookie: String)
 
 @tableRow(infoMap: Map[String, String]) = {
 	<tr>
@@ -14,6 +14,8 @@
 
 	<h1>Pallet listing</h1>
 	<form method="get">
+		Id:
+		<input type="number" name="id" @if(fId != -1){ value="@fId" }>
 		From date:
 		<input type="datetime-local" name="fromDate" value="@fDate">
 		To date:
