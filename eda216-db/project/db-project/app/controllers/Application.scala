@@ -60,8 +60,7 @@ object Application extends Controller {
   def updatePallet = Action { implicit request =>
     val (status, id) = palletForm.bindFromRequest.get
     DatabaseConn.changePalletStatus(id.toInt, PalletStatus.withName(status))
-    //Then show pallet view again?
-    Ok("Pallet updated")
+    Ok(views.html.messageView("Pallet updated"))
   }
 
   val palletForm = Form(
