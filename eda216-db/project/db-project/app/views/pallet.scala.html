@@ -1,6 +1,14 @@
 @(pallet: Pallet)
 @import models._
 
+
+
+@deliveryInfo(palletMap: Map[String, String]) = {
+    if(pallet){
+
+    }
+}
+
 @main("Pallet") {
 	<h1>Pallet info:</h1>
 	<table>
@@ -12,6 +20,9 @@
 		}
 		<!--More info maybe? customer, order etc -->
 	</table>
+
+    @deliveryInfo(pallet.getInfoAsMap)
+
 	<div>
 		<h3>Change status</h3>
 		<form method="post">
@@ -24,5 +35,6 @@
 			<input type="submit">
 		</form>
 	</div>
-    <FORM><INPUT Type="button" VALUE="Back" onClick="history.go(-1);return true;"></FORM>
+
+    <a href="http://localhost:9000/palletList">Tillbaka</a>
 }
