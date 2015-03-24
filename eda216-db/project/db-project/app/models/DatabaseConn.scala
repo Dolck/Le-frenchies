@@ -90,12 +90,13 @@ object DatabaseConn{
             updateRes(rawType, newQ)
           }
           
+          val oid = if (orderId > 0) orderId.toString else "null"
           val result = SQL(
             """
             INSERT INTO pallets (prodTime, cookieName, status, orderId)
             VALUES (now(), {cookieName}, {status}, {orderId})
             """
-          ).on('cookieName -> cookieName, 'status -> status.toString, 'orderId -> orderId).executeUpdate() 
+          ).on('cookieName -> cookieName, 'status -> status.toString, 'orderId -> oid).executeUpdate() 
           c.commit()
           println("result" + result)
           return 1 == result
@@ -167,6 +168,16 @@ object DatabaseConn{
         rw[Int]("count(*)")).toList.head))).toList
   }
 
+  def getCookies(): List[(String)] = DB.withConnection {
+    implicit c => 
+    val query = SQL(
+      """
+      SELECT cookieName
+      FROM CookieNames
+      """
+    )
+    return query().map(row => row[String]("cookieName")).toList
+  }
 
 
 
