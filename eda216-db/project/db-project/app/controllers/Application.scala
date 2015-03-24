@@ -15,7 +15,7 @@ object Application extends Controller {
     Ok(views.html.index("Your new application is ready."))
   }
 
-  def listPallets(id: Int, fromDate: String, toDate: String, status: String, cookie: String) = Action {
+  def listPallets(id: String, fromDate: String, toDate: String, status: String, cookie: String) = Action {
   	//Dateformat: YYYYY-MM-DD + 'T' + HH:mm
   	var format: DateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm")
   	var fDate: Date = new Date()
@@ -36,13 +36,19 @@ object Application extends Controller {
 			case e: Exception => println("formatting exception toDate: " + tDate)
   		}
   	}
+    var aId: Int = -1
+    try{
+      aId = id.toInt
+    }catch{
+      case e: Exception => aId = -1
+    }
 
-    var list = DatabaseConn.getPallets(id, fDate, tDate, cookie, status)
+    var list = DatabaseConn.getPallets(aId, fDate, tDate, cookie, status)
   	
   	val fd:String = format.format(fDate)
   	val td:String = format.format(tDate)
 
-  	Ok(views.html.palletList(list, id, fd, td, status, cookie))
+  	Ok(views.html.palletList(list, aId, fd, td, status, cookie))
 
   }
 

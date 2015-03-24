@@ -4,7 +4,7 @@
 
 # Home page
 GET     /                           controllers.Application.index
-GET     /pallets                    controllers.Application.listPallets(id: Int ?= -1, fromDate: String ?= "", toDate: String ?= "", status: String ?= "any", cookie: String ?= "")
+GET     /pallets                    controllers.Application.listPallets(id: String ?= "-1", fromDate: String ?= "", toDate: String ?= "", status: String ?= "any", cookie: String ?= "")
 GET     /pallet                     controllers.Application.pallet(id: Int)
 POST    /pallet                     controllers.Application.updatePallet
 GET     /createPallet               controllers.Application.createPallet(cookieName: String ?= "", orderId: Int ?=0)
