@@ -15,6 +15,8 @@
 
 \documentclass[a4paper]{article}
 
+\usepackage{graphicx}
+\usepackage{listings}
 \usepackage[T1]{fontenc}                % För svenska bokstäver
 \usepackage[swedish]{babel}             % För svensk avstavning och svenska
                                         % rubriker (t ex "innehållsförteckning)
@@ -25,6 +27,7 @@ Christopher Nilsson dat11cni@student.lu.se}
 %\date{}           % Blir dagens datum om det utelämnas
 
 \begin{document}
+\lstset{language=SQL}
 
 \maketitle                      % Skriver ut rubriken som vi
                                 % deklarerade ovan med \title, \author
@@ -39,7 +42,99 @@ Our product is built in play framework. It is a web application framework with s
 
 \section{Model}
 
+\includegraphics[width=\textwidth]{cookies.png}
+
 \section{Statements}
+
+\begin{lstlisting}[frame=single]
+--
+-- Disable foreign key checks temporarily so 
+-- tables can be deleted in arbitrary order, 
+-- and so that insertion is faster.
+
+set FOREIGN_KEY_CHECKS = 0;
+
+-- Drop the tables if they already exist.
+
+drop table if exists RawMaterials;
+drop table if exists RecipeDetails;
+drop table if exists CookieNames;
+drop table if exists Pallets;
+drop table if exists OrderDetails;
+drop table if exists Orders;
+drop table if exists Customers;
+
+-- Create the tables.
+
+create table RawMaterials (
+    rawType     varchar(30) not null,
+    quantity    integer default 100000000 
+      check (quantity >= 0),
+    unitOfM     enum('g', 'ml') not null,
+    lastDeliv   datetime,
+    lastDelivQ  integer,
+    primary key (rawType)
+);
+
+create table RecipeDetails (
+    cookieName  varchar(20) not null,
+    rawType     varchar(30) not null,
+    quantity    integer not null,
+    primary key (cookieName, rawType),
+    foreign key (cookieName) references 
+      CookieNames(cookieName),
+    foreign key (rawType) references 
+      RawMaterials(rawType)
+);
+
+create table CookieNames (
+    cookieName  varchar(20) not null,
+    primary key (cookieName)
+);
+
+create table Pallets (
+    id          integer auto_increment,
+    prodTime    datetime not null,
+    cookieName  varchar(20) not null,
+    status      enum('free','blocked','ordered','delivered') 
+      not null default 'free',
+    orderId     integer default null,
+    primary key (id),
+    foreign key (cookieName) references 
+      CookieNames(cookieName),
+    foreign key (orderId) references 
+      OrderDetails(orderId)
+);
+
+create table Customers (
+    cName       varchar(30) not null,
+    cAddress    varchar(30) not null,
+    primary key (cName, cAddress)
+);
+
+create table Orders (
+    orderId     integer auto_increment,
+    nbrPallets  integer not null check (nbrPallets > 0),
+    incomeDate  datetime not null,
+    delivDate   datetime not null,
+    cName       varchar(30) not null,
+    cAddress    varchar(30) not null,
+    primary key (orderId),
+    foreign key (cName, cAddress) references 
+      Customers(cName, cAddress)
+);
+
+create table OrderDetails (
+    orderId     integer not null,
+    cookieName  varchar(20) not null,
+    nbrPallets  integer not null check (nbrPallets >= 0),
+    primary key (orderId, cookieName),
+    foreign key (orderId) references Orders(orderId),
+    foreign key (cookieName) references 
+      CookieNames(cookieName)
+);
+\end{lstlisting}
+
 
 \section{Manual}
 

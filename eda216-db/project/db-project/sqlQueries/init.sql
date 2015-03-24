@@ -155,7 +155,7 @@ insert into RecipeDetails(cookieName, rawType, quantity) values
     ('Berliner', 'Chocolate', 2700);
 
 insert into Orders (nbrpallets, incomedate, delivdate, cname, caddress) values 
-    (100, now(), now(), 'Småbröd AB', 'Malmö');
+    (100, now(), '2015-11-11 12:45:34', 'Småbröd AB', 'Malmö');
 
 insert into OrderDetails values
     (1, 'Tango', 25),
