@@ -77,7 +77,7 @@ object Application extends Controller {
     Ok(views.html.orderList(orders))
   }
 
-  def chooseOrderdetail(oId: Int, statusmsg: String) = Action {
+  def chooseOrderdetails(oId: Int, statusmsg: String) = Action {
     val details: List[OrderDetails] = DatabaseConn.getOrderDetails(oId)
 
     Ok(views.html.order(details, oId, statusmsg))
@@ -100,7 +100,7 @@ object Application extends Controller {
     var msg: String = "Successfully created pallet"
     if(!success)
       msg = "Unable to create pallet, try again"
-    Redirect(routes.Application.chooseCookie(orderId, msg))
+    Redirect(routes.Application.chooseOrderdetails(id, msg))
   }
 
 }
