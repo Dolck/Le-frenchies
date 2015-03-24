@@ -17,7 +17,7 @@ object DatabaseConn{
       WHERE (prodTime BETWEEN {from} AND {to}) AND 
       ({cookie} LIKE '' OR cookieName = {cookie}) AND 
       ({status} LIKE 'any' OR status = {status}) AND
-      ({id} LIKE -1 or id = {id})
+      ({id} LIKE '-1' OR id = {id})
       """
     ).on("id" -> id, "from" -> from, "to" -> to, "cookie" -> cookie, "status" -> status)
     return query().map(row => new Pallet(
@@ -79,24 +79,26 @@ object DatabaseConn{
             SET quantity = {newQ}
             WHERE rawType = {rawType}
             """
-          ).on('newQ -> newQ, 'rawType -> rawType).apply
+          ).on('newQ -> newQ, 'rawType -> rawType).executeUpdate()
           
           for (row <- reqResources){
             val rawType: String = row[String]("rawType")
-            val newQ: Int = row[Int]("availQ") - row[Int]("reqQ")
+            val newQ: Int = row[Int]("rawMaterials.quantity") - row[Int]("recipeDetails.quantity")
             updateRes(rawType, newQ)
           }
           
           val result = SQL(
-          """
-          INSERT INTO pallets (prodTime, cookieName, status, orderId)
-          VALUES (now(), {cookieName}, {status}, {orderId})
-          """
+            """
+            INSERT INTO pallets (prodTime, cookieName, status, orderId)
+            VALUES (now(), {cookieName}, {status}, {orderId})
+            """
           ).on('cookieName -> cookieName, 'status -> status.toString, 'orderId -> orderId).executeUpdate() 
           c.commit()
+          println("result" + result)
           return 1 == result
         } catch {
           case e: Exception => c.rollback()
+          println(e)
           return false
         }
     }
