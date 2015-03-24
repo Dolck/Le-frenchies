@@ -86,14 +86,22 @@ object DatabaseConn{
             val newQ: Int = row[Int]("rawMaterials.quantity") - row[Int]("recipeDetails.quantity")
             updateRes(rawType, newQ)
           }
-          
-          val oid = if (orderId > 0) orderId.toString else "null"
-          val result = SQL(
-            """
-            INSERT INTO pallets (prodTime, cookieName, status, orderId)
-            VALUES (now(), {cookieName}, {status}, {orderId})
-            """
-          ).on('cookieName -> cookieName, 'status -> status.toString, 'orderId -> oid).executeUpdate() 
+          var result = 0
+          if (orderId > 0) {
+            result = SQL(
+              """
+              INSERT INTO pallets (prodTime, cookieName, status, orderId)
+              VALUES (now(), {cookieName}, {status}, {orderId})
+              """
+            ).on('cookieName -> cookieName, 'status -> status.toString, 'orderId -> orderId).executeUpdate() 
+          }else{
+            result = SQL(
+              """
+              INSERT INTO pallets (prodTime, cookieName, status, orderId)
+              VALUES (now(), {cookieName}, {status})
+              """
+            ).on('cookieName -> cookieName, 'status -> status.toString).executeUpdate() 
+          }
           c.commit()
           println("result" + result)
           return 1 == result

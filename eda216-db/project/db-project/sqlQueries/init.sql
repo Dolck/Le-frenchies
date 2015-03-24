@@ -46,7 +46,7 @@ create table Pallets (
     prodTime    datetime not null,
     cookieName  varchar(20) not null,
     status      enum('free', 'blocked', 'ordered', 'delivered') not null default 'free',
-    orderId     integer,
+    orderId     integer default null,
     primary key (id),
     foreign key (cookieName) references CookieNames(cookieName),
     foreign key (orderId) references OrderDetails(orderId)
