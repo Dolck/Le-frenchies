@@ -37,7 +37,7 @@ object DatabaseConn{
     val query = SQL(
         """
         SELECT *
-        FROM pallets natural join orders
+        FROM pallets natural left join orders
         WHERE id = {id}
         """
        ).on('id -> id)
@@ -51,10 +51,23 @@ object DatabaseConn{
           }catch{
             case e:Exception => None
           },
-          row[Date]("delivDate"),
-          row[String]("cName"),
-          row[String]("cAddress"))
-        ).toList.head
+          try{
+            row[Date]("delivDate")
+          }catch{
+            case e:Exception => null
+          },
+          try{
+            row[String]("cName")
+          }catch{
+            case e:Exception => ""
+          },
+          try{
+            row[String]("cAddress")
+          } catch {
+            case e:Exception => ""
+          }
+        )
+       ).toList.head
   }
   
   def changePalletStatus(id: Int, newStatus: PalletStatus.Value): Int = 
