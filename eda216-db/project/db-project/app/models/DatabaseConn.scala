@@ -81,11 +81,6 @@ object DatabaseConn{
          ).on('id -> id, 'newStatus -> newStatus.toString).executeUpdate()
     }
 
-    //TODO: transaction check if resources available else rollback
-    //get required resources for pallet
-    //check if resources available
-    //delete resources
-
     def createPallet(cookieName: String, status: PalletStatus.Value, orderId: Int): Boolean = 
     DB.withConnection { implicit c =>
         c.setAutoCommit(false)
@@ -207,28 +202,4 @@ object DatabaseConn{
     )
     return query().map(row => row[String]("cookieName")).toList
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

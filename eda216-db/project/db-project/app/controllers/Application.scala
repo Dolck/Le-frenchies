@@ -91,12 +91,14 @@ object Application extends Controller {
 
   def createPallet(cookieName: String, orderId: String) = Action{
     var id: Int = -1
+    var status = PalletStatus.free
     try{
       id = orderId.toInt
+      status = PalletStatus.ordered
     }catch{
       case e: Exception => id = -1
     }
-    val success: Boolean = DatabaseConn.createPallet(cookieName, PalletStatus.ordered, id)
+    val success: Boolean = DatabaseConn.createPallet(cookieName, status, id)
     var msg: String = "Successfully created pallet"
     if(!success)
       msg = "Unable to create pallet, try again"
