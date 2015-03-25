@@ -117,9 +117,17 @@ of delivery.}
 Nothing about delivery is implemented in this version of the system.
 
 \section{Outline}
-Our product is built in play framework. It is a web application framework with support for programming in scala. Play also enables us to easy use a model-view-controller modell, which we have. The view section is mostly built up by html-templates. These templates are filled up with data from scala-variables. The model \& controller section are both written in scala. 
+Our product is built in Play framework. It is a web application framework with 
+support for programming in Scala. Play also enables us to easy use a 
+model-view-controller pattern, which we have done. The view section is mostly 
+built up by HTML-templates. These templates are filled up with data from 
+Scala-variables. The model \& controller section are both written in Scala. 
 
-The product uses jdbc as databasemanager. The controller section of the program has the connection with the database. It handles all the SQL-queries and sends them to the database. For every method the controller sets up a connection with the database, sends the queries, gets the result and closes the connection.
+We have used JDBC to connect to the database. The connection to the database 
+is carried out in the controller section of the program. It handles all the 
+SQL-queries and sends them to the database. For every method in the controller 
+we set up a connection with the database, sends the queries, gets the result 
+and closes the connection.
 
 \section{Model}
 
