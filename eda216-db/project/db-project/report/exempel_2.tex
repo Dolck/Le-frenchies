@@ -21,17 +21,100 @@ Christopher Nilsson dat11cni@student.lu.se}
 \newpage
 \section{Introduction}
 
-The assignment brought to us was to build a program for a cookie factory. The client was Krusty Cookies. They needed a program to help them manage their production, deliveries and orders. The program needs therefore to both contain a database-system and a user interface for Krusty Cookies. Throughout the project we faced different challenges setting up a local-server, planning effective relations, managing the database, designing a user-friendly webpage. By using new framework and developing tools the results were remarkable.
+This is our project for the course Database Technology at LTH.
+The assignment brought to us was to build a program for a cookie factory for a 
+fictional customer, Krusty Cookies.
+They needed a program to help them manage their production, deliveries and 
+orders. The implementation of such a system therefore needs to contain a 
+database-system and straight forward user interface for Krusty Cookies.
+
+Our implementation is a pilot program for demonstration purposes and
+laying the ground work for further development. In this pilot version
+it is possible to create, search and block pallets.
+Throughout the project we faced different challenges setting up a local-
+server, planning effective database relations, managing the database and 
+designing a user-friendly interface. To implement the system we used the
+programming language Scala and the Play-framework.
 
 \section{Requirements}
 
-Krusty Cookies database system is built with the simplest possible interface to make sure all employees are able to use it. 
-The system is also very stable and the bugs are very few. 
+Krusty Cookies database system is built with the simplest possible interface 
+to make sure all employees are able to use it. At this point the system is 
+only a test system with all aspects of production implemented although the 
+database is prepared for future development!
 
-At this point the system is only a test system with all aspects of production implemented although the database is prepared for future development!
-So far the system can be used to search/filter pallets, create pallets and block pallets.
-When a pallet is created the database of rawmaterials is updated according to the cookietype of the pallet created.
-When searching/filtering pallets several parameters can be used such as id-number, production time and status. 
+\subsection{Production}
+\textit{A pallet is considered to be produced when the pallet label is read at 
+the entrance to the deepfreeze storage. The pallet number, product name, and 
+date and time of production is registered in the database. The pallet number 
+is unique. At any time, we must be able to check how many pallets of a product 
+that have been produced during a specific time.}
+
+In our system we don't have access to a barcode scanner, therefor a pallet is
+created on button clicks in the user-interface.
+
+\subsection{Raw Materials}
+\textit{When a pallet is produced, the raw materials storage must be updated. 
+We must be able to check the amount in store of each ingredient, and to see 
+when, and how much of, an ingredient was last delivered into storage.}
+
+When a pallet is produced in our system the raw materials storage database is 
+updated accordingly. The rest was not part of our implementation because it 
+was stated so in the assignment description. Although the database supports 
+all of the stated data.
+
+\subsection{Recipes}
+\textit{We need an interface to the collection of recipes (appendix A), where 
+we can study and update recipes. We also need a facility for entering new 
+recipes. We don’t change recipes during production.}
+
+This is not implemented because it was not included in the assignment. The 
+database contains recipes which is used to update the available raw materials 
+when a pallet is created.
+
+\subsection{Produced Pallets}
+\textit{As we mentioned earlier, pallets in the deep-freeze storage may be 
+blocked. An order to block a pallet will always come before the pallet has 
+been delivered. This is due to the new investments in our laboratory, where 
+the analysis process is completely automated. We must be able to trace each 
+pallet. For instance, we need to see all information about a pallet with a 
+given number (the contents of the pallet, the location of the pallet, if the 
+pallet is delivered and in that case to whom, etc.). We must also be able to 
+see which pallets that contain a certain product and which pallets that have 
+been produced during a certain time interval. Blocked products are of special 
+interest. We need to find out which products that are blocked, and also which 
+pallets that contain a certain blocked product. Finally, we must be able to 
+check which pallets that have been delivered to a given customer, and the date 
+and time of delivery.}
+
+Our system supports blocking of pallets. Everything regarding delivery and 
+tracing of pallets is to be implemented in a future version. Although it is
+very simple to search and filter the produced pallets before delivery.
+
+\subsection{Orders and Production Planning}
+\textit{Orders must be registered in the database. For production planning 
+purposes, we must have a facility to see all orders that are to be delivered 
+during a specific time period. The production planning is manual. At the end 
+of each week, production for the following week is planned, using the orders 
+for the following weeks as input. We cannot produce “on demand”, since it 
+takes time to set up a production line for a new kind of cookie (mixers have to
+be cleaned, for example).}
+
+Nothing regarding orders are implemented in the user interface in this version.
+The database although supports it. 
+
+\subsection{Delivery}
+\textit{Before pallets are loaded into the freezer trucks, a loading order is 
+created. The order contains information regarding the customers and the number 
+of pallets to be delivered. When pallets are taken out of deep-freeze storage 
+the pallet label is read. When the truck is loaded, the driver receives a 
+loading bill (identical to the loading order, but contains a field where the 
+customer can acknowledge reception of the delivery). The loading bill data 
+need not be saved in the database. When the loading bill has been printed, the 
+data regarding delivered pallets must be updated with customer data and date 
+of delivery.}
+
+Nothing about delivery is implemented in this version of the system.
 
 \section{Outline}
 Our product is built in play framework. It is a web application framework with support for programming in scala. Play also enables us to easy use a model-view-controller modell, which we have. The view section is mostly built up by html-templates. These templates are filled up with data from scala-variables. The model \& controller section are both written in scala. 
