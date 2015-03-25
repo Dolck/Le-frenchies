@@ -21,6 +21,8 @@ Christopher Nilsson dat11cni@student.lu.se}
 \newpage
 \section{Introduction}
 
+The assignment brought to us was to build a program for a cookie factory. The client was Krusty Cookies. They needed a program to help them manage their production, deliveries and orders. The program needs therefore to both contain a database-system and a user interface for Krusty Cookies. Throughout the project we faced different challenges setting up a local-server, planning effective relations, managing the database, designing a user-friendly webpage. By using new framework and developing tools the results were remarkable.
+
 \section{Requirements}
 
 Krusty Cookies database system is built with the simplest possible interface to make sure all employees are able to use it. 
@@ -40,6 +42,8 @@ The product uses jdbc as databasemanager. The controller section of the program 
 
 \subsection{E/R Diagram}
 
+An overview of the database design can be seen in figure~\ref{model}.
+
 \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{cookies.png}
@@ -48,6 +52,8 @@ The product uses jdbc as databasemanager. The controller section of the program 
 \end{figure}
 
 \subsection{Relations}
+
+The relations extracted from the database design are as follows:
 
 \noindent
 RawMaterials(\underline{rawType}, quantity, unitOfM, lastDelivDate, lastDelivQ) \\
@@ -59,9 +65,12 @@ Orders(\underline{orderId}, nbrPallets, incomeDate, delivDate, \emph{cName, cAdd
 OrderDetails(\underline{\emph{orderId, cookieName}}, nbrPallets)
 \indent
 
-Since there are no relations other than those provided by the primary keys, the relations are in BCNF.
+There are no other functional dependencies except for the key dependencies, so the relations are in
+BCNF.
 
 \section{Statements}
+
+The statements used when creating the database:
 
 \begin{lstlisting}[frame=single]
 --
