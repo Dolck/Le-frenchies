@@ -122,7 +122,7 @@ Nothing about delivery is implemented in this version of the system.
 \section{Outline}
 Our product is built in Play framework. It is a web application framework with 
 support for programming in Scala. Play also enables us to easy use a 
-model-view-controller pattern, which we have done. The view section is mostly 
+model-view-controller pattern. The view section is mostly 
 built up by HTML-templates. These templates are filled up with data from 
 Scala-variables. The model \& controller section are both written in Scala. 
 
@@ -130,7 +130,8 @@ We have used JDBC to connect to the database. The connection to the database
 is carried out in the controller section of the program. It handles all the 
 SQL-queries and sends them to the database. For every method in the controller 
 we set up a connection with the database, sends the queries, gets the result 
-and closes the connection.
+and closes the connection. When an error occurs during a transaction, 
+a rollback is executed to preserve the state of the database.
 
 \section{Model}
 
