@@ -19,7 +19,9 @@ void SaveToFile::writeNewgroups(const vector<newsgroup>& ngs, int nid, int aid){
 			for(const article& a : ng.articles){
 				myfile << a.id << "\t" << a.title << "\t" << a.author << "\t" << a.article_text << "\t";
 			}
+			myfile.flush();
 		}
+		file.close()
 	}
 }
 
