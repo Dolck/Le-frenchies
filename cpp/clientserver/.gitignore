@@ -4,4 +4,5 @@ serverImpl1
 clientImpl
 test/myserver
 test/myclient
+hiberlite/
 hiberlite/*
