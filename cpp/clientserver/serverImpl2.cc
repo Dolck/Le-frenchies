@@ -1,18 +1,13 @@
-/* myserver.cc: sample server program */
 #include "server.h"
 #include "connection.h"
 #include "connectionclosedexception.h"
-#include "exceptions.h"
 #include "newsobjects.h"
 #include "database.h"
 #include "protocol.h"
 #include "messagehandler.h"
+#include "protocolHandler.h"
 
-#include <memory>
 #include <iostream>
-#include <string>
-#include <stdexcept>
-#include <cstdlib>
 
 using namespace std;
 

@@ -1,4 +1,7 @@
 #include "protocolHandler.h"
+#include "exceptions.h"
+#include "messagehandler.h"
+#include "protocol.h"
 
 using namespace std;
 

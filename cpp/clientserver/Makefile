@@ -24,13 +24,13 @@ all: libclientserver.a serverImpl1 serverImpl2 clientImpl
 # Create the library; ranlib is for Darwin (OS X) and maybe other systems.
 # Doesn't seem to do any damage on other systems.
 
-libclientserver.a: connection.o server.o messagehandler.o
-	ar rv libclientserver.a  connection.o server.o messagehandler.o
+libclientserver.a: connection.o server.o messagehandler.o database.o protocolHandler.o
+	ar rv libclientserver.a  connection.o server.o messagehandler.o database.o protocolHandler.o
 	ranlib libclientserver.a
 
 serverImpl1: serverImpl1.o
 
-serverImpl2: serverImpl2.o database.o
+serverImpl2: serverImpl2.o
 
 clientImpl: clientImpl.o 
 
