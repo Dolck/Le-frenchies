@@ -57,6 +57,9 @@ void Database::readNewsgroups(vector<newsgroup>& ngs, int& nid, int& aid){
       ngs.push_back(ng);
     }
     file.close();
+  }else{
+  	nid = 0;
+  	aid = 0;
   }
 }
 

@@ -19,7 +19,7 @@ LDLIBS = -lclientserver
 #CPPFLAGS =  -stdlib=libc++
 #CXXFLAGS += -stdlib=libc++
 
-all: libclientserver.a serverImpl1 clientImpl
+all: libclientserver.a serverImpl1 serverImpl2 clientImpl
 
 # Create the library; ranlib is for Darwin (OS X) and maybe other systems.
 # Doesn't seem to do any damage on other systems.
