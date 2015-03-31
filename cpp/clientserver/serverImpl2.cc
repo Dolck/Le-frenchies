@@ -220,7 +220,7 @@ int main(int argc, char* argv[]){
   }
 
   int groupId, articleId;
-  vector<newsgroup> groups = saveToFile::readNewsGroups(groupId, articleId);
+  vector<newsgroup> groups = SaveToFile::readNewsGroups(groupId, articleId);
   
   while (true) {
     auto conn = server.waitForActivity();
@@ -252,7 +252,7 @@ int main(int argc, char* argv[]){
           default: throw ConnectionClosedException();
             break;
         }
-        saveToFile::writeNewsgroups(groups, groupId, articleId);
+        SaveToFile::writeNewsgroups(groups, groupId, articleId);
       } catch (ConnectionClosedException&) {
         server.deregisterConnection(conn);
         cout << "Client closed connection" << endl;
