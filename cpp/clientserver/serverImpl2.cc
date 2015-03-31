@@ -4,6 +4,7 @@
 #include "connectionclosedexception.h"
 #include "exceptions.h"
 #include "newsobjects.h"
+#include "savetofile.h"
 #include "protocol.h"
 #include "messagehandler.h"
 
@@ -218,8 +219,8 @@ int main(int argc, char* argv[]){
     exit(1);
   }
 
-  vector<newsgroup> groups; // Check this?
-  int groupId = 0, articleId = 0;
+  int groupId, articleId;
+  vector<newsgroup> groups = saveToFile::readNewsGroups(groupId, articleId);
   
   while (true) {
     auto conn = server.waitForActivity();
