@@ -245,7 +245,7 @@ int main(int argc, char* argv[]){
             ProtocolHandler::createArt(conn, groups, articleId);
             break;
           case Protocol::COM_DELETE_ART:
-            ProtocolHandler::deleteArt(conn, groups);
+            ProtocolHandler::delArt(conn, groups);
             break;
           case Protocol::COM_GET_ART:
             ProtocolHandler::getArt(conn, groups);

@@ -243,10 +243,10 @@ int main(int argc, char* argv[]){
             ProtocolHandler::createArt(conn, groups, articleId);
 						break;
 					case Protocol::COM_DELETE_ART:
-            ProtocolHandlerdeleteArt(conn, groups);
+            ProtocolHandler::delArt(conn, groups);
 						break;
 					case Protocol::COM_GET_ART:
-            ProtocolHandlergetArt(conn, groups);
+            ProtocolHandler::getArt(conn, groups);
 						break;
 					default: throw ConnectionClosedException();
 						break;
