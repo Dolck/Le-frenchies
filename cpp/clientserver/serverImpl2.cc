@@ -252,6 +252,7 @@ int main(int argc, char* argv[]){
           default: throw ConnectionClosedException();
             break;
         }
+        saveToFile::writeNewsgroups(groups, groupId, articleId);
       } catch (ConnectionClosedException&) {
         server.deregisterConnection(conn);
         cout << "Client closed connection" << endl;

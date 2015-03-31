@@ -8,7 +8,7 @@ vector<newsgroup>& SaveToFile::readNewsgroups(int& nid, int& aid){
 
 }
 
-void SaveToFile::writeNewgroups(const vector<newsgroup>& ngs, int nid, int aid){
+void SaveToFile::writeNewsgroups(const vector<newsgroup>& ngs, int nid, int aid){
 	ofstream file(fileName);
 	if(file.is_open()){		
 		myfile << nid << endl;
