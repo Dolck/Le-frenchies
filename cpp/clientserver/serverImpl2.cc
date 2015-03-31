@@ -2,8 +2,7 @@
 #include "connection.h"
 #include "connectionclosedexception.h"
 #include "exceptions.h"
-#include "newsgroup.h"
-#include "article.h"
+#include "newsobjects.h"
 #include "protocol.h"
 #include "messagehandler.h"
 

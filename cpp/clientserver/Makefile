@@ -14,7 +14,7 @@ CXXFLAGS =  -O2 -Wall -Wextra -pedantic-errors -Wold-style-cast
 CXXFLAGS += -std=c++11 
 CXXFLAGS += -g
 LDFLAGS = -g -L.
-LDLIBS = -lclientserver -lhiberlite -lsqlite3
+LDLIBS = -lclientserver
 #CXXFLAGS =  -stdlib=libc++
 #CPPFLAGS =  -stdlib=libc++
 #CXXFLAGS += -stdlib=libc++
@@ -29,6 +29,8 @@ libclientserver.a: connection.o server.o messagehandler.o
 	ranlib libclientserver.a
 
 serverImpl1: serverImpl1.o
+
+serverImpl2: serverImpl2.o
 
 clientImpl: clientImpl.o 
 
