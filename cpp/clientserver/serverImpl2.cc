@@ -220,7 +220,8 @@ int main(int argc, char* argv[]){
   }
 
   int groupId, articleId;
-  vector<newsgroup> groups = SaveToFile::readNewsgroups(groupId, articleId);
+  vector<newsgroup> groups;
+  SaveToFile::readNewsgroups(groups, groupId, articleId);
   
   while (true) {
     auto conn = server.waitForActivity();

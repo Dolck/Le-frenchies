@@ -8,7 +8,7 @@
 
 class SaveToFile{
   public:
-    static std::vector<newsgroup>& readNewsgroups(int& nid, int& aid);
+    static void readNewsgroups(std::vector<newsgroup>& ngs, int& nid, int& aid);
     static void writeNewsgroups(const std::vector<newsgroup>& ngs, int nid, int aid);
   private:
     static std::string fileName;
