@@ -30,7 +30,7 @@ libclientserver.a: connection.o server.o messagehandler.o
 
 serverImpl1: serverImpl1.o
 
-serverImpl2: serverImpl2.o savetofile.o
+serverImpl2: serverImpl2.o database.o
 
 clientImpl: clientImpl.o 
 

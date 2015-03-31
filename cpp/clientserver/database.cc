@@ -1,12 +1,12 @@
-#include "savetofile.h"
 #include "newsobjects.h"
+#include "database.h"
 
 #include <iostream>
 #include <fstream>
 
 using namespace std;
 
-void SaveToFile::readNewsgroups(vector<newsgroup>& ngs, int& nid, int& aid){
+void Database::readNewsgroups(vector<newsgroup>& ngs, int& nid, int& aid){
   ngs.clear();
   int nbrg;
   ifstream file("database.txt");
@@ -60,7 +60,7 @@ void SaveToFile::readNewsgroups(vector<newsgroup>& ngs, int& nid, int& aid){
   }
 }
 
-void SaveToFile::writeNewsgroups(const vector<newsgroup>& ngs, int nid, int aid){
+void Database::writeNewsgroups(const vector<newsgroup>& ngs, int nid, int aid){
 	ofstream file("database.txt");
 	if(file.is_open()){		
 		file << nid << endl;
