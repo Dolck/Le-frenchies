@@ -10,6 +10,8 @@ class SaveToFile{
   public:
     static std::vector<newsgroup> readNewsgroups();
     static void writeNewgroups(const std::vector<newsgroup> ngs);
+  private:
+    static std::string fileName = "database.txt";
 };
 #endif
 
