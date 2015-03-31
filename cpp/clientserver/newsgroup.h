@@ -1,3 +1,6 @@
+#ifndef NEWSGROUP_H
+#define NEWSGROUP_H
+
 #include "article.h"
 #include <string>
 #include <vector>
@@ -16,3 +19,5 @@ class Newsgroup{
     std::vector<article> articles;
 };
 HIBERLITE_EXPORT_CLASS(Newsgroup)
+
+#endif

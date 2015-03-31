@@ -1,3 +1,6 @@
+#ifndef ARTICLE_H
+#define ARTICLE_H
+
 #include <string>
 
 class Article{
@@ -16,3 +19,5 @@ class Article{
     std::string article_text;
 };
 HIBERLITE_EXPORT_CLASS(Article)
+
+#endif
