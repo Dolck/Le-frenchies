@@ -4,7 +4,7 @@
 #include "connectionclosedexception.h"
 #include "exceptions.h"
 #include "newsobjects.h"
-#include "savetofile.h"
+#include "database.h"
 #include "protocol.h"
 #include "messagehandler.h"
 
@@ -220,7 +220,7 @@ int main(int argc, char* argv[]){
   }
 
   int groupId, articleId;
-  vector<newsgroup> groups = SaveToFile::readNewsgroups(groupId, articleId);
+  vector<newsgroup> groups = Database::readNewsgroups(groupId, articleId);
   
   while (true) {
     auto conn = server.waitForActivity();
@@ -252,7 +252,7 @@ int main(int argc, char* argv[]){
           default: throw ConnectionClosedException();
             break;
         }
-        SaveToFile::writeNewsgroups(groups, groupId, articleId);
+        Database::writeNewsgroups(groups, groupId, articleId);
       } catch (ConnectionClosedException&) {
         server.deregisterConnection(conn);
         cout << "Client closed connection" << endl;
