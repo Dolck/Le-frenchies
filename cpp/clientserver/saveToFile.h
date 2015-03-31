@@ -8,8 +8,8 @@
 
 class SaveToFile{
   public:
-    static vector<newsgroup> readNewsgroups();
-    static void writeNewgroups(const vector<newsgroup> ngs);
+    static std::vector<newsgroup> readNewsgroups();
+    static void writeNewgroups(const std::vector<newsgroup> ngs);
 };
 #endif
 
