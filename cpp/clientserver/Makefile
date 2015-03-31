@@ -14,7 +14,7 @@ CXXFLAGS =  -O2 -Wall -Wextra -pedantic-errors -Wold-style-cast
 CXXFLAGS += -std=c++11 
 CXXFLAGS += -g
 LDFLAGS = -g -L.
-LDLIBS = -lclientserver
+LDLIBS = -lclientserver -lhiberlite -lsqlite3
 #CXXFLAGS =  -stdlib=libc++
 #CPPFLAGS =  -stdlib=libc++
 #CXXFLAGS += -stdlib=libc++

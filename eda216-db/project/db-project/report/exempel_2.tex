@@ -11,7 +11,8 @@
 \title{Programming Project, Database Technology}
 \author{Tim Dolck dat11tdo@student.lu.se \\ 
 Julian Kroné dat11jkr@student.lu.se \\
-Christopher Nilsson dat11cni@student.lu.se}
+Christopher Nilsson dat11cni@student.lu.se \\
+Computer science, LTH}
 %\date{}           % Blir dagens datum om det utelämnas
 
 \begin{document}
@@ -50,8 +51,10 @@ date and time of production is registered in the database. The pallet number
 is unique. At any time, we must be able to check how many pallets of a product 
 that have been produced during a specific time.}
 
-In our system we don't have access to a barcode scanner, therefor a pallet is
-created on button clicks in the user-interface.
+In our system we don't have access to a barcode scanner, therefore a pallet is
+created on button clicks in the user-interface. The pallets page have a filtering 
+feature implemented, where filtering can be based on production time, cookie type, 
+pallet status, and pallet id.
 
 \subsection{Raw Materials}
 \textit{When a pallet is produced, the raw materials storage must be updated. 
@@ -59,18 +62,18 @@ We must be able to check the amount in store of each ingredient, and to see
 when, and how much of, an ingredient was last delivered into storage.}
 
 When a pallet is produced in our system the raw materials storage database is 
-updated accordingly. The rest was not part of our implementation because it 
-was stated so in the assignment description. Although the database supports 
-all of the stated data.
+updated accordingly. The database supports all of the other requirements, 
+though it is not part of the production interface.
 
 \subsection{Recipes}
 \textit{We need an interface to the collection of recipes (appendix A), where 
 we can study and update recipes. We also need a facility for entering new 
 recipes. We don’t change recipes during production.}
 
-This is not implemented because it was not included in the assignment. The 
-database contains recipes which is used to update the available raw materials 
-when a pallet is created.
+The database supports all of these requirements, 
+though it is not part of the production interface.
+The database contains recipes which is used to update the raw materials upon 
+pallet production.
 
 \subsection{Produced Pallets}
 \textit{As we mentioned earlier, pallets in the deep-freeze storage may be 
@@ -100,8 +103,8 @@ for the following weeks as input. We cannot produce “on demand”, since it
 takes time to set up a production line for a new kind of cookie (mixers have to
 be cleaned, for example).}
 
-Nothing regarding orders are implemented in the user interface in this version.
-The database although supports it. 
+The database supports all of these requirements, 
+though it is not part of the production interface.
 
 \subsection{Delivery}
 \textit{Before pallets are loaded into the freezer trucks, a loading order is 
@@ -119,7 +122,7 @@ Nothing about delivery is implemented in this version of the system.
 \section{Outline}
 Our product is built in Play framework. It is a web application framework with 
 support for programming in Scala. Play also enables us to easy use a 
-model-view-controller pattern, which we have done. The view section is mostly 
+model-view-controller pattern. The view section is mostly 
 built up by HTML-templates. These templates are filled up with data from 
 Scala-variables. The model \& controller section are both written in Scala. 
 
@@ -127,7 +130,8 @@ We have used JDBC to connect to the database. The connection to the database
 is carried out in the controller section of the program. It handles all the 
 SQL-queries and sends them to the database. For every method in the controller 
 we set up a connection with the database, sends the queries, gets the result 
-and closes the connection.
+and closes the connection. When an error occurs during a transaction, 
+a rollback is executed to preserve the state of the database.
 
 \section{Model}
 

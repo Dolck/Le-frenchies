@@ -1,9 +1,9 @@
-/* myserver.cc: sample server program */
 #include "server.h"
 #include "connection.h"
 #include "connectionclosedexception.h"
 #include "exceptions.h"
-#include "newsobjects.h"
+#include "newsgroup.h"
+#include "article.h"
 #include "protocol.h"
 #include "messagehandler.h"
 
