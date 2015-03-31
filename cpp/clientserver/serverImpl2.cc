@@ -1,3 +1,4 @@
+/* myserver.cc: sample server program */
 #include "server.h"
 #include "connection.h"
 #include "connectionclosedexception.h"
@@ -22,12 +23,12 @@ void createNewsgroup(vector<newsgroup>& v, string& title, int& id){
 }
 
 bool ngExists(const vector<newsgroup>& v, const string& newTitle){
-	for(newsgroup ng : v){
-		if(ng.name == newTitle){
-			return true;
-		}
-	}
-	return false;
+  for(newsgroup ng : v){
+    if(ng.name == newTitle){
+      return true;
+    }
+  }
+  return false;
 }
 
 newsgroup& getNG(vector<newsgroup>& v, const unsigned int& id){
@@ -84,10 +85,9 @@ article& getArticle(vector<article>& v, unsigned int id){
 void listNG(const shared_ptr<Connection>& conn, const vector<newsgroup>& groups){
   MessageHandler::expectInputChar(conn, Protocol::COM_END);
   int num = groups.size();
-  vector<unsigned char> bytes {Protocol::ANS_LIST_NG, Protocol::PAR_NUM};
+  vector<char> bytes {Protocol::ANS_LIST_NG};
   MessageHandler::addNumberToBytesVector(bytes, num);
   for(newsgroup ng : groups){
-    bytes.push_back(Protocol::PAR_NUM);
     MessageHandler::addNumberToBytesVector(bytes, ng.id);
     MessageHandler::addStringBytesToVector(bytes, ng.name);
   }
@@ -98,7 +98,7 @@ void listNG(const shared_ptr<Connection>& conn, const vector<newsgroup>& groups)
 void createNG(const shared_ptr<Connection>& conn, vector<newsgroup>& groups, int& groupId){
   string newTitle = MessageHandler::readString(conn);
   MessageHandler::expectInputChar(conn, Protocol::COM_END);
-  vector<unsigned char> bytes;
+  vector<char> bytes;
   if(ngExists(groups, newTitle)){
     bytes = {Protocol::ANS_CREATE_NG, Protocol::ANS_NAK, Protocol::ERR_NG_ALREADY_EXISTS, Protocol::ANS_END};
   } else {
@@ -109,14 +109,14 @@ void createNG(const shared_ptr<Connection>& conn, vector<newsgroup>& groups, int
 }
 
 void createArt(const shared_ptr<Connection>& conn, vector<newsgroup>& groups, int & articleId){
-  vector<unsigned char> bytes;
+  vector<char> bytes;
   try{
     int n = MessageHandler::readNumber(conn);
-    newsgroup& ng = getNG(groups, n);
     string title = MessageHandler::readString(conn);
     string author = MessageHandler::readString(conn);
     string text = MessageHandler::readString(conn);
     MessageHandler::expectInputChar(conn, Protocol::COM_END);
+    newsgroup& ng = getNG(groups, n);
     createArticle(ng.articles, title, author, text, articleId);
     bytes = {Protocol::ANS_CREATE_ART, Protocol::ANS_ACK, Protocol::ANS_END};
   } catch (NewsgroupDoesNotExistException e){
@@ -128,7 +128,7 @@ void createArt(const shared_ptr<Connection>& conn, vector<newsgroup>& groups, in
 void delNG(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
   int n = MessageHandler::readNumber(conn);
   MessageHandler::expectInputChar(conn, Protocol::COM_END);
-  vector<unsigned char> bytes;
+  vector<char> bytes;
   try{
     deleteNG(groups, n);
     bytes = {Protocol::ANS_DELETE_NG, Protocol::ANS_ACK, Protocol::ANS_END};
@@ -141,15 +141,14 @@ void delNG(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
 void listArts(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
   int n = MessageHandler::readNumber(conn);
   MessageHandler::expectInputChar(conn, Protocol::COM_END);
-  vector<unsigned char> bytes;
+  vector<char> bytes;
   try{
     newsgroup& ng = getNG(groups, n);
     vector<article> articles = ng.articles;
     size_t nbra = articles.size();
-    bytes = {Protocol::ANS_LIST_ART, Protocol::ANS_ACK, Protocol::PAR_NUM};
+    bytes = {Protocol::ANS_LIST_ART, Protocol::ANS_ACK};
     MessageHandler::addNumberToBytesVector(bytes, nbra);
     for(article a : articles){
-      bytes.push_back(Protocol::PAR_NUM);
       MessageHandler::addNumberToBytesVector(bytes, a.id);
       MessageHandler::addStringBytesToVector(bytes, a.title);
     }
@@ -164,7 +163,7 @@ void deleteArt(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
   int ngid = MessageHandler::readNumber(conn);
   int aid = MessageHandler::readNumber(conn);
   MessageHandler::expectInputChar(conn, Protocol::COM_END);
-  vector<unsigned char> bytes;
+  vector<char> bytes;
   try{
     newsgroup& ng = getNG(groups, ngid);
     deleteArticle(ng.articles, aid);
@@ -181,7 +180,7 @@ void getArt(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
   int ngid = MessageHandler::readNumber(conn);
   int artid = MessageHandler::readNumber(conn);
   MessageHandler::expectInputChar(conn, Protocol::COM_END);
-  vector<unsigned char> bytes;
+  vector<char> bytes;
   try{
     newsgroup& ng = getNG(groups, ngid);
     article& art = getArticle(ng.articles, artid);
@@ -190,9 +189,9 @@ void getArt(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
     MessageHandler::addStringBytesToVector(bytes, art.author);
     MessageHandler::addStringBytesToVector(bytes, art.article_text);
     bytes.push_back(Protocol::ANS_END);
-  } catch(NewsgroupDoesNotExistException&){
+  } catch(NewsgroupDoesNotExistException e){
     bytes = {Protocol::ANS_GET_ART, Protocol::ANS_NAK, Protocol::ERR_NG_DOES_NOT_EXIST, Protocol::ANS_END};
-  } catch(ArticleDoesNotExistException&){
+  } catch(ArticleDoesNotExistException e){
     bytes = {Protocol::ANS_GET_ART, Protocol::ANS_NAK, Protocol::ERR_ART_DOES_NOT_EXIST, Protocol::ANS_END};
   }
   MessageHandler::writeByteVector(conn, bytes);
@@ -200,66 +199,66 @@ void getArt(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
 
 
 int main(int argc, char* argv[]){
-	if (argc != 2) {
-		cerr << "Usage: myserver port-number" << endl;
-		exit(1);
-	}
-	
-	int port = -1;
-	try {
-		port = stoi(argv[1]);
-	} catch (exception& e) {
-		cerr << "Wrong port number. " << e.what() << endl;
-		exit(1);
-	}
-	
-	Server server(port);
-	if (!server.isReady()) {
-		cerr << "Server initialization error." << endl;
-		exit(1);
-	}
+  if (argc != 2) {
+    cerr << "Usage: myserver port-number" << endl;
+    exit(1);
+  }
+  
+  int port = -1;
+  try {
+    port = stoi(argv[1]);
+  } catch (exception& e) {
+    cerr << "Wrong port number. " << e.what() << endl;
+    exit(1);
+  }
+  
+  Server server(port);
+  if (!server.isReady()) {
+    cerr << "Server initialization error." << endl;
+    exit(1);
+  }
 
-	vector<newsgroup> groups; // Check this?
-	int groupId = 0, articleId = 0;
-	
-	while (true) {
-		auto conn = server.waitForActivity();
-		if (conn != nullptr) {
-			try {
-				char cmd = MessageHandler::readChar(conn);
-				switch(cmd){
-					case Protocol::COM_LIST_NG:
-						listNG(conn, groups);
+  vector<newsgroup> groups; // Check this?
+  int groupId = 0, articleId = 0;
+  
+  while (true) {
+    auto conn = server.waitForActivity();
+    if (conn != nullptr) {
+      try {
+        char cmd = MessageHandler::readChar(conn);
+        switch(cmd){
+          case Protocol::COM_LIST_NG:
+            listNG(conn, groups);
             break;
-					case Protocol::COM_CREATE_NG:
-						createNG(conn, groups, groupId);
-						break;
-					case Protocol::COM_DELETE_NG:
+          case Protocol::COM_CREATE_NG:
+            createNG(conn, groups, groupId);
+            break;
+          case Protocol::COM_DELETE_NG:
             delNG(conn, groups);
-						break;
-					case Protocol::COM_LIST_ART:
+            break;
+          case Protocol::COM_LIST_ART:
             listArts(conn, groups);
-						break;
+            break;
           case Protocol::COM_CREATE_ART:
             createArt(conn, groups, articleId);
-						break;
-					case Protocol::COM_DELETE_ART:
+            break;
+          case Protocol::COM_DELETE_ART:
             deleteArt(conn, groups);
-						break;
-					case Protocol::COM_GET_ART:
+            break;
+          case Protocol::COM_GET_ART:
             getArt(conn, groups);
-						break;
-					default: throw ConnectionClosedException();
-						break;
-				}
-			} catch (ConnectionClosedException&) {
-				server.deregisterConnection(conn);
-				cout << "Client closed connection" << endl;
-			}
-		} else {
-			conn = make_shared<Connection>();
-			server.registerConnection(conn);
-			cout << "New client connects" << endl;
-		}
-	}
+            break;
+          default: throw ConnectionClosedException();
+            break;
+        }
+      } catch (ConnectionClosedException&) {
+        server.deregisterConnection(conn);
+        cout << "Client closed connection" << endl;
+      }
+    } else {
+      conn = make_shared<Connection>();
+      server.registerConnection(conn);
+      cout << "New client connects" << endl;
+    }
+  }
 }
