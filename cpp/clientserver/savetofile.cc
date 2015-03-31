@@ -1,6 +1,7 @@
 #include "savetofile.h"
 
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -9,7 +10,7 @@ vector<newsgroup>& SaveToFile::readNewsgroups(int& nid, int& aid){
 }
 
 void SaveToFile::writeNewsgroups(const vector<newsgroup>& ngs, int nid, int aid){
-	ofstream file(fileName);
+	ofstream file("database.txt");
 	if(file.is_open()){		
 		file << nid << endl;
 		file << aid << endl;
@@ -21,7 +22,7 @@ void SaveToFile::writeNewsgroups(const vector<newsgroup>& ngs, int nid, int aid)
 			}
 			file.flush();
 		}
-		file.close()
+		file.close();
 	}
 }
 

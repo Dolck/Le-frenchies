@@ -11,7 +11,7 @@ class SaveToFile{
     static std::vector<newsgroup>& readNewsgroups(int& nid, int& aid);
     static void writeNewsgroups(const std::vector<newsgroup>& ngs, int nid, int aid);
   private:
-    static std::string fileName = "database.txt";
+    static std::string fileName;
 };
 #endif
 
