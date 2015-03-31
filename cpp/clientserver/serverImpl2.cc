@@ -47,25 +47,25 @@ int main(int argc, char* argv[]){
         char cmd = MessageHandler::readChar(conn);
         switch(cmd){
           case Protocol::COM_LIST_NG:
-            listNG(conn, groups);
+            ProtocolHandler::listNG(conn, groups);
             break;
           case Protocol::COM_CREATE_NG:
-            createNG(conn, groups, groupId);
+            ProtocolHandler::createNG(conn, groups, groupId);
             break;
           case Protocol::COM_DELETE_NG:
-            delNG(conn, groups);
+            ProtocolHandler::delNG(conn, groups);
             break;
           case Protocol::COM_LIST_ART:
-            listArts(conn, groups);
+            ProtocolHandler::listArts(conn, groups);
             break;
           case Protocol::COM_CREATE_ART:
-            createArt(conn, groups, articleId);
+            ProtocolHandler::createArt(conn, groups, articleId);
             break;
           case Protocol::COM_DELETE_ART:
-            deleteArt(conn, groups);
+            ProtocolHandler::delArt(conn, groups);
             break;
           case Protocol::COM_GET_ART:
-            getArt(conn, groups);
+            ProtocolHandler::getArt(conn, groups);
             break;
           default: throw ConnectionClosedException();
             break;
