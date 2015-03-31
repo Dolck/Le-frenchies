@@ -14,12 +14,12 @@ class MessageHandler{
     static char readChar(const shared_ptr<Connection>& conn);
     static void expectInputChar(const shared_ptr<Connection>& conn, const char& expected);
     static string readString(const shared_ptr<Connection>& conn);
-    static void addNumberToBytesVector(vector<unsigned char>& bytes, const int& num);
-    static void addStringBytesToVector(vector<unsigned char>& bytes, const string& s);
-    static void writeByteVector(const shared_ptr<Connection>& conn, const vector<unsigned char>& bytes);
+    static void addNumberToBytesVector(vector<char>& bytes, const int& num);
+    static void addStringBytesToVector(vector<char>& bytes, const string& s);
+    static void writeByteVector(const shared_ptr<Connection>& conn, const vector<char>& bytes);
   private:
   	static int readInteger(const shared_ptr<Connection>& conn);
-    static void addIntegerToBytesVector(vector<unsigned char>& bytes, const int& num);
+    static void addIntegerToBytesVector(vector<char>& bytes, const int& num);
 };
 #endif
 

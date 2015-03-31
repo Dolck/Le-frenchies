@@ -85,7 +85,7 @@ article& getArticle(vector<article>& v, unsigned int id){
 void listNG(const shared_ptr<Connection>& conn, const vector<newsgroup>& groups){
   MessageHandler::expectInputChar(conn, Protocol::COM_END);
   int num = groups.size();
-  vector<unsigned char> bytes {Protocol::ANS_LIST_NG};
+  vector<char> bytes {Protocol::ANS_LIST_NG};
   MessageHandler::addNumberToBytesVector(bytes, num);
   for(newsgroup ng : groups){
     MessageHandler::addNumberToBytesVector(bytes, ng.id);
@@ -98,7 +98,7 @@ void listNG(const shared_ptr<Connection>& conn, const vector<newsgroup>& groups)
 void createNG(const shared_ptr<Connection>& conn, vector<newsgroup>& groups, int& groupId){
   string newTitle = MessageHandler::readString(conn);
   MessageHandler::expectInputChar(conn, Protocol::COM_END);
-  vector<unsigned char> bytes;
+  vector<char> bytes;
   if(ngExists(groups, newTitle)){
     bytes = {Protocol::ANS_CREATE_NG, Protocol::ANS_NAK, Protocol::ERR_NG_ALREADY_EXISTS, Protocol::ANS_END};
   } else {
@@ -109,14 +109,14 @@ void createNG(const shared_ptr<Connection>& conn, vector<newsgroup>& groups, int
 }
 
 void createArt(const shared_ptr<Connection>& conn, vector<newsgroup>& groups, int & articleId){
-  vector<unsigned char> bytes;
+  vector<char> bytes;
   try{
     int n = MessageHandler::readNumber(conn);
-    newsgroup& ng = getNG(groups, n);
     string title = MessageHandler::readString(conn);
     string author = MessageHandler::readString(conn);
     string text = MessageHandler::readString(conn);
     MessageHandler::expectInputChar(conn, Protocol::COM_END);
+    newsgroup& ng = getNG(groups, n);
     createArticle(ng.articles, title, author, text, articleId);
     bytes = {Protocol::ANS_CREATE_ART, Protocol::ANS_ACK, Protocol::ANS_END};
   } catch (NewsgroupDoesNotExistException e){
@@ -128,7 +128,7 @@ void createArt(const shared_ptr<Connection>& conn, vector<newsgroup>& groups, in
 void delNG(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
   int n = MessageHandler::readNumber(conn);
   MessageHandler::expectInputChar(conn, Protocol::COM_END);
-  vector<unsigned char> bytes;
+  vector<char> bytes;
   try{
     deleteNG(groups, n);
     bytes = {Protocol::ANS_DELETE_NG, Protocol::ANS_ACK, Protocol::ANS_END};
@@ -141,7 +141,7 @@ void delNG(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
 void listArts(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
   int n = MessageHandler::readNumber(conn);
   MessageHandler::expectInputChar(conn, Protocol::COM_END);
-  vector<unsigned char> bytes;
+  vector<char> bytes;
   try{
     newsgroup& ng = getNG(groups, n);
     vector<article> articles = ng.articles;
@@ -163,7 +163,7 @@ void deleteArt(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
   int ngid = MessageHandler::readNumber(conn);
   int aid = MessageHandler::readNumber(conn);
   MessageHandler::expectInputChar(conn, Protocol::COM_END);
-  vector<unsigned char> bytes;
+  vector<char> bytes;
   try{
     newsgroup& ng = getNG(groups, ngid);
     deleteArticle(ng.articles, aid);
@@ -180,7 +180,7 @@ void getArt(const shared_ptr<Connection>& conn, vector<newsgroup>& groups){
   int ngid = MessageHandler::readNumber(conn);
   int artid = MessageHandler::readNumber(conn);
   MessageHandler::expectInputChar(conn, Protocol::COM_END);
-  vector<unsigned char> bytes;
+  vector<char> bytes;
   try{
     newsgroup& ng = getNG(groups, ngid);
     article& art = getArticle(ng.articles, artid);
