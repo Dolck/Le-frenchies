@@ -8,9 +8,9 @@
 %\usepackage[T1]{fontenc}                % För svenska bokstäver
 %\usepackage[swedish]{babel}             % För svensk avstavning och svenska
                                         % rubriker (t ex "innehållsförteckning)
-\title{Programming Project, Database Technology}
+\title{Programming Project, C++ Programming}
 \author{Tim Dolck dat11tdo@student.lu.se \\ 
-Julian Kroné dat11jkr@student.lu.se \\
+  Julian Kron\'{e} dat11jkr@student.lu.se \\
 Computer science, LTH}
 %\date{}           % Blir dagens datum om det utelämnas
 
@@ -38,14 +38,16 @@ There are no security requirements on the system. For instance, any user can del
 groups and articles, even if he or she is not the creator.
 
 \subsection{Server Requirements}
-There are two versions of the server: the first version uses a database stored in primary
-memory, the second a database stored on disk.
-
+There are two versions of the server: 
+\begin{enumerate}
+  \item A server that uses a database stored in primary memory.
+  \item A server that uses a database stored on disk.
+\end{enumerate}
 The in-memory version of the server starts from scratch each time it is invoked and builds
 the database in primary memory.
 
 The disk version of the database remembers the database between invocations. Changes to
-the database are immediately reflected on disk. See section 3.2.
+the database are immediately reflected on disk.
 
 Each newsgroup has a unique name. A newsgroup also has a unique identification number,
 greater than zero. Identification numbers may not be reused.
