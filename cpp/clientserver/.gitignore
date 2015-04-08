@@ -1,5 +1,8 @@
 *.d
 *.a
+*.log
+*.aux
+*.pdf
 serverImpl1
 serverImpl2
 clientImpl
