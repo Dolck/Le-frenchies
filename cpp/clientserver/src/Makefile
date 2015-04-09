@@ -21,6 +21,9 @@ LDLIBS = -lclientserver
 
 all: libclientserver.a serverImpl1 serverImpl2 clientImpl
 
+install: 
+	cp clientImpl serverImpl1 serverImpl2 ../bin/
+
 # Create the library; ranlib is for Darwin (OS X) and maybe other systems.
 # Doesn't seem to do any damage on other systems.
 

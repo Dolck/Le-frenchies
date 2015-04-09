@@ -8,6 +8,7 @@ serverImpl2
 clientImpl
 test/myserver
 test/myclient
+bin/
 hiberlite/
 hiberlite/*
 database.txt
