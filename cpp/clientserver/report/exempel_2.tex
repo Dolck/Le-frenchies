@@ -96,18 +96,26 @@ An overview of the program design can be seen in figure~\ref{model}.
 \subsection{Classes}
 \subsubsection{Common}
 \begin{description}
-  \item[]
-  \item[] 
+  \item[Connection] handles the individual connections between server and client.
+  \item[ConnectionClosedException] reports that an error has occured, and the connection is to be closed.
+  \item[MessageHandler] handles the low level message reading/writing from/to the connection.
+  \item[Protocol] handles the protocol translations.
 \end{description}
 \subsubsection{Server}
 \begin{description}
-  \item[]
-  \item[] 
+  \item[Newsgroup] handles newsgroup information.
+  \item[Article] handles article information.
+  \item[NewsgroupDoesNotExistException] reports that a newsgroup does not exist.
+  \item[ArticleDoesNotExistException] reports that an article does not exist.
+  \item[Database] handles reading/writing from/to the persistent database.
+  \item[ProtocolHandler] handles the parsing/translation of the messages read/written from/to the connection, reports possible errors.
+  \item[Server] handles multiple connections.
+  \item[ServerImpl1] handles the database with primary memory storage.
+  \item[ServerImpl2] handles the database with persistent storage.
 \end{description}
-\subsubsection[Client}
+\subsubsection{Client}
 \begin{description}
-  \item[]
-  \item[] 
+  \item[ClientImpl] handles the client user interface.
 \end{description}
 \section{Conclusion}
 
