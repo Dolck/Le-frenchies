@@ -178,7 +178,7 @@ bool ProtocolHandler::deleteArticle(vector<article>& v, const unsigned int& id){
   throw ArticleDoesNotExistException();
 }
 
-article& ProtocolHandler::getArticle(vector<article>& v, unsigned int id){
+article& ProtocolHandler::getArticle(vector<article>& v, const unsigned int& id){
   for(article& a : v){
     if(a.id == id){
       return a;

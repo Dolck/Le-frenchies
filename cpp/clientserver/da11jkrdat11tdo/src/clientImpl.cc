@@ -179,6 +179,7 @@ void welcomePrompt(){
     cout << "5: Create article" << endl;
     cout << "6: Delete article" << endl;
     cout << "7: View article" << endl;
+    cout << "8: Quit program" << endl;
     cout << "Type a number: ";
 }
 
@@ -203,32 +204,36 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
     welcomePrompt();
-    int nbr;
+    char nbr;
     while (cin >> nbr) {
         try{
             switch(nbr){
-                case 1: 
+                case '1': 
                     listNewsGroups(conn);
                     break;
-                case 2:
+                case '2':
                     createNewsGroup(conn);
                     break;
-                case 3:
+                case '3':
                     deleteNewsGroup(conn);
                     break;
-                case 4:{
+                case '4':{
                     int id = chooseNewsGroup(conn);
                     listArticles(conn, id);
                     break;
                 }
-                case 5:
+                case '5':
                     createArticle(conn);
                     break;
-                case 6:
+                case '6':
                     deleteArticle(conn);
                     break;
-                case 7:
+                case '7':
                     viewArticle(conn);
+                    break;
+                case '8':
+                    cout << "Goodbye" << endl;
+                    exit(0);
                     break;
                 default:
                     cout << "You must choose a command from the list.." << endl;

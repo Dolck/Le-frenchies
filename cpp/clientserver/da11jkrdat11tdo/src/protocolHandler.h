@@ -23,7 +23,7 @@ private:
   static bool deleteNG(std::vector<newsgroup>& v, const unsigned int& id);
   static void createArticle(std::vector<article>& v, std::string& title, std::string& author, std::string& text, int& id);
   static bool deleteArticle(std::vector<article>& v, const unsigned int& id);
-  static article& getArticle(std::vector<article>& v, unsigned int id);
+  static article& getArticle(std::vector<article>& v, const unsigned int& id);
 };
 
 #endif
