@@ -184,5 +184,5 @@ article& ProtocolHandler::getArticle(vector<article>& v, const unsigned int& id)
       return a;
     }
   }
-  throw new ArticleDoesNotExistException();
+  throw ArticleDoesNotExistException();
 }
